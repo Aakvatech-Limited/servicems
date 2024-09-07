@@ -1,0 +1,179 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:naming_series",
+ "creation": "2024-09-07 16:46:39.407568",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "phone_no",
+  "column_break_kbt0b",
+  "status",
+  "posting_date",
+  "posting_time",
+  "job_card",
+  "create_job_card",
+  "section_break_svzdl",
+  "service_vehicle",
+  "booking_date",
+  "booking_time",
+  "workshop",
+  "bay",
+  "column_break_myvsy",
+  "service_description",
+  "naming_series"
+ ],
+ "fields": [
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "phone_no",
+   "fieldtype": "Data",
+   "label": "Phone No",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "column_break_kbt0b",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nOn Progress\nCompleted",
+   "read_only": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_svzdl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "service_vehicle",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Service Vehicle",
+   "options": "Service Vehicle",
+   "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "booking_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Booking Date",
+   "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "booking_time",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Booking Time"
+  },
+  {
+   "fieldname": "column_break_myvsy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "service_description",
+   "fieldtype": "Text Editor",
+   "label": "Service Description"
+  },
+  {
+   "default": "SB-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "SB-.YYYY.-"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "bay",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Bay",
+   "options": "Bay",
+   "reqd": 1
+  },
+  {
+   "fieldname": "job_card",
+   "fieldtype": "Link",
+   "label": "Job Card",
+   "options": "Service Job Card",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: !doc.__islocal && !doc.job_card",
+   "fieldname": "create_job_card",
+   "fieldtype": "Button",
+   "label": "Create Job Card"
+  },
+  {
+   "fieldname": "workshop",
+   "fieldtype": "Link",
+   "label": "Workshop",
+   "options": "Service Workshop",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-07 17:06:45.616789",
+ "modified_by": "Administrator",
+ "module": "Service Management",
+ "name": "Service Booking",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
