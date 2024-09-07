@@ -12,6 +12,7 @@ import {
   frappeRequest,
   resourcesPlugin,
   DatePicker,
+  Badge,
 } from 'frappe-ui'
 
 let app = createApp(App)
@@ -25,5 +26,6 @@ app.component('Button', Button)
 app.component('Card', Card)
 app.component('Input', Input)
 app.component('DatePicker', DatePicker)
+app.component('Badge', Badge)
 
 app.mount('#app')
