@@ -1,8 +1,30 @@
 # Copyright (c) 2024, Aakvatech Limited and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
+from frappe.utils import nowdate, nowtime
 from frappe.model.document import Document
+from frappe.query_builder import DocType
 
 class ServiceBooking(Document):
-	pass
+	def before_insert(self):
+		self.status = "Pending"
+		self.posting_date = nowdate()
+		self.posting_time = nowtime()
+
+	@frappe.whitelist()
+	def close_booking(self):
+		self.status = "Closed"
+		self.save(ignore_permissions=True)
+	
+@frappe.whitelist()
+def bulk_close_bookings(booking_list):
+	booking_list = frappe.parse_json(booking_list)
+	for booking in booking_list:
+		if booking.status in ["Closed", "Completed"]:
+			continue
+
+		booking_doc = frappe.get_doc("Service Booking", booking)
+		booking_doc.close_booking()
+
+	return True

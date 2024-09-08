@@ -52,7 +52,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nOn Progress\nCompleted",
+   "options": "Pending\nIn Progress\nClosed\nCompleted",
    "read_only": 1
   },
   {
