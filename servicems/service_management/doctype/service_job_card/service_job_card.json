@@ -23,6 +23,9 @@
   "driver_name",
   "driver_mobile_number",
   "column_break_11",
+  "service_booking",
+  "bay_type",
+  "bay",
   "make",
   "type",
   "engine_number",
@@ -610,9 +613,28 @@
    "read_only": 1
   },
   {
-     "fieldname": "last_service_odometer_reading",
-     "fieldtype": "Data",
-     "label": "Last Service Odometer Reading"
+   "fieldname": "last_service_odometer_reading",
+   "fieldtype": "Data",
+   "label": "Last Service Odometer Reading"
+  },
+  {
+   "fieldname": "bay_type",
+   "fieldtype": "Link",
+   "label": "Bay Type",
+   "options": "Bay Type"
+  },
+  {
+   "fieldname": "bay",
+   "fieldtype": "Link",
+   "label": "Bay",
+   "options": "Bay"
+  },
+  {
+   "fieldname": "service_booking",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Service Booking",
+   "read_only": 1
   }
  ],
  "has_web_view": 1,
@@ -624,7 +646,7 @@
    "link_fieldname": "service_job_card"
   }
  ],
- "modified": "2023-05-21 22:07:38.106225",
+ "modified": "2024-09-07 17:27:38.851529",
  "modified_by": "Administrator",
  "module": "Service Management",
  "name": "Service Job Card",
