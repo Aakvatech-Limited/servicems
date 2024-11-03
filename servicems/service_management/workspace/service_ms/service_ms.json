@@ -1,0 +1,96 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"dFhp9HSsa0\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Service MS</span>\",\"col\":12}},{\"id\":\"NCh6MVObz0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle Inspection\",\"col\":3}},{\"id\":\"mkzcsrSYYa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle\",\"col\":3}},{\"id\":\"bYJ8rzhAP-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Workshop\",\"col\":3}},{\"id\":\"9UvcXOqOJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Spare\",\"col\":3}},{\"id\":\"yysftveJSP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card\",\"col\":3}},{\"id\":\"Jj2N28rDS2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workshop Service Type\",\"col\":3}},{\"id\":\"reGqPHcVPa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workshop Service\",\"col\":3}}]",
+ "creation": "2024-04-16 16:38:59.620998",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Service MS",
+ "links": [],
+ "modified": "2024-11-04 01:18:59.697529",
+ "modified_by": "Administrator",
+ "module": "Service Management",
+ "name": "Service MS",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "doc_view": "List",
+   "label": "Booking Page",
+   "type": "URL",
+   "url": "/bookings"
+  },
+  {
+   "doc_view": "List",
+   "label": "Service Booking",
+   "link_to": "Service Booking",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Workshop Service Type",
+   "link_to": "Workshop Service Type",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Vehicle Inspection",
+   "link_to": "Service Vehicle Inspection",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Spare",
+   "link_to": "Spare",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Job Card",
+   "link_to": "Service Job Card",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Workshop Service",
+   "link_to": "Workshop Service",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Vehicle",
+   "link_to": "Service Vehicle",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Workshop",
+   "link_to": "Service Workshop",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Service MS"
+}

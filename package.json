@@ -11,5 +11,17 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@headlessui/vue": "^1.7.23",
+    "@vueuse/core": "^11.1.0",
+    "date-fns": "^4.1.0",
+    "frappe-ui": "0.1.0",
+    "vue": "^3.5.12",
+    "vue-toastification": "^2.0.0-rc.5"
+  },
+  "devDependencies": {
+    "@vue-macros/volar": "^0.30.5",
+    "unplugin-vue-define-options": "^1.5.2"
+  }
 }

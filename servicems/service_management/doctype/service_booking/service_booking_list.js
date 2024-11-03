@@ -20,7 +20,7 @@ frappe.listview_settings['Service Booking'] = {
 };
 var visit_booking_page = function(listview) {
     listview.page.add_inner_button(__("View Booking Page"), function() {
-        let url = "http://sems-dev:8080/frontend/"
+        let url = frappe.urllib.get_full_url("/bookings");
         window.open(url, '_blank');
     });
 };

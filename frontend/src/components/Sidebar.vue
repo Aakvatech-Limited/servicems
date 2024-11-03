@@ -1,29 +1,25 @@
 <template>
-  <div class="h-screen w-64 bg-gray-800 text-white flex flex-col items-start p-5">
+  <div class="h-screen w-60 bg-blue-400 flex flex-col items-start p-6">
     <Button 
-      class="mb-8 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-6 px-4 rounded"
+      class="mb-8 w-full bg-blue-500 hover:bg-blue-500/50 text-black font-bold py-6 px-4 rounded"
       label="Bookings"
-      @click=""
+      @click="goToBookings()"
     />
 
     <Button 
-      class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-6 px-4 rounded"
+      class="w-full bg-green-500 hover:bg-green-500 text-black font-bold py-6 px-4 rounded"
       label="Job Card"
-      @click=""
+      @click="goToJobCard()"
     />
   </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
 function goToBookings() {
-  router.push({ name: 'Bookings' });
+  window.location.href = '/app/Service Booking'
 }
 
 function goToJobCard() {
-  router.push({ name: 'JobCard' });
+  window.location.href = '/app/Service Job Card'
 }
 </script>

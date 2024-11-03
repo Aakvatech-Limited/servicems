@@ -1,0 +1,32 @@
+// src/script-lang.ts
+import { createFilter } from "@vue-macros/common";
+import { parse } from "@vue/language-core";
+var plugin = (_, options = {}) => {
+  if (!options) return [];
+  const filter = createFilter(options);
+  return {
+    name: "vue-macros-script-lang",
+    version: 2.1,
+    order: -1,
+    parseSFC(fileName, content) {
+      if (!filter(fileName)) return;
+      const sfc = parse(content);
+      const {
+        descriptor: { script, scriptSetup }
+      } = sfc;
+      const lang = options.defaultLang || "ts";
+      if (script && !script.attrs.lang) {
+        script.lang = lang;
+      }
+      if (scriptSetup && !scriptSetup.attrs.lang) {
+        scriptSetup.lang = lang;
+      }
+      return sfc;
+    }
+  };
+};
+var script_lang_default = plugin;
+
+export {
+  script_lang_default
+};

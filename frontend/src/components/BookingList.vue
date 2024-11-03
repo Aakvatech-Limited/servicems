@@ -1,47 +1,214 @@
 <template>
-    <div class="scroll">
-        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-            <Card
-                v-for="item in bay.data"
-                :key="item.name"
-                class="bg-white p-4 rounded-lg shadow-md"
-            >
-                <div class="mb-6">
-                    <h5 class="font-bold text-sm mb-3">{{ item.name }}</h5>
-                    <p class="text-sm text-gray-600">{{ item.service_workshop }}</p>
+    <div class="mb-6">
+        <DateFilter :filters="filters" />
+    </div>
+    <div class="scroll h-[600px] overflow-y-auto">
+        <div v-if="loading" class="text-center py-4 text-gray-500">Loading bookings...</div>
+
+        <div v-for="(bookings, date) in weeklyBookings" :key="date" class="mb-5">
+            <div class="border border-gray-300 rounded-md p-4 relative">
+                <h1 class="flex shadow-lg shadow-green-500 font-bold mb-8 text-center h-7 text-2xl">
+                    {{ date }}
+                </h1>
+
+                <div class="flex items-center justify-between relative">
+                    <button
+                        @click="scrollLeft(date)"
+                        class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-500 px-2 text-white font-bold text-xl rounded-l-md z-10"
+                        v-if="bookings.length > 4"
+                    >
+                        &lt;
+                    </button>
+
+                    <div :id="`container-${date}`" class="flex overflow-x-hidden gap-4 px-8 h-40 custom-scroll-hidden relative">
+                        <div
+                            v-for="item in bookings"
+                            :key="item.name"
+                            :class="[
+                                !item.status ? 'bg-white-overlay-500 border-0 shadow-xl shadow-cyan-500/50 font-sans' : 'bg-blue-300 border-blue-300 shadow-lg shadow-cyan-500/50 font-mono'
+                            ]"
+                            class="w-[140px] h-[150px] flex-shrink-0 rounded-md shadow-md p-2 flex flex-col justify-between"
+                        >
+
+                            <div class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap mt-2 text-center">
+                                <p class="font-bold text-base">{{ item.bay_name }}</p>
+                                <p v-if="item.status"
+                                    class="rounded-md bg-orange-200 text-sm text-orange-900 ring-1 ring-inset ring-orange-500/10">
+                                    Status: {{ item.status === 'In Progress' ? 'Progress' : item.status }}
+                                </p>
+                            </div>
+                            <div class="translate-x-3/4 mb-6" >
+                                <div class="bg-gray-400 text-black rounded-full w-9 h-9 flex items-center justify-center text-5xl font-bold">
+                                    {{ item.count || 0 }}
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center mt-auto">
+                                <button
+                                    class="bg-gray-400 text-black font-bold px-2 rounded-md text-base w-full h-5"
+                                    @click="addBooking(item.bay_name, date)"
+                                    >
+                                    +Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        @click="scrollRight(date)"
+                        class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-500 px-2 text-white font-bold text-xl rounded-r-md z-10"
+                        v-if="bookings.length > 4"
+                    >
+                        &gt;
+                    </button>
                 </div>
-                <div class="flex">
-                    <Badge>{{ item.name }}</Badge>
-                    <Button
-                        class="flex-initial bg-blue-500 hover:bg-blue-600 text-white font-bold rounded"
-                        label="View"
-                        @click=""
-                    />
-                </div>
-            </Card>
+            </div>
         </div>
-        
-        <div class="mt-6">
-            <Button @click="bay.next()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded">Next Page</Button>
-        </div>
+        <CreateBooking :showDialog="showDialog" :bay="_bayName" :booking_date="booking_date" @closeDialog="showDialog = false" />
     </div>
 </template>
 
 
-
 <script setup>
-import { ref } from 'vue'
-import { createResource, createListResource } from 'frappe-ui'
+import { ref, computed, onMounted, reactive, watch } from 'vue'
+import { createResource, toast } from 'frappe-ui'
+import { addDays, format, differenceInDays } from 'date-fns'
+import CreateBooking from '@/components/CreateBooking.vue'
+import DateFilter from '@/components/DateFilter.vue'
+import { useToast } from 'vue-toastification'
 
-const bay = createListResource({
-    doctype: 'Bay',
-    fields: ['name', 'service_workshop'],
-    auto: true,
-    orderBy: 'name',
-    start: 0,
-    pageLength: 100,
+const today = new Date()
+const lastcount = ref(0)
+const loading = ref(true)
+const showDialog = ref(false)
+const _bayName = ref('')
+const booking_date = ref(today.value)
+
+const filters = reactive({
+    from_date: today.value,
+    to_date: '',
+    workshop: '',
 })
 
-bay.fetch()
+const tos = useToast();
+
+watch(() => filters, async () => {
+    loading.value = true
+    await bay_data.fetch()
+    loading.value = false
+}, { deep: true })
+
+const bay_data = createResource({
+    url: 'servicems.api.api.get_service_bays',
+    method: 'GET',
+    auto: true,
+    cache: 'bookings',
+    makeParams() {
+        return {
+            from_date: filters.from_date || format(today.value, 'yyyy-MM-dd'),
+            to_date: filters.to_date,
+            workshop: filters.workshop,
+        }
+    },
+    validate(params) {
+    },
+    onSuccess: (data) => {
+    },
+    onError: (err) => {
+        if (!err.messages) {
+            tos.error(err.message)
+            return
+        }
+        tos.error(err.messages.join('\n'))
+    }
+})
+
+const weeklyBookings = computed(() => {
+    const dates = {}
+
+    today.value = filters.from_date ? new Date(filters.from_date) : new Date();
+
+    lastcount.value = filters.to_date ? differenceInDays(new Date(filters.to_date), today.value) : 6;
+
+
+    for (let i = 0; i <= lastcount.value; i++) {
+        const currentDate = format(addDays(today.value, i), 'EE, yyyy-MM-dd')
+        dates[currentDate] = []
+
+        // if (Array.isArray(bay_data.data)) {
+        //     bay_data.data.forEach((item) => {
+        //         if (item.booking_date && dates[item.booking_date]) {
+        //             dates[item.booking_date].push(item)
+        //         } else if (item.booking_date && !dates[item.booking_date] && item.booking_date === currentDate) {
+        //             dates[currentDate].push(item)
+        //         } else {
+        //             dates[currentDate].push({
+        //                 bay_name: item.bay_name,
+        //                 count: 0,
+        //                 status: '',
+        //             })
+        //         }
+        //     })
+        // }
+
+    }
+
+    if (Array.isArray(bay_data.data)) {
+        bay_data.data.forEach((item) => {
+            const itemDate = item.booking_date;
+            if (itemDate && dates[itemDate]) {
+                dates[itemDate].push(item);
+            } else if (itemDate && !dates[itemDate]) {
+                const formattedDate = format(new Date(itemDate), 'EE, yyyy-MM-dd');
+                if (!dates[formattedDate]) {
+                    dates[formattedDate] = [];
+                }
+                dates[formattedDate].push(item);
+            } else {
+                for (const dateKey in dates) {
+                    dates[dateKey].push({
+                        bay_name: item.bay_name,
+                        count: 0,
+                        status: '',
+                    });
+                }
+            }
+        });
+    }
+
+
+    return dates
+})
+
+function addBooking(bay_name, date) {
+    showDialog.value = true
+    _bayName.value = bay_name
+    booking_date.value = format(date, 'yyyy-MM-dd')
+}
+
+const scrollLeft = (date) => {
+    const container = document.getElementById(`container-${date}`)
+    container.scrollBy({ left: -300, behavior: 'smooth' })
+}
+
+const scrollRight = (date) => {
+    const container = document.getElementById(`container-${date}`)
+    container.scrollBy({ left: 300, behavior: 'smooth' })
+}
+
+onMounted(async () => {
+    await bay_data.fetch()
+    loading.value = false
+})
 
 </script>
+
+<style scoped>
+.custom-scroll-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.custom-scroll-hidden::-webkit-scrollbar {
+    display: none;
+}
+</style>
