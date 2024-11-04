@@ -9,6 +9,13 @@ import json
 
 
 class ServiceJobCard(WebsiteGenerator):
+    def after_insert(self):
+        if self.service_booking:
+            frappe.db.set_value("Service Booking", self.service_booking, {
+                "status": "In Progress",
+                "job_card": self.name,
+            })
+
     def validate(self):
         self.update_tables()
         self.set_parts_rate()
@@ -27,6 +34,9 @@ class ServiceJobCard(WebsiteGenerator):
     def on_submit(self):
         if self.status != "Completed":
             frappe.throw(_("It is not allowed to submit if it is not completed"))
+        
+        if self.service_booking:
+            frappe.db.set_value("Service Booking", self.service_booking, "status", "Completed")
 
     def update_tables(self):
         for template in self.services:

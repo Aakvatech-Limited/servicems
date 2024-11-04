@@ -1,0 +1,74 @@
+import {
+  getText
+} from "./chunk-LMDKOHQF.mjs";
+
+// src/define-generic.ts
+import { createFilter } from "@vue-macros/common";
+import { replace, replaceSourceRange } from "muggle-string";
+function getDefineGenerics(ts, sfc, codes) {
+  const result = [];
+  const sourceFile = sfc.scriptSetup.ast;
+  ts.forEachChild(sourceFile, (node) => {
+    if (ts.isTypeAliasDeclaration(node) && ts.isTypeReferenceNode(node.type) && ts.isIdentifier(node.type.typeName) && node.type.typeName.escapedText === "DefineGeneric") {
+      if (!node.type.typeArguments?.length) {
+        replaceSourceRange(
+          codes,
+          "scriptSetup",
+          node.name.pos,
+          node.name.end,
+          ` _${node.name.escapedText}`
+        );
+        replaceSourceRange(
+          codes,
+          "scriptSetup",
+          node.type.end,
+          node.type.end,
+          `<${node.name.escapedText}>`
+        );
+      }
+      const typeArgument = node.type.typeArguments?.[0] ? ` extends ${getText(node.type.typeArguments[0], { ts, sfc })}` : "";
+      const defaultType = node.type.typeArguments?.[1] ? ` = ${getText(node.type.typeArguments[1], { ts, sfc })}` : "";
+      result.push(`${node.name.escapedText}${typeArgument}${defaultType}`);
+    }
+  });
+  return result;
+}
+var plugin = (ctx, options = {}) => {
+  if (!options) return [];
+  const filter = createFilter(options);
+  return [
+    {
+      name: "vue-macros-define-generic-pre",
+      version: 2.1,
+      order: -1,
+      resolveEmbeddedCode(fileName, sfc) {
+        if (filter(fileName) && !sfc.scriptSetup?.attrs.generic && sfc.scriptSetup?.content.includes("DefineGeneric")) {
+          sfc.scriptSetup.attrs.generic = "T";
+        }
+      }
+    },
+    {
+      name: "vue-macros-define-generic",
+      version: 2.1,
+      resolveEmbeddedCode(fileName, sfc, embeddedFile) {
+        if (!filter(fileName) || !sfc.scriptSetup?.ast) return;
+        const defineGenerics = getDefineGenerics(
+          ctx.modules.typescript,
+          sfc,
+          embeddedFile.content
+        );
+        if (!defineGenerics.length) return;
+        replace(
+          embeddedFile.content,
+          /(?<=export\sdefault\s\(<).*(?=,>)/,
+          defineGenerics.join(", ")
+        );
+      }
+    }
+  ];
+};
+var define_generic_default = plugin;
+
+export {
+  define_generic_default
+};

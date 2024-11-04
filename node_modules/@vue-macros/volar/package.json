@@ -1,0 +1,171 @@
+{
+  "name": "@vue-macros/volar",
+  "version": "0.30.5",
+  "description": "Volar plugin for Vue Macros.",
+  "type": "commonjs",
+  "keywords": [
+    "vue-macros",
+    "macros",
+    "vue",
+    "sfc",
+    "setup",
+    "script-setup",
+    "volar"
+  ],
+  "license": "MIT",
+  "homepage": "https://vue-macros.dev",
+  "bugs": {
+    "url": "https://github.com/vue-macros/vue-macros/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vue-macros/vue-macros.git",
+    "directory": "packages/volar"
+  },
+  "author": "三咲智子 <sxzz@sxzz.moe>",
+  "files": [
+    "*.d.ts",
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./boolean-prop": {
+      "require": "./dist/boolean-prop.js",
+      "import": "./dist/boolean-prop.mjs"
+    },
+    "./common": {
+      "require": "./dist/common.js",
+      "import": "./dist/common.mjs"
+    },
+    "./define-emit": {
+      "require": "./dist/define-emit.js",
+      "import": "./dist/define-emit.mjs"
+    },
+    "./define-generic": {
+      "require": "./dist/define-generic.js",
+      "import": "./dist/define-generic.mjs"
+    },
+    "./define-models": {
+      "require": "./dist/define-models.js",
+      "import": "./dist/define-models.mjs"
+    },
+    "./define-options": {
+      "require": "./dist/define-options.js",
+      "import": "./dist/define-options.mjs"
+    },
+    "./define-prop": {
+      "require": "./dist/define-prop.js",
+      "import": "./dist/define-prop.mjs"
+    },
+    "./define-props": {
+      "require": "./dist/define-props.js",
+      "import": "./dist/define-props.mjs"
+    },
+    "./define-props-refs": {
+      "require": "./dist/define-props-refs.js",
+      "import": "./dist/define-props-refs.mjs"
+    },
+    "./define-slots": {
+      "require": "./dist/define-slots.js",
+      "import": "./dist/define-slots.mjs"
+    },
+    "./export-expose": {
+      "require": "./dist/export-expose.js",
+      "import": "./dist/export-expose.mjs"
+    },
+    "./export-props": {
+      "require": "./dist/export-props.js",
+      "import": "./dist/export-props.mjs"
+    },
+    "./export-render": {
+      "require": "./dist/export-render.js",
+      "import": "./dist/export-render.mjs"
+    },
+    "./jsx-directive": {
+      "require": "./dist/jsx-directive.js",
+      "import": "./dist/jsx-directive.mjs"
+    },
+    "./jsx-ref": {
+      "require": "./dist/jsx-ref.js",
+      "import": "./dist/jsx-ref.mjs"
+    },
+    "./script-lang": {
+      "require": "./dist/script-lang.js",
+      "import": "./dist/script-lang.mjs"
+    },
+    "./script-sfc": {
+      "require": "./dist/script-sfc.js",
+      "import": "./dist/script-sfc.mjs"
+    },
+    "./setup-jsdoc": {
+      "require": "./dist/setup-jsdoc.js",
+      "import": "./dist/setup-jsdoc.mjs"
+    },
+    "./setup-sfc": {
+      "require": "./dist/setup-sfc.js",
+      "import": "./dist/setup-sfc.mjs"
+    },
+    "./short-bind": {
+      "require": "./dist/short-bind.js",
+      "import": "./dist/short-bind.mjs"
+    },
+    "./short-vmodel": {
+      "require": "./dist/short-vmodel.js",
+      "import": "./dist/short-vmodel.mjs"
+    },
+    "./template-ref": {
+      "require": "./dist/template-ref.js",
+      "import": "./dist/template-ref.mjs"
+    },
+    "./*": [
+      "./*",
+      "./*.d.ts"
+    ]
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./*"
+      ]
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "vue-tsc": "2.1.6"
+  },
+  "peerDependenciesMeta": {
+    "vue-tsc": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@vue/language-core": "2.1.6",
+    "muggle-string": "^0.4.1",
+    "@vue-macros/boolean-prop": "0.5.2",
+    "@vue-macros/common": "1.15.0",
+    "@vue-macros/short-vmodel": "1.5.2",
+    "@vue-macros/short-bind": "1.1.2",
+    "@vue-macros/config": "0.5.0"
+  },
+  "devDependencies": {
+    "@vue/compiler-dom": "^3.5.12",
+    "typescript": "^5.6.2",
+    "vue-tsc": "2.1.6"
+  },
+  "engines": {
+    "node": ">=16.14.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "DEV=true tsup --watch"
+  }
+}

@@ -175,3 +175,7 @@ user_data_fields = [
 # 	"servicems.auth.validate"
 # ]
 
+
+website_route_rules = [
+	{'from_route': '/bookings/<path:app_path>', 'to_route': 'bookings'},
+]
