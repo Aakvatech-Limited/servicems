@@ -20,8 +20,9 @@ frappe.listview_settings['Service Booking'] = {
 };
 var visit_booking_page = function(listview) {
     listview.page.add_inner_button(__("View Booking Page"), function() {
-        let url = frappe.urllib.get_full_url("/bookings");
-        window.open(url, '_blank');
+        // let url = frappe.urllib.get_full_url("/bookings");
+        // window.open("/bookings/", '_blank');
+        window.location.href = "/bookings";
     });
 };
 
