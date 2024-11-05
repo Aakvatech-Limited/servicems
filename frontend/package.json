@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build --base=/assets/servicems/frontend/ && yarn copy-html-entry",
     "preview": "vite preview",
-    "copy-html-entry": "cp ../servicems/public/frontend/index.html ../servicems/www/frontend.html"
+    "copy-html-entry": "cp ../servicems/public/frontend/index.html ../servicems/www/bookings.html"
   },
   "dependencies": {
     "feather-icons": "^4.28.0",

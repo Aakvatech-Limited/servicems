@@ -1,5 +1,6 @@
 <template>
-    <Dialog v-model="showDialog" :options="{ size: '5xl' }">
+    <Dialog :model-value="localShowDialog" @update:model-value="updateDialogVisibility" :options="{ size: '5xl' }">
+    <!-- <Dialog v-model="showDialog" :options="{ size: '5xl' }"> -->
         <template #body>
             <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
                 <div class="mb-5 flex gap-36 items-center justify-around">
@@ -56,6 +57,11 @@ const toast = useToast();
 const emit = defineEmits(['closeDialog'])
 
 const localShowDialog = ref(props.showDialog)
+
+function updateDialogVisibility(newVal) {
+    localShowDialog.value = newVal;
+    emit('update:showDialog', newVal);
+}
 
 watch(() => props.showDialog, (newVal) => {
   localShowDialog.value = newVal
