@@ -38,7 +38,10 @@
                                 </p>
                             </div>
                             <div class="translate-x-3/4 mb-6" >
-                                <div class="bg-gray-400 text-black rounded-full w-9 h-9 flex items-center justify-center text-5xl font-bold">
+                                <div 
+                                    class="bg-gray-400 text-black rounded-full w-9 h-9 flex items-center justify-center text-5xl font-bold hover:bg-blue-700/50"
+                                    @click="openBookingDoc(item.bay_name, date)"
+                                >
                                     {{ item.count || 0 }}
                                 </div>
                             </div>
@@ -179,6 +182,11 @@ const weeklyBookings = computed(() => {
 
     return dates
 })
+
+function openBookingDoc(bay_name, date) {
+    const bDate = format(date, 'yyyy-MM-dd')
+    window.location.href = '/app/service-booking?bay=' + bay_name + '&booking_date=' + bDate
+}
 
 function addBooking(bay_name, date) {
     showDialog.value = true
