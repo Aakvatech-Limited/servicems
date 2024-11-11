@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"dFhp9HSsa0\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Service MS</span>\",\"col\":12}},{\"id\":\"NCh6MVObz0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle Inspection\",\"col\":3}},{\"id\":\"mkzcsrSYYa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle\",\"col\":3}},{\"id\":\"bYJ8rzhAP-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Workshop\",\"col\":3}},{\"id\":\"9UvcXOqOJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Spare\",\"col\":3}},{\"id\":\"yysftveJSP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card\",\"col\":3}},{\"id\":\"Jj2N28rDS2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workshop Service Type\",\"col\":3}},{\"id\":\"reGqPHcVPa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workshop Service\",\"col\":3}}]",
+ "content": "[{\"id\":\"skwv7vtvjl\",\"type\":\"paragraph\",\"data\":{\"text\":\"Portal\",\"col\":12}},{\"id\":\"X7a87RULga\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Booking Page\",\"col\":3}},{\"id\":\"LHo9f8EsC-\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"TuI1c_ID-X\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"dFhp9HSsa0\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Service MS</span>\",\"col\":12}},{\"id\":\"yysftveJSP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card\",\"col\":3}},{\"id\":\"JfL6PqVHGH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Booking\",\"col\":3}},{\"id\":\"bYJ8rzhAP-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Workshop\",\"col\":3}},{\"id\":\"c8BIWRWo4u\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bay\",\"col\":3}},{\"id\":\"NCh6MVObz0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle Inspection\",\"col\":3}},{\"id\":\"mkzcsrSYYa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle\",\"col\":3}},{\"id\":\"9UvcXOqOJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Spare\",\"col\":3}},{\"id\":\"Jj2N28rDS2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workshop Service Type\",\"col\":3}}]",
  "creation": "2024-04-16 16:38:59.620998",
  "custom_blocks": [],
  "docstatus": 0,
@@ -10,9 +10,30 @@
  "idx": 0,
  "is_hidden": 0,
  "label": "Service MS",
- "links": [],
- "modified": "2024-11-04 01:18:59.697529",
- "modified_by": "Administrator",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Service Booking",
+   "link_count": 0,
+   "link_to": "Service Booking",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "TEST",
+   "link_count": 0,
+   "link_to": "Service Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-11-10 23:36:40.916651",
+ "modified_by": "sydneykb38@gmail.com",
  "module": "Service Management",
  "name": "Service MS",
  "number_cards": [],
@@ -24,15 +45,26 @@
  "sequence_id": 1.0,
  "shortcuts": [
   {
+   "color": "Grey",
    "doc_view": "List",
    "label": "Booking Page",
    "type": "URL",
    "url": "/bookings"
   },
   {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Bay",
+   "link_to": "Bay",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
    "doc_view": "List",
    "label": "Service Booking",
    "link_to": "Service Booking",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {
@@ -64,14 +96,6 @@
    "doc_view": "List",
    "label": "Service Job Card",
    "link_to": "Service Job Card",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Workshop Service",
-   "link_to": "Workshop Service",
    "stats_filter": "[]",
    "type": "DocType"
   },
