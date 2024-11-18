@@ -163,6 +163,26 @@ frappe.ui.form.on('Service Job Card', {
 				frm.reload_doc();
 			});
 	},
+	create_quotation: async function (frm) {
+		if (frm.is_dirty()) {
+			await frm.save();
+		}
+
+		frappe.call({
+			method: 'servicems.api.api.create_quotation',
+			args: {
+				job_card_id: frm.doc.name
+			},
+			freeze: true,
+			callback: (r) => {
+				if (r.message) {
+					frappe.set_route("Form", "Quotation", r.message);
+				}
+			},
+			error: (r) => {
+			}
+		})
+	},
 	service_item_name: async function(frm){
 		frm.set_value('last_service_date', '');
 		const last_service_date = await frappe.db.get_list('Service Job Card',{
@@ -177,7 +197,7 @@ frappe.ui.form.on('Service Job Card', {
 			frm.set_value('last_service_date', last_service_date[0].modified);
 		}
 	},
-  odometer_reading: async function(frm){
+	odometer_reading: async function(frm){
 		frm.set_value('last_service_odometer_reading', '');
 		if (frm.doc.service_item_name) {
 			const last_odometer_reading = await frappe.db.get_list('Service Job Card',{
@@ -212,6 +232,12 @@ frappe.ui.form.on('Service Job Card', {
 
 function set_custom_buttons (frm) {
 	if (!frm.is_dirty() && frm.doc.docstatus == 0) {
+		if (!frm.doc.quotation) {
+			frm.add_custom_button('Quotation', () => {
+				frm.trigger('create_quotation');
+			}, 'Create');
+		}
+
 		frm.add_custom_button('Stock Entry', () => {
 			frm.trigger('create_stock_entry');
 		}, 'Create');
