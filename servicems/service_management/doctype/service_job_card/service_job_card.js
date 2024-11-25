@@ -188,7 +188,7 @@ frappe.ui.form.on('Service Job Card', {
 		const last_service_date = await frappe.db.get_list('Service Job Card',{
 		      filters: {
               'service_item_name': frm.doc.service_item_name,
-              'workflow_state': 'Closed'
+              'status': 'Closed'
           },
           order_by:'modified desc',
           fields: ['modified'],
@@ -203,7 +203,7 @@ frappe.ui.form.on('Service Job Card', {
 			const last_odometer_reading = await frappe.db.get_list('Service Job Card',{
 		     filters: {
 					'service_item_name': frm.doc.service_item_name,
-					'workflow_state': 'Closed'
+					'status': 'Closed'
 				},
 				order_by:'modified desc',
 				fields: ['odometer_reading'],
