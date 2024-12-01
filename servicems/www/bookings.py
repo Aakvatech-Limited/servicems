@@ -7,7 +7,7 @@ cache = 1
 def get_context():
     frappe.db.commit()
     context = frappe._dict()
-    context.boot = get_boot()
+    context = get_boot()
     if frappe.session.user != "Guest":
         capture("active_site", "bookings")
 

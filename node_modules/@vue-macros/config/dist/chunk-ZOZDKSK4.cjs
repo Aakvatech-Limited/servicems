@@ -1,8 +1,0 @@
-"use strict";Object.defineProperty(exports, "__esModule", {value: true});// src/define.ts
-function defineConfig(config) {
-  return config;
-}
-
-
-
-exports.defineConfig = defineConfig;
