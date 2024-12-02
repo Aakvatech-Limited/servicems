@@ -9,7 +9,7 @@ __app_version = {}
 
 
 @frappe.whitelist()
-def search_link(
+def search_link_data(
 	doctype,
 	txt,
 	query=None,
