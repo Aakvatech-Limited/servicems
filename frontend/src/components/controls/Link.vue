@@ -117,7 +117,7 @@ watchDebounced(
 )
 
 const options = createResource({
-  url: 'servicems.api.api.search_link',
+  url: 'servicems.api.api.search_link_data',
   cache: [props.doctype, text.value, props.hideMe],
   method: 'POST',
   params: {

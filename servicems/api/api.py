@@ -5,11 +5,9 @@ from frappe.query_builder.functions import Count
 from frappe.utils.change_log import get_app_branch
 from frappe.desk.search import search_link, search_widget, build_for_autosuggest
 
-__app_version = {}
-
 
 @frappe.whitelist()
-def search_link(
+def search_link_data(
 	doctype,
 	txt,
 	query=None,
@@ -19,22 +17,9 @@ def search_link(
 	reference_doctype=None,
 	ignore_user_permissions=False,
 ):
-    if not __app_version.get("frappe"):
-        __app_version["frappe"] = get_app_branch("frappe")
+    frappe_version = frappe.__version__.split(".")[0]
 
-    if not __app_version.get("frappe"):
-        return search_link(
-            doctype,
-            txt,
-            query=None,
-            filters=None,
-            page_length=20,
-            searchfield=None,
-            reference_doctype=None,
-            ignore_user_permissions=False,
-        )
-    
-    elif __app_version.get("frappe") in ["version-14", "version-13", "version-12"]:
+    if frappe_version in [12, 13, 14]:
         search_widget(
             doctype,
             txt.strip(),

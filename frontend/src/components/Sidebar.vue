@@ -8,7 +8,7 @@
       <img :src="settings.doc.app_logo" alt="logo" class="w-full rounded-full" />
     </div>
     <Button
-      class="mb-8 w-full hover:bg-blue-500/50 text-black font-bold py-6 px-4 rounded border-4 border-gray-300"
+      class="mb-8 w-full hover:bg-green-500/50 text-black font-bold py-6 px-4 rounded border-4 border-gray-300"
       label="Bookings"
       @click="goToBookings()"
     />
