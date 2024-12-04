@@ -1,8 +1,8 @@
 import frappe
 from pypika.terms import Not
+from frappe.utils import cint
 from frappe.query_builder import DocType
 from frappe.query_builder.functions import Count
-from frappe.utils.change_log import get_app_branch
 from frappe.desk.search import search_link, search_widget, build_for_autosuggest
 
 
@@ -19,7 +19,7 @@ def search_link_data(
 ):
     frappe_version = frappe.__version__.split(".")[0]
 
-    if frappe_version in [12, 13, 14]:
+    if frappe_version and cint(frappe_version) in [12, 13, 14]:
         search_widget(
             doctype,
             txt.strip(),

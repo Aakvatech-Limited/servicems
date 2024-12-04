@@ -67,7 +67,13 @@
                 </div>
             </div>
         </div>
-        <CreateBooking :showDialog="showDialog" :bay="_bayName" :booking_date="booking_date" @closeDialog="showDialog = false" />
+        <CreateBooking 
+            :showDialog="showDialog" 
+            :bay="_bayName" 
+            :booking_date="booking_date" 
+            @closeDialog="showDialog = false"
+            @refreshData="refreshBayData"
+        />
     </div>
 </template>
 
@@ -127,61 +133,55 @@ const bay_data = createResource({
 })
 
 const weeklyBookings = computed(() => {
-    const dates = {}
+    const dates = {};
 
     today.value = filters.from_date ? new Date(filters.from_date) : new Date();
-
     lastcount.value = filters.to_date ? differenceInDays(new Date(filters.to_date), today.value) : 6;
 
-
     for (let i = 0; i <= lastcount.value; i++) {
-        const currentDate = format(addDays(today.value, i), 'EE, yyyy-MM-dd')
-        dates[currentDate] = []
-
-        // if (Array.isArray(bay_data.data)) {
-        //     bay_data.data.forEach((item) => {
-        //         if (item.booking_date && dates[item.booking_date]) {
-        //             dates[item.booking_date].push(item)
-        //         } else if (item.booking_date && !dates[item.booking_date] && item.booking_date === currentDate) {
-        //             dates[currentDate].push(item)
-        //         } else {
-        //             dates[currentDate].push({
-        //                 bay_name: item.bay_name,
-        //                 count: 0,
-        //                 status: '',
-        //             })
-        //         }
-        //     })
-        // }
-
+        const currentDate = format(addDays(today.value, i), 'EE, yyyy-MM-dd');
+        dates[currentDate] = [];
     }
 
-    if (Array.isArray(bay_data.data)) {
-        bay_data.data.forEach((item) => {
+    const bayDataList = bay_data.data;
+    const allBays = bayDataList.filter(item => item.bay_name).map(item => ({
+        bay_name: item.bay_name,
+        workshop: item.workshop,
+        count: 0,
+        status: '',
+        customer: '',
+        booking_time: '',
+        booking_date: ''
+    }));
+
+    for (const dateKey in dates) {
+        const uniqueBays = new Map();
+        allBays.forEach(bay => {
+            uniqueBays.set(bay.bay_name, bay);
+        });
+        dates[dateKey] = Array.from(uniqueBays.values());
+    }
+
+    if (Array.isArray(bayDataList)) {
+        bayDataList.forEach((item) => {
             const itemDate = item.booking_date;
-            if (itemDate && dates[itemDate]) {
-                dates[itemDate].push(item);
-            } else if (itemDate && !dates[itemDate]) {
-                const formattedDate = format(new Date(itemDate), 'EE, yyyy-MM-dd');
-                if (!dates[formattedDate]) {
-                    dates[formattedDate] = [];
-                }
-                dates[formattedDate].push(item);
-            } else {
-                for (const dateKey in dates) {
-                    dates[dateKey].push({
-                        bay_name: item.bay_name,
-                        count: 0,
-                        status: '',
-                    });
+            if (itemDate) {
+                const formattedItemDate = format(itemDate, 'EE, yyyy-MM-dd');
+                if (dates[formattedItemDate]) {
+                    const bayIndex = dates[formattedItemDate].findIndex(bay => bay.bay_name === item.bay_name);
+                    if (bayIndex !== -1) {
+                        dates[formattedItemDate][bayIndex] = item;
+                    } else {
+                        dates[formattedItemDate].push(item);
+                    }
                 }
             }
         });
     }
 
+    return dates;
+});
 
-    return dates
-})
 
 function openBookingDoc(bay_name, date) {
     const bDate = format(date, 'yyyy-MM-dd')
@@ -197,6 +197,15 @@ function addBooking(bay_name, date) {
 const scrollLeft = (date) => {
     const container = document.getElementById(`container-${date}`)
     container.scrollBy({ left: -300, behavior: 'smooth' })
+}
+
+async function refreshBayData() {
+    loading.value = true;
+    await bay_data.fetch().then(() => {
+        loading.value = false;
+    }).catch(() => {
+        loading.value = false;
+    });
 }
 
 const scrollRight = (date) => {

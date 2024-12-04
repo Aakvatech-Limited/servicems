@@ -1,6 +1,5 @@
 <template>
     <Dialog :model-value="localShowDialog" @update:model-value="updateDialogVisibility" :options="{ size: '5xl' }">
-    <!-- <Dialog v-model="showDialog" :options="{ size: '5xl' }"> -->
         <template #body>
             <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
                 <div class="mb-5 flex gap-36 items-center justify-around">
@@ -140,6 +139,7 @@ const booking_doc = createResource({
         showToast('Booking created successfully', 'success')
         closeDialog()
         resetBooking()
+        emit('refreshData');
     },
     onError: (err) => {
         isBookingCreating.value = false
