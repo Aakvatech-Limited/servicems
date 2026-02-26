@@ -4,15 +4,22 @@
 frappe.ui.form.on('Service Job Card', {
 	onload: function (frm) {
 		setMatrialBtn(frm);
+		toggleTyreManagementFields(frm);
+		toggleTyreMovementFields(frm);
 
 	},
 	refresh: function (frm) {
 		setMatrialBtn(frm);
+		toggleTyreManagementFields(frm);
+		toggleTyreMovementFields(frm);
 		cur_frm.set_query("item", "parts", () => {
 			return {
 				query: "servicems.service_management.doctype.service_settings.service_settings.get_filtered_items",
 			};
 		});
+	},
+	tyre_movement_type: function (frm) {
+		toggleTyreMovementFields(frm);
 	},
 
 	unbill_item: function (frm) {
@@ -147,6 +154,73 @@ frappe.ui.form.on('Service Job Card', {
 		}
 	}
 });
+
+const toggleTyreManagementFields = frm => {
+	const tyre_fields = [
+		"tyre_management_section",
+		"tyre_serial",
+		"tyre_movement_type",
+		"tyre_install_on",
+		"tyre_from_position",
+		"tyre_to_position",
+		"tyre_position"
+	];
+
+	frappe.db.get_single_value("Transport Settings", "create_tyre_movement_from_service_job_card")
+		.then(enabled => {
+			const show = cint(enabled || 0) === 1;
+			tyre_fields.forEach(fieldname => {
+				if (frm.fields_dict[fieldname]) {
+					frm.set_df_property(fieldname, "hidden", show ? 0 : 1);
+				}
+			});
+			if (!show) {
+				frm.set_value("tyre_serial", "");
+				frm.set_value("tyre_movement_type", "");
+				frm.set_value("tyre_install_on", "");
+				frm.set_value("tyre_from_position", "");
+				frm.set_value("tyre_to_position", "");
+				frm.set_value("tyre_position", "");
+			}
+		})
+		.catch(() => {
+			tyre_fields.forEach(fieldname => {
+				if (frm.fields_dict[fieldname]) {
+					frm.set_df_property(fieldname, "hidden", 1);
+				}
+			});
+		});
+};
+
+const toggleTyreMovementFields = frm => {
+	const movement_type = frm.doc.tyre_movement_type || "";
+	const is_positional = movement_type === "Positional Change";
+	const has_movement = !!movement_type;
+
+	if (frm.fields_dict.tyre_install_on) {
+		frm.set_df_property("tyre_install_on", "hidden", has_movement ? 0 : 1);
+	}
+	if (frm.fields_dict.tyre_from_position) {
+		frm.set_df_property("tyre_from_position", "hidden", is_positional ? 0 : 1);
+	}
+	if (frm.fields_dict.tyre_to_position) {
+		frm.set_df_property("tyre_to_position", "hidden", is_positional ? 0 : 1);
+	}
+	if (frm.fields_dict.tyre_position) {
+		frm.set_df_property("tyre_position", "hidden", is_positional ? 1 : 0);
+	}
+
+	if (is_positional) {
+		frm.set_value("tyre_position", "");
+	} else {
+		frm.set_value("tyre_from_position", "");
+		frm.set_value("tyre_to_position", "");
+	}
+
+	if (!has_movement) {
+		frm.set_value("tyre_install_on", "");
+	}
+};
 
 
 const setMatrialBtn = frm => {
