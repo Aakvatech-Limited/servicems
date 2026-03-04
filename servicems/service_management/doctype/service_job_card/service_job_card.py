@@ -8,6 +8,11 @@ from frappe.utils import nowdate, nowtime, cint
 import json
 
 
+def get_service_transaction_company(fallback_company=None):
+    company = frappe.db.get_single_value("Service Settings", "company")
+    return company or fallback_company
+
+
 class ServiceJobCard(WebsiteGenerator):
     def after_insert(self):
         if self.service_booking:
@@ -17,10 +22,16 @@ class ServiceJobCard(WebsiteGenerator):
             })
 
     def validate(self):
+        self.set_company_from_service_settings()
         self.update_tables()
         self.set_parts_rate()
         self.set_totals()
         self.vaildate_complete()
+
+    def set_company_from_service_settings(self):
+        service_company = frappe.db.get_single_value("Service Settings", "company")
+        default_company = frappe.defaults.get_global_default("company")
+        self.company = service_company or default_company or self.company
 
     def before_submit(self):
         use_parts_entry = frappe.get_value(
@@ -187,6 +198,7 @@ class ServiceJobCard(WebsiteGenerator):
     def create_stock_entry(self, type):
         if self.parts and len(self.parts) > 0:
             workshop = frappe.get_doc("Service Workshop", self.workshop)
+            transaction_company = get_service_transaction_company(self.company)
             items = []
             for item in self.parts:
                 if item.qty > 0:
@@ -210,7 +222,7 @@ class ServiceJobCard(WebsiteGenerator):
                     posting_time=nowtime(),
                     stock_entry_type="Material Transfer",
                     purpose="Material Transfer",
-                    company=self.company,
+                    company=transaction_company,
                     service_job_card=self.name,
                     from_warehouse=workshop.parts_warehouse,
                     to_warehouse=workshop.workshop_warehouse,
@@ -243,6 +255,7 @@ class ServiceJobCard(WebsiteGenerator):
             return
         items = []
         workshop = frappe.get_doc("Service Workshop", self.workshop)
+        transaction_company = get_service_transaction_company(self.company)
         if self.services and len(self.services) > 0:
             for item in self.services:
                 if not item.is_billable:
@@ -273,7 +286,7 @@ class ServiceJobCard(WebsiteGenerator):
                 )
             taxes = frappe.get_value(
                 "Sales Taxes and Charges Template",
-                {"company": self.company, "is_default": 1},
+                {"company": transaction_company, "is_default": 1},
                 ["name", "tax_category"],
                 as_dict=1,
             )
@@ -289,7 +302,7 @@ class ServiceJobCard(WebsiteGenerator):
                     due_date=date,
                     update_stock=1,
                     service_job_card=self.name,
-                    company=self.company,
+                    company=transaction_company,
                     ignore_pricing_rule=1,
                     set_warehouse=workshop.workshop_warehouse,
                     items=items,

@@ -6,6 +6,11 @@ from frappe.query_builder.functions import Count
 from frappe.desk.search import search_link, search_widget, build_for_autosuggest
 
 
+def get_service_transaction_company(fallback_company=None):
+    company = frappe.db.get_single_value("Service Settings", "company")
+    return company or fallback_company
+
+
 @frappe.whitelist()
 def search_link_data(
 	doctype,
@@ -114,9 +119,10 @@ def create_quotation(job_card_id):
     items = []
     job_card_doc = frappe.get_doc("Service Job Card", job_card_id)
     warehouse = frappe.get_cached_value("Service Workshop", job_card_doc.workshop, "workshop_warehouse")
+    transaction_company = get_service_transaction_company(job_card_doc.company)
 
     quo_doc = frappe.new_doc("Quotation")
-    quo_doc.company = job_card_doc.company
+    quo_doc.company = transaction_company
     quo_doc.quotation_to = "Customer"
     quo_doc.party_name = job_card_doc.customer
     quo_doc.order_type = "Sales"

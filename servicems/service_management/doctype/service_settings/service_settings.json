@@ -5,12 +5,19 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "default_is_billable",
   "price_list",
   "item_groups",
   "use_spares_instead_of_item"
  ],
  "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Service MS Company",
+   "options": "Company"
+  },
   {
    "default": "0",
    "fieldname": "default_is_billable",

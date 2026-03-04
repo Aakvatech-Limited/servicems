@@ -59,7 +59,8 @@ app_include_js = "/assets/servicems/js/shortcut.js"
 # ------------
 
 # before_install = "servicems.install.before_install"
-# after_install = "servicems.install.after_install"
+after_install = "servicems.fleet_integration.ensure_service_job_card_tyre_fields"
+after_migrate = ["servicems.fleet_integration.ensure_service_job_card_tyre_fields"]
 
 # Desk Notifications
 # ------------------

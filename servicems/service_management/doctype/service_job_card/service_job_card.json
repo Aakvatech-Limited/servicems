@@ -17,7 +17,6 @@
   "section_break_7",
   "service_item_doctype",
   "service_item_name",
-  "custom_trailer",
   "customer",
   "mobile_no",
   "vehicle_model",
@@ -31,14 +30,6 @@
   "engine_number",
   "chassis_number",
   "odometer_reading",
-  "tyre_management_section",
-  "tyre_serial",
-  "tyre_movement_type",
-  "tyre_install_on",
-  "column_break_tyre_1",
-  "tyre_from_position",
-  "tyre_to_position",
-  "tyre_position",
   "last_service_date",
   "last_service_odometer_reading",
   "vin",
@@ -158,12 +149,6 @@
    "label": "Service Item Name",
    "options": "Service Vehicle",
    "reqd": 1
-  },
-  {
-   "fieldname": "custom_trailer",
-   "fieldtype": "Link",
-   "label": "Trailer",
-   "options": "Trailers"
   },
   {
    "fetch_from": "service_item_name.customer",
@@ -359,56 +344,6 @@
    "fieldname": "odometer_reading",
    "fieldtype": "Data",
    "label": "Odometer Reading"
-  },
-  {
-   "fieldname": "tyre_management_section",
-   "fieldtype": "Section Break",
-   "label": "Tyre Management"
-  },
-  {
-   "fieldname": "tyre_serial",
-   "fieldtype": "Link",
-   "label": "Tyre Serial",
-   "options": "Tyre Master"
-  },
-  {
-   "default": "Installation",
-   "fieldname": "tyre_movement_type",
-   "fieldtype": "Select",
-   "label": "Tyre Movement Type",
-   "options": "Installation\nRemoval\nPositional Change\nVehicle Transfer\nSend for Repair\nReturn from Repair\nScrap"
-  },
-  {
-   "depends_on": "eval:doc.tyre_movement_type",
-   "fieldname": "tyre_install_on",
-   "fieldtype": "Select",
-   "label": "Movement On",
-   "options": "Truck\nTrailers"
-  },
-  {
-   "fieldname": "column_break_tyre_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.tyre_movement_type == 'Positional Change'",
-   "fieldname": "tyre_from_position",
-   "fieldtype": "Link",
-   "label": "From Position",
-   "options": "Tyre Position"
-  },
-  {
-   "depends_on": "eval:doc.tyre_movement_type == 'Positional Change'",
-   "fieldname": "tyre_to_position",
-   "fieldtype": "Link",
-   "label": "To Position",
-   "options": "Tyre Position"
-  },
-  {
-   "depends_on": "eval:doc.tyre_movement_type != 'Positional Change'",
-   "fieldname": "tyre_position",
-   "fieldtype": "Link",
-   "label": "Tyre Position",
-   "options": "Tyre Position"
   },
   {
    "fieldname": "section_break_41",

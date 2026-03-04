@@ -4,6 +4,7 @@
 
 frappe.ui.form.on('Service Job Card', {
 	onload: function (frm) {
+		setServiceCompanyDefault(frm);
 		set_custom_buttons(frm);
 		toggleTyreManagementFields(frm);
 		toggleTyreMovementFields(frm);
@@ -238,6 +239,18 @@ frappe.ui.form.on('Service Job Card', {
 	}
 });
 
+const setServiceCompanyDefault = frm => {
+	if (!frm.is_new()) return;
+	frappe.db.get_single_value("Service Settings", "company")
+		.then(company => {
+			const fallback = (frappe.boot && frappe.boot.sysdefaults && frappe.boot.sysdefaults.company) || "";
+			const target_company = company || fallback;
+			if (target_company) {
+				frm.set_value("company", target_company);
+			}
+		});
+};
+
 const toggleTyreManagementFields = frm => {
 	const tyre_fields = [
 		"tyre_management_section",
@@ -249,21 +262,20 @@ const toggleTyreManagementFields = frm => {
 		"tyre_position"
 	];
 
-	frappe.db.get_single_value("Transport Settings", "create_tyre_movement_from_service_job_card")
-		.then(enabled => {
-			const show = Number(enabled || 0) === 1;
+	is_tyre_management_enabled()
+		.then(show => {
 			tyre_fields.forEach(fieldname => {
 				if (frm.fields_dict[fieldname]) {
 					frm.set_df_property(fieldname, "hidden", show ? 0 : 1);
 				}
 			});
 			if (!show) {
-				frm.set_value("tyre_serial", "");
-				frm.set_value("tyre_movement_type", "");
-				frm.set_value("tyre_install_on", "");
-				frm.set_value("tyre_from_position", "");
-				frm.set_value("tyre_to_position", "");
-				frm.set_value("tyre_position", "");
+				set_if_field_exists(frm, "tyre_serial", "");
+				set_if_field_exists(frm, "tyre_movement_type", "");
+				set_if_field_exists(frm, "tyre_install_on", "");
+				set_if_field_exists(frm, "tyre_from_position", "");
+				set_if_field_exists(frm, "tyre_to_position", "");
+				set_if_field_exists(frm, "tyre_position", "");
 			}
 		})
 		.catch(() => {
@@ -272,7 +284,21 @@ const toggleTyreManagementFields = frm => {
 					frm.set_df_property(fieldname, "hidden", 1);
 				}
 			});
-		});
+			});
+	};
+
+const is_tyre_management_enabled = async () => {
+	try {
+		const doctype_exists = await frappe.db.exists("DocType", "Transport Settings");
+		if (!doctype_exists) return false;
+		const enabled = await frappe.db.get_single_value(
+			"Transport Settings",
+			"create_tyre_movement_from_service_job_card"
+		);
+		return Number(enabled || 0) === 1;
+	} catch (e) {
+		return false;
+	}
 };
 
 const toggleTyreMovementFields = frm => {
@@ -294,14 +320,20 @@ const toggleTyreMovementFields = frm => {
 	}
 
 	if (is_positional) {
-		frm.set_value("tyre_position", "");
+		set_if_field_exists(frm, "tyre_position", "");
 	} else {
-		frm.set_value("tyre_from_position", "");
-		frm.set_value("tyre_to_position", "");
+		set_if_field_exists(frm, "tyre_from_position", "");
+		set_if_field_exists(frm, "tyre_to_position", "");
 	}
 
 	if (!has_movement) {
-		frm.set_value("tyre_install_on", "");
+		set_if_field_exists(frm, "tyre_install_on", "");
+	}
+};
+
+const set_if_field_exists = (frm, fieldname, value) => {
+	if (frm.fields_dict[fieldname]) {
+		frm.set_value(fieldname, value);
 	}
 };
 
