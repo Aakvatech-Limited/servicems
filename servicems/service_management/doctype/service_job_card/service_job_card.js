@@ -12,7 +12,6 @@ frappe.ui.form.on('Service Job Card', {
 	},
 	refresh: function (frm) {
 		set_custom_buttons(frm);
-		remove_delete_button(frm);
 		toggleTyreManagementFields(frm);
 		toggleTyreMovementFields(frm);
 
@@ -106,7 +105,7 @@ frappe.ui.form.on('Service Job Card', {
 								"parent": $(this).find("#parent").attr("data-parent"),
 								"qty": $(this).find("#qty").attr("data-qty"),
 								"parenttype": $(this).find("#parenttype").attr("data-parenttype"),
-								"qty_to_return": $(this).find("#parenttype").attr("data-qty_to_return")
+								"qty_to_return": $(this).find("#qty_to_return").attr("data-qty_to_return")
 							});
 						});
 
@@ -327,7 +326,7 @@ const toggleTyreMovementFields = frm => {
 };
 
 const set_if_field_exists = (frm, fieldname, value) => {
-	if (frm.fields_dict[fieldname]) {
+	if (frm.fields_dict[fieldname] && (frm.doc[fieldname] || value)) {
 		frm.set_value(fieldname, value);
 	}
 };
@@ -398,12 +397,4 @@ function is_parts_entry_applicable (frm) {
 	})
 	return items.length ? true : false;
 
-}
-
-// function remove_delete_button(frm) {
-// 	frm.set_df_property('parts', 'cannot_delete_rows', frm.doc.parts.filter(fetch_row_with_parts_entry) ? true : false);
-// }
-
-function fetch_row_with_parts_entry(row) {
-	return row.service_parts_entry;
 }

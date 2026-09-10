@@ -27,6 +27,7 @@ class ServiceJobCard(WebsiteGenerator):
 			)
 
 	def validate(self):
+		super().validate()
 		self.set_company_from_service_settings()
 		self.update_tables()
 		self.set_parts_rate()
@@ -284,11 +285,14 @@ class ServiceJobCard(WebsiteGenerator):
 						"rate": item.rate if item.is_billable else 0,
 					}
 				)
-			taxes = frappe.get_value(
-				"Sales Taxes and Charges Template",
-				{"company": transaction_company, "is_default": 1},
-				["name", "tax_category"],
-				as_dict=1,
+			taxes = (
+				frappe.get_value(
+					"Sales Taxes and Charges Template",
+					{"company": transaction_company, "is_default": 1},
+					["name", "tax_category"],
+					as_dict=1,
+				)
+				or frappe._dict()
 			)
 
 			if len(items) == 0:

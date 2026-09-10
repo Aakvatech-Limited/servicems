@@ -8,7 +8,7 @@ frappe.ui.form.on('Service Job Card', {
 
 
         // Add keyboard shortcut for Ctrl+Q
-        $(document).on('keydown', function(e) {
+        $(document).off('keydown.servicems_item_info').on('keydown.servicems_item_info', function(e) {
             if (e.ctrlKey && e.which === 81) { // Ctrl + Q
                 if (frm.doctype === "Service Job Card") {
                     e.preventDefault();

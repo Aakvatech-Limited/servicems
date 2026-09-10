@@ -43,12 +43,12 @@ def search_link_data(
 		return search_link(
 			doctype,
 			txt,
-			query=None,
-			filters=None,
-			page_length=20,
-			searchfield=None,
-			reference_doctype=None,
-			ignore_user_permissions=False,
+			query=query,
+			filters=filters,
+			page_length=page_length,
+			searchfield=searchfield,
+			reference_doctype=reference_doctype,
+			ignore_user_permissions=ignore_user_permissions,
 		)
 
 
@@ -164,8 +164,7 @@ def create_quotation(job_card_id: str):
 
 	quo_doc.run_method("set_missing_values")
 	quo_doc.run_method("calculate_taxes_and_totals")
-	frappe.flags.ignore_permissions = True
-	quo_doc.save()
+	quo_doc.save(ignore_permissions=True)
 
 	job_card_doc.quotation = quo_doc.name
 	job_card_doc.save()

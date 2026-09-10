@@ -23,12 +23,12 @@ class ServiceBooking(Document):
 
 @frappe.whitelist()
 def bulk_close_bookings(booking_list: str | list):
-	booking_list = frappe.parse_json(booking_list)
-	for booking in booking_list:
-		if booking.status in ["Closed", "Completed"]:
+	"""Close bookings given as names or as list view rows (dicts with a `name`)."""
+	for booking in frappe.parse_json(booking_list):
+		name = booking.get("name") if isinstance(booking, dict) else booking
+		if frappe.db.get_value("Service Booking", name, "status") in ["Closed", "Completed"]:
 			continue
 
-		booking_doc = frappe.get_doc("Service Booking", booking)
-		booking_doc.close_booking()
+		frappe.get_doc("Service Booking", name).close_booking()
 
 	return True
