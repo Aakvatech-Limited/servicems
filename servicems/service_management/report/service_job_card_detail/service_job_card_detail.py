@@ -3,6 +3,7 @@
 
 import frappe
 from frappe import _
+from frappe.query_builder.functions import Count, Sum
 
 
 def execute(filters=None):
@@ -32,34 +33,26 @@ def execute(filters=None):
 		}
 	)
 
-	if not filters.customer_view:
-		data = frappe.get_list(
-			"Service Job Card",
-			filters=[
-				["receiving_datetime", "between", [filters.from_date, filters.to_date]],
-				["docstatus", "=", 1],
-			],
-			fields=[
-				"customer",
-				"service_item_name",
-				"count(service_item_name) as count",
-				"sum(total) as total_amount",
-			],
-			group_by="service_item_name",
-		)
-	else:
-		data = frappe.get_list(
-			"Service Job Card",
-			filters=[
-				["receiving_datetime", "between", [filters.from_date, filters.to_date]],
-				["docstatus", "=", 1],
-			],
-			fields=[
-				"customer",
-				"count(service_item_name) as count",
-				"sum(total) as total_amount",
-			],
-			group_by="customer",
-		)
+	return columns, get_data(filters)
 
-	return columns, data
+
+def get_data(filters):
+	job_card = frappe.qb.DocType("Service Job Card")
+	group_by = job_card.customer if filters.customer_view else job_card.service_item_name
+
+	query = (
+		frappe.qb.from_(job_card)
+		.select(
+			job_card.customer,
+			Count(job_card.service_item_name).as_("count"),
+			Sum(job_card.total).as_("total_amount"),
+		)
+		.where(job_card.docstatus == 1)
+		.where(job_card.receiving_datetime[filters.from_date : filters.to_date])
+		.groupby(group_by)
+	)
+
+	if not filters.customer_view:
+		query = query.select(job_card.service_item_name)
+
+	return query.run(as_dict=True)

@@ -1,0 +1,18 @@
+{% extends "templates/web.html" %}
+{% block title %}{{ _("Vehicle Models") }}{% endblock %}
+
+{% block page_content %}
+<h1>{{ _("Vehicle Models") }}</h1>
+<div data-doctype="{{ doctype }}" data-txt="{{ (txt or '') | e }}">
+	{% if not result -%}
+	<div class="text-muted">{{ no_result_message or _("Nothing to show") }}</div>
+	{% else %}
+	<div class="result">
+		{% for item in result %}
+		{{ item }}
+		{% endfor %}
+	</div>
+	{% endif %}
+	<button class="btn btn-light btn-more my-4 {% if not show_more -%} hidden {%- endif %}">{{ _("Load More") }}</button>
+</div>
+{% endblock %}

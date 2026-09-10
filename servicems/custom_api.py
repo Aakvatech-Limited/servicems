@@ -1,83 +1,60 @@
-from datetime import date
-
 import frappe
-from frappe.utils import cint, flt, getdate
+from erpnext.stock.doctype.batch.batch import get_batch_qty
+from frappe.utils import cint, flt, getdate, nowdate
 
 
 @frappe.whitelist()
 def get_item_info(item_code: str):
-	"""
-	Get available stock by batch and warehouse for the given item.
-	Includes expiry info and quantity from latest stock ledger entries.
-	"""
-	float_precision = cint(frappe.db.get_default("float_precision")) or 3
+	"""Available stock per warehouse, split by batch for batched items, with batch expiry."""
+	precision = cint(frappe.db.get_default("float_precision")) or 3
+	item = frappe.db.get_value("Item", item_code, ["stock_uom", "has_batch_no"], as_dict=True)
+	if not item:
+		return []
 
-	stock_uom = frappe.db.get_value("Item", item_code, "stock_uom")
-
-	# Inline stock ledger query (latest entries per warehouse + batch)
-	sle = frappe.db.sql(
-		"""
-        SELECT
-            sle.batch_no,
-            sle.item_code,
-            sle.warehouse,
-            sle.qty_after_transaction AS actual_qty
-        FROM `tabStock Ledger Entry` sle
-        INNER JOIN (
-            SELECT
-                IFNULL(batch_no, '') AS batch_no,
-                item_code,
-                warehouse,
-                MAX(posting_datetime) AS posting_datetime
-            FROM `tabStock Ledger Entry`
-            WHERE docstatus = 1
-            GROUP BY IFNULL(batch_no, ''), item_code, warehouse
-        ) AS sle_max
-        ON IFNULL(sle.batch_no, '') = sle_max.batch_no
-            AND sle.item_code = sle_max.item_code
-            AND sle.warehouse = sle_max.warehouse
-            AND sle.posting_datetime = sle_max.posting_datetime
-        WHERE sle.docstatus = 1 AND sle.item_code = %s
-        ORDER BY sle.warehouse, sle.item_code, sle.batch_no
-    """,
-		(item_code,),
-		as_dict=True,
+	bins = frappe.get_all(
+		"Bin",
+		filters={"item_code": item_code, "actual_qty": ["!=", 0]},
+		fields=["warehouse", "actual_qty"],
+		order_by="warehouse",
 	)
 
-	# Build quantity map
-	iwb_map = {}
-
-	for d in sle:
-		iwb_map.setdefault(d.item_code, {}).setdefault(d.warehouse, {}).setdefault(
-			d.batch_no, frappe._dict({"bal_qty": 0.0})
-		)
-		qty_dict = iwb_map[d.item_code][d.warehouse][d.batch_no]
-
-		# Fetch expiry date for the batch (if any)
-		expiry_date_str = frappe.db.get_value("Batch", d.batch_no, "expiry_date") if d.batch_no else None
-
-		if expiry_date_str:
-			expiry_date = getdate(expiry_date_str)
-			qty_dict.expires_on = expiry_date
-			days_to_expire = (expiry_date - date.today()).days
-			qty_dict.expiry_status = days_to_expire if days_to_expire > 0 else 0
-
-		qty_dict.actual_qty = flt(qty_dict.actual_qty, float_precision) + flt(d.actual_qty, float_precision)
-
-	# Format result list
 	results = []
-	for item_code, warehouses in iwb_map.items():
-		for warehouse, batches in warehouses.items():
-			for batch_no, info in batches.items():
-				result = {
+	for bin_row in bins:
+		if item.has_batch_no:
+			rows = get_batch_rows(item_code, bin_row.warehouse)
+		else:
+			rows = [{"batch_no": None, "qty": bin_row.actual_qty}]
+
+		for row in rows:
+			expires_on, expiry_status = get_expiry(row["batch_no"])
+			results.append(
+				{
 					"item_code": item_code,
-					"warehouse": warehouse,
-					"batch_no": batch_no,
-					"actual_qty": flt(info.actual_qty, float_precision),
-					"expires_on": info.get("expires_on"),
-					"expiry_status": info.get("expiry_status"),
-					"stock_uom": stock_uom,
+					"warehouse": bin_row.warehouse,
+					"batch_no": row["batch_no"],
+					"actual_qty": flt(row["qty"], precision),
+					"expires_on": expires_on,
+					"expiry_status": expiry_status,
+					"stock_uom": item.stock_uom,
 				}
-				results.append(result)
+			)
 
 	return results
+
+
+def get_batch_rows(item_code: str, warehouse: str):
+	"""Batch balances come from the Serial and Batch Bundle ledger in ERPNext v15+."""
+	batches = get_batch_qty(item_code=item_code, warehouse=warehouse, for_stock_levels=True)
+	return [
+		{"batch_no": batch.get("batch_no"), "qty": batch.get("qty")} for batch in batches if batch.get("qty")
+	]
+
+
+def get_expiry(batch_no: str | None):
+	expiry_date = frappe.db.get_value("Batch", batch_no, "expiry_date") if batch_no else None
+	if not expiry_date:
+		return None, None
+
+	expiry_date = getdate(expiry_date)
+	days_to_expire = (expiry_date - getdate(nowdate())).days
+	return expiry_date, max(days_to_expire, 0)
