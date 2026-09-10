@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from . import __version__ as app_version
 
 app_name = "servicems"
 app_title = "servicems"
@@ -46,7 +45,7 @@ app_include_js = "/assets/servicems/js/shortcut.js"
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+# "Role": "home_page"
 # }
 
 # Generators
@@ -97,7 +96,7 @@ after_migrate = ["servicems.fleet_integration.ensure_service_job_card_tyre_field
 # 		"on_update": "method",
 # 		"on_cancel": "method",
 # 		"on_trash": "method"
-#	}
+# }
 # }
 
 # Scheduled Tasks
@@ -164,9 +163,7 @@ user_data_fields = [
 		"doctype": "{doctype_3}",
 		"strict": False,
 	},
-	{
-		"doctype": "{doctype_4}"
-	}
+	{"doctype": "{doctype_4}"},
 ]
 
 # Authentication and authorization
@@ -178,5 +175,5 @@ user_data_fields = [
 
 
 website_route_rules = [
-	{'from_route': '/bookings/<path:app_path>', 'to_route': 'bookings'},
+	{"from_route": "/bookings/<path:app_path>", "to_route": "bookings"},
 ]

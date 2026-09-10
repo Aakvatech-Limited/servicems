@@ -4,5 +4,6 @@
 # import frappe
 import unittest
 
+
 class TestVehicleMake(unittest.TestCase):
 	pass

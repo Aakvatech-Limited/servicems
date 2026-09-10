@@ -16,7 +16,7 @@ frappe.ui.form.on('Service Job Card', {
 		toggleTyreManagementFields(frm);
 		toggleTyreMovementFields(frm);
 
-		cur_frm.set_query("item", "parts", () => {
+		frm.set_query("item", "parts", () => {
 			return {
 				query: "servicems.service_management.doctype.service_settings.service_settings.get_filtered_items",
 			};
@@ -43,7 +43,7 @@ frappe.ui.form.on('Service Job Card', {
 						],
 
 					});
-					
+
 					let html = `<table class="table table-hover" style="width:100%;">
 						<colgroup>
 							<col width="5%">
@@ -69,7 +69,7 @@ frappe.ui.form.on('Service Job Card', {
 							<th></th>
 							<th>Qty to Return</th>
 						</tr>`
-					
+
 					data.forEach(row => {
 						html += `<tr>
 							<td><input type="checkbox"/></td>
@@ -87,16 +87,16 @@ frappe.ui.form.on('Service Job Card', {
 					html += `</table>`
 
 					let wrapper = d.fields_dict.open_space.$wrapper
-					
+
 					wrapper.html(html);
 
 					wrapper.find("table").hover(function() {
 						get_qty_to_return(wrapper);
 					});
-					
+
 					d.set_primary_action(__("Select Item"), function() {
 						let items = [];
-						
+
 						wrapper.find('tr:has(input:checkbox:checked)').each(function() {
 							items.push({
 								"item":  $(this).find("#item").attr("data-item"),
@@ -122,10 +122,7 @@ frappe.ui.form.on('Service Job Card', {
 							frappe.msgprint({
 								title: __('Message'),
 								indicator: 'red',
-								message: __(
-									'<h4 class="text-center" style="background-color: #D3D3D3; font-weight: bold;">\
-									No any Item selected<h4>'
-								)
+								message: __('<h4 class="text-center" style="background-color: #D3D3D3; font-weight: bold;">No any Item selected</h4>')
 							});
 						}
 					});
@@ -136,9 +133,9 @@ frappe.ui.form.on('Service Job Card', {
 						"display": "table-cell",
 						"text-align": "left"
 					});
-					
+
 					d.show();
-				
+
 				} else {
 					let d = new frappe.ui.Dialog({
 						title: "Select Items Unbill",
@@ -225,17 +222,17 @@ frappe.ui.form.on('Service Job Card', {
 					let prev_odometer_reading = Number(last_odometer_reading[0].odometer_reading);
 					let current_odometer_reading = Number(frm.doc.odometer_reading);
 					let interval = current_odometer_reading - prev_odometer_reading;
- 
+
 					if(interval >= recommended_interval.message.recommended_service_interval){
 						frappe.show_alert({
 							message:__('Vehicle '+frm.doc.service_item_name+' Requires Service'),
 							indicator:'red'
 						}, 8);
 					}
-				}  
+				}
 			}
 		}
-		
+
 	}
 });
 
@@ -338,23 +335,23 @@ const set_if_field_exists = (frm, fieldname, value) => {
 function set_custom_buttons (frm) {
 	if (!frm.is_dirty() && frm.doc.docstatus == 0) {
 		if (!frm.doc.quotation) {
-			frm.add_custom_button('Quotation', () => {
+			frm.add_custom_button(__('Quotation'), () => {
 				frm.trigger('create_quotation');
-			}, 'Create');
+			}, __('Create'));
 		}
 
-		frm.add_custom_button('Stock Entry', () => {
+		frm.add_custom_button(__('Stock Entry'), () => {
 			frm.trigger('create_stock_entry');
-		}, 'Create');
+		}, __('Create'));
 
 		if (is_parts_entry_applicable(frm)) {
-			frm.add_custom_button('Service Parts Entry', () => {
+			frm.add_custom_button(__('Service Parts Entry'), () => {
 				frm.trigger('create_parts_entry');
-			}, 'Create');
+			}, __('Create'));
 		}
 	}
 	else {
-		frm.remove_custom_button('Stock Entry', 'Create');
+		frm.remove_custom_button(__('Stock Entry'), __('Create'));
 	}
 };
 
@@ -379,11 +376,7 @@ var get_qty_to_return = function(wrapper) {
 							frappe.msgprint({
 								title: __('Message'),
 								indicator: 'red',
-								message: __(
-									'<h4 class="text-center" style="background-color: orange; font-size: 13pt; font-weight: bold;">\
-									Qty to return cannot be Negative, cannot be Zero(0) or Empty<br>\
-									and cannot be greater than Qty<h4>'
-								)
+								message: __('<h4 class="text-center" style="background-color: orange; font-size: 13pt; font-weight: bold;">Qty to return cannot be Negative, cannot be Zero(0) or Empty<br>and cannot be greater than Qty</h4>')
 							});
 						};
 					});

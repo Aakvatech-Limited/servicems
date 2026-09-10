@@ -60,20 +60,19 @@
       </div>
     </div>
   </template>
-  
+
   <script setup>
   import Fields from '../components/Fields.vue';
-  
+
   const props = defineProps({
     sections: Array,
     data: Object,
   })
-  
+
   </script>
-  
+
   <style scoped>
   :deep(.form-control.prefix select) {
     padding-left: 2rem;
   }
   </style>
-  

@@ -4,5 +4,6 @@
 # import frappe
 import unittest
 
+
 class TestServiceTemplate(unittest.TestCase):
 	pass

@@ -13,7 +13,7 @@
       @click="goToBookings()"
     />
 
-    <Button 
+    <Button
       class="w-full hover:bg-green-500/50 text-black font-bold py-6 px-4 rounded border-4 border-gray-300"
       label="Job Card"
       @click="goToJobCard()"

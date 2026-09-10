@@ -6,11 +6,11 @@ frappe.ui.form.on('Service Job Card', {
         //     ctrlQ_for_job_card(frm);
         // });
 
-        
+
         // Add keyboard shortcut for Ctrl+Q
         $(document).on('keydown', function(e) {
             if (e.ctrlKey && e.which === 81) { // Ctrl + Q
-                if (cur_frm.doctype === "Service Job Card") {
+                if (frm.doctype === "Service Job Card") {
                     e.preventDefault();
                     ctrlQ_for_job_card(frm);
                 }
@@ -31,19 +31,19 @@ function ctrlQ_for_job_card(frm) {
     const TableName = 'Job Card Items Supplied';
     let current_doc;
     let item_row;
-    
+
     // Check if we're editing an item row (child table is open)
     if ($('.grid-row-open').length && $('.grid-row-open').closest('[data-fieldname="parts"]').length) {
         current_doc = $('.grid-row-open').attr('data-name');
         if (current_doc) {
             item_row = locals[TableName][current_doc];
         }
-    } 
+    }
     // Check if we have a selected row in the parts grid
     else {
         const parts_grid = frm.fields_dict['parts'].grid;
         const selected_rows = parts_grid.get_selected();
-        
+
         if (selected_rows && selected_rows.length) {
             current_doc = selected_rows[0];
             item_row = locals[TableName][current_doc];
@@ -61,7 +61,7 @@ function ctrlQ_for_job_card(frm) {
     frappe.db.get_value('Item', item_row.item, 'stock_uom')
         .then(r => {
             const stock_uom = r.message.stock_uom || '';
-            
+
             // Now call the server method to get item info
             frappe.call({
                 method: 'servicems.custom_api.get_item_info',

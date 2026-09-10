@@ -4,5 +4,6 @@
 # import frappe
 import unittest
 
+
 class TestServiceVehicleInspection(unittest.TestCase):
 	pass

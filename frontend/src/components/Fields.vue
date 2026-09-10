@@ -5,7 +5,7 @@
       class="mb-2 text-base text-gray-900 font-semibold"
     >
       {{ field.label}}
-      <span 
+      <span
         class="text-red-500 text-xl"
         v-if="field.reqd && !((field.name === 'customer' && data['Service Booking']['is_new_customer']) || (field.name === 'service_vehicle' && data['Service Booking']['is_new_vehicle']))"
       >
@@ -114,7 +114,7 @@ const props = defineProps({
 
 function updateField(doctype, name, value) {
   const data = props.data;
-  if (data[doctype]) {  
+  if (data[doctype]) {
     data[doctype][name] = value;
   }
 }

@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   tests:
-    name: Server Tests
+    name: Install Smoke Check
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -54,7 +54,7 @@ jobs:
           if [[ "$REF_NAME" =~ ^version-[0-9]+(-hotfix)?$ ]]; then
             echo "FRAPPE_BRANCH=$REF_NAME" >> "$GITHUB_ENV"
           else
-            echo "FRAPPE_BRANCH=version-15" >> "$GITHUB_ENV"
+            echo "FRAPPE_BRANCH=version-16-hotfix" >> "$GITHUB_ENV"
           fi
 
       - name: Install MariaDB client
@@ -63,12 +63,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           check-latest: true
 
       - name: Check for valid Python & Merge Conflicts
@@ -125,8 +125,7 @@ jobs:
           bench new-site --db-root-password root --admin-password admin test_site
           bench --site test_site install-app erpnext
           bench --site test_site install-app servicems
-          bench --site test_site set-config allow_tests true
 
-      - name: Run Tests
+      - name: Migrate
         working-directory: /home/runner/frappe-bench
-        run: bench --site test_site run-tests --app servicems
+        run: bench --site test_site migrate

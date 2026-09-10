@@ -16,4 +16,3 @@ recursive-include servicems *.py
 recursive-include servicems *.svg
 recursive-include servicems *.txt
 recursive-exclude servicems *.pyc
-

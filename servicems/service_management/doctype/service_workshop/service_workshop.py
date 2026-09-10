@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 
+
 class ServiceWorkshop(Document):
 	def validate(self):
 		service_company = frappe.db.get_single_value("Service Settings", "company")

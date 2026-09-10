@@ -38,7 +38,7 @@
                                 </p>
                             </div>
                             <div class="translate-x-3/4 mb-6" >
-                                <div 
+                                <div
                                     class="bg-gray-400 text-black rounded-full w-9 h-9 flex items-center justify-center text-5xl font-bold hover:bg-blue-700/50"
                                     @click="openBookingDoc(item.bay_name, date)"
                                 >
@@ -67,10 +67,10 @@
                 </div>
             </div>
         </div>
-        <CreateBooking 
-            :showDialog="showDialog" 
-            :bay="_bayName" 
-            :booking_date="booking_date" 
+        <CreateBooking
+            :showDialog="showDialog"
+            :bay="_bayName"
+            :booking_date="booking_date"
             @closeDialog="showDialog = false"
             @refreshData="refreshBayData"
         />

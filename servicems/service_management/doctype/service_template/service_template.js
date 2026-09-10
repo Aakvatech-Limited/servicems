@@ -3,7 +3,7 @@
 
 frappe.ui.form.on('Service Template', {
 	refresh: function (frm) {
-		cur_frm.set_query("item", "parts", () => {
+		frm.set_query("item", "parts", () => {
 			return {
 				query: "servicems.service_management.doctype.service_settings.service_settings.get_filtered_items",
 			};
