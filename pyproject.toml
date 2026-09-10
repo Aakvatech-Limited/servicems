@@ -11,6 +11,11 @@ dependencies = [
     # "frappe" # Installed and managed by bench.
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+]
+
 [build-system]
 requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
