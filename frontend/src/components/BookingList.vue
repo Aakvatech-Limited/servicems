@@ -86,7 +86,7 @@ import CreateBooking from '@/components/CreateBooking.vue'
 import BookingFilter from '@/components/BookingFilter.vue'
 import { useToast } from '@/composables/useToast.js'
 
-const today = new Date()
+const today = ref(new Date())
 const lastcount = ref(0)
 const loading = ref(true)
 const showDialog = ref(false)
@@ -94,7 +94,7 @@ const _bayName = ref('')
 const booking_date = ref(today.value)
 
 const filters = reactive({
-    from_date: today.value,
+    from_date: '',
     to_date: '',
     workshop: '',
     vehicle: '',
@@ -141,7 +141,7 @@ const weeklyBookings = computed(() => {
         dates[currentDate] = [];
     }
 
-    const bayDataList = bay_data.data;
+    const bayDataList = bay_data.data || [];
     const allBays = bayDataList.filter(item => item.bay_name).map(item => ({
         bay_name: item.bay_name,
         workshop: item.workshop,
