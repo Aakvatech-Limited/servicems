@@ -1,6 +1,8 @@
 from datetime import date
 
 import frappe
+from frappe.query_builder import DocType
+from frappe.query_builder.functions import IfNull, Max
 from frappe.utils import cint, flt, getdate
 
 
@@ -15,34 +17,37 @@ def get_item_info(item_code):
 	stock_uom = frappe.db.get_value("Item", item_code, "stock_uom")
 
 	# Inline stock ledger query (latest entries per warehouse + batch)
-	sle = frappe.db.sql(
-		"""
-        SELECT
-            sle.batch_no,
-            sle.item_code,
-            sle.warehouse,
-            sle.qty_after_transaction AS actual_qty
-        FROM `tabStock Ledger Entry` sle
-        INNER JOIN (
-            SELECT
-                IFNULL(batch_no, '') AS batch_no,
-                item_code,
-                warehouse,
-                MAX(posting_datetime) AS posting_datetime
-            FROM `tabStock Ledger Entry`
-            WHERE docstatus = 1
-            GROUP BY IFNULL(batch_no, ''), item_code, warehouse
-        ) AS sle_max
-        ON IFNULL(sle.batch_no, '') = sle_max.batch_no
-            AND sle.item_code = sle_max.item_code
-            AND sle.warehouse = sle_max.warehouse
-            AND sle.posting_datetime = sle_max.posting_datetime
-        WHERE sle.docstatus = 1 AND sle.item_code = %s
-        ORDER BY sle.warehouse, sle.item_code, sle.batch_no
-    """,
-		(item_code,),
-		as_dict=True,
-	)
+	stock_ledger = DocType("Stock Ledger Entry")
+	sle_max = (
+		frappe.qb.from_(stock_ledger)
+		.select(
+			IfNull(stock_ledger.batch_no, "").as_("batch_no"),
+			stock_ledger.item_code,
+			stock_ledger.warehouse,
+			Max(stock_ledger.posting_datetime).as_("posting_datetime"),
+		)
+		.where(stock_ledger.docstatus == 1)
+		.groupby(IfNull(stock_ledger.batch_no, ""), stock_ledger.item_code, stock_ledger.warehouse)
+	).as_("sle_max")
+
+	sle = (
+		frappe.qb.from_(stock_ledger)
+		.inner_join(sle_max)
+		.on(
+			(IfNull(stock_ledger.batch_no, "") == sle_max.batch_no)
+			& (stock_ledger.item_code == sle_max.item_code)
+			& (stock_ledger.warehouse == sle_max.warehouse)
+			& (stock_ledger.posting_datetime == sle_max.posting_datetime)
+		)
+		.select(
+			stock_ledger.batch_no,
+			stock_ledger.item_code,
+			stock_ledger.warehouse,
+			stock_ledger.qty_after_transaction.as_("actual_qty"),
+		)
+		.where((stock_ledger.docstatus == 1) & (stock_ledger.item_code == item_code))
+		.orderby(stock_ledger.warehouse, stock_ledger.item_code, stock_ledger.batch_no)
+	).run(as_dict=True)
 
 	# Build quantity map
 	iwb_map = {}
