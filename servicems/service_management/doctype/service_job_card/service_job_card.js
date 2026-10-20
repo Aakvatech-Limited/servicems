@@ -11,7 +11,6 @@ frappe.ui.form.on("Service Job Card", {
   },
   refresh: function (frm) {
     set_custom_buttons(frm);
-    remove_delete_button(frm);
     toggleTyreManagementFields(frm);
     toggleTyreMovementFields(frm);
 
