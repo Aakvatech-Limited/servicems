@@ -1,551 +1,255 @@
 <template>
   <Dialog
-    :model-value="localShowDialog"
-    @update:model-value="updateDialogVisibility"
-    :options="{ size: '5xl' }"
+    :model-value="showDialog"
+    :options="{ title: 'Create Booking', size: '5xl' }"
+    :disable-outside-click-to-close="saving"
+    @update:model-value="closeDialog"
   >
-    <template #body>
-      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex gap-36 items-center justify-around">
-          <div class="ml-60 w-112">
-            <h3
-              class="text-2xl text-center font-semibold leading-6 text-gray-900"
+    <template #body-content>
+      <form
+        id="create-service-booking"
+        class="space-y-6"
+        @submit.prevent="createBooking"
+      >
+        <fieldset :disabled="saving" class="space-y-6">
+          <div class="flex flex-wrap gap-6">
+            <label class="flex items-center gap-2 text-sm font-semibold"
+              ><input v-model="isNewCustomer" type="checkbox" />Is New
+              Customer</label
             >
-              Create Booking
-            </h3>
+            <label class="flex items-center gap-2 text-sm font-semibold"
+              ><input
+                v-model="isNewVehicle"
+                type="checkbox"
+                :disabled="isNewCustomer"
+              />Is New Vehicle</label
+            >
           </div>
-          <div class="flex justify-end w-12">
-            <Button variant="ghost" class="w-7" @click="showDialog = false">
-              <FeatherIcon name="x" class="h-7 w-7" />
-            </Button>
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <Link
+              v-if="!isNewCustomer"
+              v-model="booking.customer"
+              doctype="Customer"
+              label="Customer *"
+              placeholder="Customer"
+            />
+            <Link
+              v-if="!isNewVehicle"
+              v-model="booking.service_vehicle"
+              doctype="Service Vehicle"
+              label="Service Vehicle *"
+              placeholder="Service Vehicle"
+              :filters="booking.customer ? { customer: booking.customer } : {}"
+            />
+            <div>
+              <label
+                for="create-booking-date"
+                class="mb-2 block text-sm font-semibold"
+                >Booking Date *</label
+              >
+              <input
+                id="create-booking-date"
+                v-model="booking.booking_date"
+                type="date"
+                required
+                class="form-input w-full"
+              />
+            </div>
+            <Link
+              v-model="booking.workshop"
+              doctype="Service Workshop"
+              label="Workshop *"
+              placeholder="Workshop"
+            />
+            <Link
+              v-if="isNewVehicle"
+              v-model="newVehicle.vehicle_model"
+              doctype="Vehicle Model"
+              label="Vehicle Model *"
+              placeholder="Vehicle Model"
+            />
+            <div v-else>
+              <label
+                for="booking-vehicle-model"
+                class="mb-2 block text-sm font-semibold"
+                >Vehicle Model</label
+              >
+              <input
+                id="booking-vehicle-model"
+                :value="vehicleLoading ? 'Loading...' : vehicleModel"
+                readonly
+                class="form-input w-full bg-gray-50"
+              />
+            </div>
+            <div>
+              <label
+                for="booking-description"
+                class="mb-2 block text-sm font-semibold"
+                >Service Description</label
+              >
+              <textarea
+                id="booking-description"
+                v-model="booking.service_description"
+                class="form-textarea w-full"
+                rows="2"
+              />
+            </div>
           </div>
-        </div>
-        <div v-if="isBookingCreating" class="text-center py-4 text-gray-500">
-          {{ statusMessage }}
-        </div>
-        <div>
-          <FieldMap v-if="sections" :sections="sections" :data="booking" />
-          <ErrorMessage
-            class="mt-4 text-lg font-bold"
-            v-if="error"
-            :message="error"
+          <BookingPartyDetails
+            :is-new-customer="isNewCustomer"
+            :is-new-vehicle="isNewVehicle"
+            :new-customer="newCustomer"
+            :new-vehicle="newVehicle"
           />
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 lg:px-7">
-        <div class="flex flex-row-reverse gap-2 w-full">
-          <button
-            class="w-24 h-10 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            :loading="isBookingCreating"
-            @click="create_booking_docs()"
-          >
-            Create
-          </button>
-        </div>
+        </fieldset>
+        <p v-if="error" role="alert" class="text-sm text-red-700">
+          {{ error }}
+        </p>
+      </form>
+    </template>
+    <template #actions>
+      <div class="flex justify-end gap-3">
+        <Button
+          type="button"
+          label="Cancel"
+          :disabled="saving"
+          @click="closeDialog"
+        />
+        <Button
+          type="submit"
+          form="create-service-booking"
+          variant="solid"
+          label="Create"
+          :loading="saving"
+          :disabled="saving || vehicleLoading"
+        />
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, watch, reactive } from 'vue'
-import { ErrorMessage, createResource } from 'frappe-ui'
-import FieldMap from '../components/FieldMap.vue'
+import { reactive, ref, watch } from 'vue'
+import { frappeRequest } from 'frappe-ui'
+import Link from './controls/Link.vue'
+import BookingPartyDetails from './BookingPartyDetails.vue'
 import { useToast } from '@/composables/useToast.js'
-
-const isBookingCreating = ref(false)
-const statusMessage = ref('')
-const error = ref(null)
 
 const props = defineProps({
   showDialog: Boolean,
-  bay: String,
-  booking_date: Date,
+  bookingDate: String,
+  workshop: String,
+  vehicle: String,
 })
-
-const { showSuccess, showError, handleResourceError } = useToast()
-const emit = defineEmits(['closeDialog'])
-
-const localShowDialog = ref(props.showDialog)
-
-function updateDialogVisibility(newVal) {
-  localShowDialog.value = newVal
-  emit('update:showDialog', newVal)
-}
-
-watch(
-  () => props.showDialog,
-  (newVal) => {
-    localShowDialog.value = newVal
-  }
-)
-
-watch(
-  () => props.bay,
-  (newVal) => {
-    booking['Service Booking']['bay'] = newVal
-  }
-)
-
-watch(
-  () => props.booking_date,
-  (newVal) => {
-    booking['Service Booking']['booking_date'] = newVal
-  }
-)
-
-const closeDialog = () => {
-  localShowDialog.value = false
-  emit('closeDialog')
-}
-
-function showToast(message, type) {
-  if (type === 'success') {
-    showSuccess(message)
-  } else if (type === 'error') {
-    showError(message)
-  }
-}
-
-const booking_doc = createResource({
-  url: 'frappe.client.insert',
-  method: 'POST',
-  makeParams() {
-    return {
-      doc: {
-        doctype: 'Service Booking',
-        ...booking['Service Booking'],
-      },
-    }
-  },
-  validate(params) {
-    error.value = null
-    if (!params.doc.customer) {
-      error.value = 'Customer is required'
-      showToast('Customer is required', 'error')
-      return error.value
-    }
-    if (!params.doc.service_vehicle && !params.doc.is_new_vehicle) {
-      error.value = 'Service Vehicle is required'
-      showToast('Service Vehicle is required', 'error')
-      return error.value
-    }
-    if (!params.doc.booking_date) {
-      error.value = 'Booking Date is required'
-      showToast('Booking Date is required', 'error')
-      return error.value
-    }
-    if (!params.doc.booking_time) {
-      error.value = 'Booking Time is required'
-      showToast('Booking Time is required', 'error')
-      return error.value
-    }
-    // if (!params.doc.workshop) {
-    //     error.value = 'Workshop is required'
-    //     return error.value
-    // }
-    if (!params.doc.bay) {
-      error.value = 'Bay is required'
-      showToast('Bay is required', 'error')
-      return error.value
-    }
-
-    isBookingCreating.value = true
-  },
-  onSuccess: (data) => {
-    isBookingCreating.value = false
-    showToast('Booking created successfully', 'success')
-    closeDialog()
-    resetBooking()
-    emit('refreshData')
-  },
-  onError: (err) => {
-    isBookingCreating.value = false
-    if (!err.messages) {
-      error.value = err.message
-      return
-    }
-    error.value = err.messages.join('\n')
-  },
-})
-
-const customer_doc = createResource({
-  url: 'frappe.client.insert',
-  method: 'POST',
-  makeParams() {
-    return {
-      doc: {
-        doctype: 'Customer',
-        ...booking['Customer'],
-      },
-    }
-  },
-  validate(params) {
-    error.value = null
-    if (!params.doc.customer_name) {
-      error.value = 'Customer Name is required'
-      showToast('Customer Name is required', 'error')
-      return error.value
-    }
-    if (!params.doc.customer_type) {
-      error.value = 'Customer Type is required'
-      showToast('Customer Type is required', 'error')
-      return error.value
-    }
-    if (!params.doc.customer_group) {
-      error.value = 'Customer Group is required'
-      showToast('Customer Group is required', 'error')
-      return error.value
-    }
-    if (!params.doc.territory) {
-      error.value = 'Territory is required'
-      showToast('Territory is required', 'error')
-      return error.value
-    }
-  },
-  onSuccess: (data) => {
-    booking['Service Booking']['customer'] = data.name
-    booking['Service Vehicle']['customer'] = data.name
-
-    showToast('Customer created successfully', 'success')
-  },
-  onError: (err) => {
-    if (!err.messages) {
-      error.value = err.message
-      showToast(error.value, 'error')
-      return
-    }
-    error.value = err.messages.join('\n')
-
-    showToast(error.value, 'error')
-  },
-})
-
-const vehicle_doc = createResource({
-  url: 'frappe.client.insert',
-  method: 'POST',
-  makeParams() {
-    return {
-      doc: {
-        doctype: 'Service Vehicle',
-        ...booking['Service Vehicle'],
-      },
-    }
-  },
-  validate(params) {
-    error.value = null
-    if (!params.doc.registration_number) {
-      error.value = 'Registration Number is required'
-      showToast('Registration Number is required', 'error')
-      return error.value
-    }
-    if (!params.doc.customer) {
-      error.value = 'Customer is required'
-      showToast('Customer is required', 'error')
-      return error.value
-    }
-    if (!params.doc.vehicle_model) {
-      error.value = 'Vehicle Model is required'
-      showToast('Vehicle Model is required', 'error')
-      return error.value
-    }
-  },
-  onSuccess: (data) => {
-    booking['Service Booking']['service_vehicle'] = data.name
-    showToast('Vehicle created successfully', 'success')
-  },
-  onError: (err) => {
-    if (!err.messages) {
-      error.value = err.message
-      showToast(error.value, 'error')
-      return
-    }
-    error.value = err.messages.join('\n')
-    showToast(error.value, 'error')
-  },
-})
-
-async function create_booking_docs() {
-  isBookingCreating.value = true
-  error.value = null
-
-  try {
-    if (booking['Service Booking']['is_new_customer']) {
-      statusMessage.value = 'Creating customer...'
-      await customer_doc.submit()
-    }
-
-    if (booking['Service Booking']['is_new_vehicle']) {
-      statusMessage.value = 'Creating vehicle...'
-      await vehicle_doc.submit()
-    }
-
-    statusMessage.value = 'Creating booking...'
-    await booking_doc.submit()
-  } catch (err) {
-    showToast('Error while creating booking documents', 'error')
-  } finally {
-    isBookingCreating.value = false
-  }
-}
-
-function resetBooking() {
-  booking['Service Booking'] = {
-    is_new_customer: false,
-    customer: '',
-    is_new_vehicle: false,
-    service_vehicle: '',
-    booking_date: '',
-    booking_time: '',
-    // "workshop": "",
-    bay: '',
-    service_description: '',
-    disabled: false,
-  }
-
-  booking['Customer'] = {
-    customer_name: '',
-    customer_type: '',
-    customer_group: '',
-    territory: '',
-    tax_id: '',
-    mobile_no: '',
-    disabled: false,
-  }
-
-  booking['Service Vehicle'] = {
-    registration_number: '',
-    customer: '',
-    vehicle_model: '',
-    make: '',
-    type: '',
-    engine_number: '',
-    chassis_number: '',
-    disabled: false,
-  }
-}
-
+const emit = defineEmits(['closeDialog', 'refreshData'])
+const { showSuccess } = useToast()
+const saving = ref(false)
+const error = ref('')
+const isNewCustomer = ref(false)
+const isNewVehicle = ref(false)
+const vehicleLoading = ref(false)
+const vehicleModel = ref('')
 const booking = reactive({
-  'Service Booking': {
-    is_new_customer: false,
-    customer: '',
-    is_new_vehicle: false,
-    service_vehicle: '',
-    booking_date: '',
-    booking_time: '',
-    // "workshop": "",
-    bay: '',
-    service_description: '',
-    disabled: false,
-  },
-  Customer: {
-    customer_name: '',
-    customer_type: '',
-    customer_group: '',
-    territory: '',
-    tax_id: '',
-    mobile_no: '',
-    disabled: false,
-  },
-  'Service Vehicle': {
-    registration_number: '',
-    customer: '',
-    vehicle_model: '',
-    make: '',
-    type: '',
-    engine_number: '',
-    chassis_number: '',
-    disabled: false,
-  },
+  customer: '',
+  service_vehicle: props.vehicle || '',
+  booking_date: props.bookingDate,
+  workshop: props.workshop || '',
+  service_description: '',
+})
+const newCustomer = reactive({
+  customer_name: '',
+  customer_type: 'Individual',
+  customer_group: '',
+  territory: '',
+  tax_id: '',
+  mobile_no: '',
+})
+const newVehicle = reactive({
+  registration_number: '',
+  vehicle_model: '',
+  engine_number: '',
+  chassis_number: '',
 })
 
-const sections = [
-  {
-    label: 'Booking Details',
-    doctype: 'Service Booking',
-    fields: [
-      {
-        name: 'is_new_customer',
-        label: 'Is New Customer',
-        type: 'Check',
-        placeholder: 'Is New Customer',
-        reqd: false,
+function closeDialog() {
+  if (!saving.value) emit('closeDialog')
+}
+
+async function createBooking() {
+  if (saving.value || vehicleLoading.value) return
+  error.value = ''
+  const customer = isNewCustomer.value
+    ? newCustomer.customer_name &&
+      newCustomer.customer_group &&
+      newCustomer.territory
+    : booking.customer
+  const vehicle = isNewVehicle.value
+    ? newVehicle.registration_number && newVehicle.vehicle_model
+    : booking.service_vehicle
+  if (!customer || !vehicle || !booking.booking_date || !booking.workshop) {
+    error.value =
+      'Please complete Customer, Service Vehicle, Booking Date and Workshop, including the required details for a new customer or vehicle.'
+    return
+  }
+  saving.value = true
+  try {
+    await frappeRequest({
+      url: 'servicems.api.bookings.create_booking',
+      params: {
+        booking: { ...booking },
+        new_customer: isNewCustomer.value ? { ...newCustomer } : null,
+        new_vehicle: isNewVehicle.value ? { ...newVehicle } : null,
       },
-      {
-        name: 'customer',
-        label: 'Customer',
-        type: 'Link',
-        placeholder: 'Customer',
-        options: 'Customer',
-        reqd: true,
-      },
-      {
-        name: 'is_new_vehicle',
-        label: 'Is New Vehicle',
-        type: 'Check',
-        placeholder: 'Is New Vehicle',
-        reqd: false,
-      },
-      {
-        name: 'service_vehicle',
-        label: 'Service Vehicle',
-        type: 'Link',
-        placeholder: 'Service Vehicle',
-        options: 'Service Vehicle',
-        reqd: true,
-      },
-      {
-        name: 'booking_date',
-        label: 'Booking Date',
-        type: 'Date',
-        placeholder: 'Booking Date',
-        reqd: true,
-      },
-      {
-        name: 'booking_time',
-        label: 'Booking Time',
-        type: 'Time',
-        placeholder: 'Booking Time',
-        reqd: true,
-      },
-      // {"name": "workshop", "label": "Workshop", "type": "Link", "placeholder": "Workshop", "options": "Customer", "reqd": true },
-      {
-        name: 'bay',
-        label: 'Bay',
-        type: 'Link',
-        placeholder: 'Bay',
-        options: 'Bay',
-        reqd: true,
-      },
-      {
-        name: 'service_description',
-        label: 'Service Description',
-        type: 'Small Text',
-        placeholder: 'Service Description',
-        reqd: false,
-      },
-    ],
-    hideLabel: false,
+    })
+    showSuccess('Booking created successfully')
+    emit('closeDialog')
+    emit('refreshData')
+  } catch (err) {
+    error.value = err.messages?.join('\n') || err.message
+  } finally {
+    saving.value = false
+  }
+}
+
+watch(isNewCustomer, (value) => {
+  booking.customer = ''
+  booking.service_vehicle = ''
+  if (value) isNewVehicle.value = true
+})
+watch(isNewVehicle, () => {
+  booking.service_vehicle = ''
+})
+watch(
+  () => booking.customer,
+  (customer, previous) => {
+    if (previous && customer !== previous) booking.service_vehicle = ''
   },
-  {
-    label: 'Customer Details',
-    doctype: 'Customer',
-    fields: [
-      {
-        name: 'customer_name',
-        label: 'Customer Name',
-        type: 'Data',
-        placeholder: 'Customer Name',
-        reqd: true,
-      },
-      {
-        name: 'customer_type',
-        label: 'Customer Type',
-        type: 'Select',
-        placeholder: 'Customer Type',
-        options: [
-          'Company',
-          'Individual',
-          'Partnership',
-          'Corporate',
-          'Government',
-          'Non-profit',
-        ],
-        reqd: true,
-      },
-      {
-        name: 'customer_group',
-        label: 'Customer Group',
-        type: 'Link',
-        placeholder: 'Customer Group',
-        options: 'Customer Group',
-        reqd: true,
-      },
-      {
-        name: 'territory',
-        label: 'Territory',
-        type: 'Link',
-        placeholder: 'Territory',
-        options: 'Territory',
-        reqd: true,
-      },
-      {
-        name: 'tax_id',
-        label: 'TIN',
-        type: 'Data',
-        placeholder: 'TIN',
-        reqd: false,
-      },
-      {
-        name: 'mobile_no',
-        label: 'Mobile No',
-        type: 'Data',
-        placeholder: 'Mobile No',
-        reqd: false,
-      },
-    ],
-    hideLabel: false,
-    hideBorder: false,
+)
+watch(
+  () => booking.service_vehicle,
+  async (name, _, onCleanup) => {
+    let active = true
+    onCleanup(() => {
+      active = false
+    })
+    vehicleModel.value = ''
+    vehicleLoading.value = Boolean(name)
+    if (!name) return
+    try {
+      const vehicle = await frappeRequest({
+        url: 'frappe.client.get',
+        method: 'GET',
+        params: { doctype: 'Service Vehicle', name },
+      })
+      if (!active) return
+      booking.customer = vehicle.customer
+      vehicleModel.value = vehicle.vehicle_model || ''
+    } catch (err) {
+      if (active) error.value = err.messages?.join('\n') || err.message
+    } finally {
+      if (active) vehicleLoading.value = false
+    }
   },
-  {
-    label: 'Vehicle Details',
-    // "columns":2,
-    doctype: 'Service Vehicle',
-    fields: [
-      {
-        name: 'registration_number',
-        label: 'Registration Number',
-        type: 'Data',
-        placeholder: 'Registration Number',
-        reqd: true,
-      },
-      {
-        name: 'customer',
-        label: 'Customer',
-        type: 'Link',
-        placeholder: 'Customer',
-        options: 'Customer',
-        reqd: true,
-      },
-      {
-        name: 'vehicle_model',
-        label: 'Vehicle Model',
-        type: 'Data',
-        placeholder: 'Vehicle Model',
-        options: 'Vehicle Model',
-        reqd: true,
-      },
-      {
-        name: 'make',
-        label: 'Make',
-        type: 'Data',
-        placeholder: 'Make',
-        reqd: false,
-      },
-      {
-        name: 'type',
-        label: 'Type',
-        type: 'Data',
-        placeholder: 'Type',
-        reqd: false,
-      },
-      {
-        name: 'engine_number',
-        label: 'Engine Number',
-        type: 'Data',
-        placeholder: 'Engine Number',
-        reqd: false,
-      },
-      {
-        name: 'chassis_number',
-        label: 'Chassis Number',
-        type: 'Data',
-        placeholder: 'Chassis Number',
-        reqd: false,
-      },
-    ],
-    hideLabel: false,
-    hideBorder: false,
-  },
-]
+  { immediate: true },
+)
 </script>

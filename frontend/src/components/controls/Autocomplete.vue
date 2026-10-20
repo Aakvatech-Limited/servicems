@@ -14,6 +14,7 @@
         >
           <div class="w-full">
             <button
+              type="button"
               class="flex w-full items-center justify-between focus:outline-none"
               :class="inputClasses"
               @click="() => togglePopover()"
@@ -57,6 +58,7 @@
                 placeholder="Search"
               />
               <button
+                type="button"
                 class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
                 @click="selectedValue = null"
               >
@@ -221,7 +223,7 @@ function filterOptions(options) {
   return options.filter((option) => {
     let searchTexts = [option.label, option.value]
     return searchTexts.some((text) =>
-      (text || '').toString().toLowerCase().includes(query.value.toLowerCase())
+      (text || '').toString().toLowerCase().includes(query.value.toLowerCase()),
     )
   })
 }
