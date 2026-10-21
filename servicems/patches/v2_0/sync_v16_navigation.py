@@ -13,6 +13,15 @@ def backup_navigation():
 		records[doctype] = (
 			frappe.get_doc(doctype, name).as_dict() if frappe.db.exists(doctype, name) else None
 		)
+	for doctype, filters in (
+		("Custom Workspace", {"workspace": "Service MS"}),
+		("Custom Sidebar", {"module": "Service Management"}),
+	):
+		if frappe.db.exists("DocType", doctype):
+			records[doctype] = [
+				frappe.get_doc(doctype, name).as_dict()
+				for name in frappe.get_all(doctype, filters=filters, pluck="name")
+			]
 	path = Path(frappe.get_site_path("backups", "servicems-navigation"))
 	path.mkdir(parents=True, exist_ok=True)
 	stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")

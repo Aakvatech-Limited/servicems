@@ -125,8 +125,7 @@
    "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Bay",
-   "options": "Bay",
-   "reqd": 1
+   "options": "Bay"
   },
   {
    "fieldname": "job_card",

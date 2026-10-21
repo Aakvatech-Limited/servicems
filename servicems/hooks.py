@@ -9,6 +9,7 @@ app_icon = "octicon octicon-file-directory"
 app_color = "#bc2230"
 app_email = "info@aakvatech.com"
 app_license = "MIT"
+required_apps = ["erpnext"]
 
 # Includes in <head>
 # ------------------

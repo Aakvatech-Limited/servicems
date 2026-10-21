@@ -121,3 +121,47 @@ class TestNavigation(unittest.TestCase):
 			kind = row.type if row.doctype == "Workspace Shortcut" else row.link_type
 			self.assertIn(kind, ("DocType", "Report"))
 			self.assertTrue(frappe.db.exists(kind, row.link_to), (kind, row.link_to))
+
+	def test_customer_customization_layers_survive_standard_imports(self):
+		from frappe.desk.desktop import Workspace
+		from frappe.desk.doctype.custom_workspace.custom_workspace import upsert_content_customization
+
+		execute()
+		content = [{"id": "customer_header", "type": "header", "data": {"text": "Customer Operations"}}]
+		content.append(
+			{"id": "customer_shortcut", "type": "shortcut", "data": {"shortcut_name": "Customer lookup"}}
+		)
+		upsert_content_customization(
+			"Service MS",
+			content,
+			{
+				"shortcut": [
+					{
+						"label": "Customer lookup",
+						"type": "DocType",
+						"link_to": "Customer",
+						"doc_view": "List",
+					}
+				]
+			},
+		)
+		custom_sidebar = frappe.get_doc(
+			{
+				"doctype": "Custom Sidebar",
+				"module": "Service Management",
+				"label": "Customer Workshop",
+			}
+		).insert(ignore_permissions=True)
+		before = frappe.get_doc("Custom Workspace", "Service MS").as_dict()
+		backup = json.loads(backup_navigation().read_text())
+		self.assertEqual(len(backup["Custom Workspace"]), 1)
+		self.assertEqual(len(backup["Custom Sidebar"]), 1)
+		for _ in range(2):
+			execute()
+			self.assertEqual(frappe.get_doc("Custom Workspace", "Service MS").as_dict(), before)
+			self.assertEqual(
+				frappe.db.get_value("Custom Sidebar", custom_sidebar.name, "label"), "Customer Workshop"
+			)
+			view = Workspace({"name": "Service MS"}, minimal=True)
+			self.assertEqual(json.loads(view.doc.content), content)
+			self.assertIn("Customer lookup", [row["label"] for row in view.get_shortcuts()])

@@ -1,0 +1,91 @@
+name: v16 Migration Compatibility
+
+on:
+  pull_request:
+    branches: [version-16-v2-hotfix]
+  push:
+    branches: [version-16-v2-hotfix]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=2s --health-retries=10
+      redis-cache:
+        image: redis:alpine
+        ports: ["13000:6379"]
+      redis-queue:
+        image: redis:alpine
+        ports: ["11000:6379"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y mariadb-client libmariadb-dev pkg-config
+      - name: Create isolated bench
+        run: |
+          pip install frappe-bench
+          if ! command -v yarn >/dev/null; then npm install -g yarn@1.22.22; fi
+          bench init --skip-redis-config-generation --skip-assets --frappe-branch version-16 --python "$(which python)" ~/frappe-bench
+      - name: Fetch apps and legacy baseline
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench get-app --skip-assets --branch version-16 erpnext
+          bench get-app --skip-assets servicems "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" worktree add --detach "$RUNNER_TEMP/servicems-legacy" ef340ca762ab84385376d656c6a7f6406aab94d4
+          bench set-config -g redis_cache redis://127.0.0.1:13000
+          bench set-config -g redis_queue redis://127.0.0.1:11000
+      - name: Create disposable sites
+        working-directory: /home/runner/frappe-bench
+        run: |
+          for site in migration-fresh.localhost migration-legacy.localhost; do
+            bench new-site --db-host 127.0.0.1 --db-root-password root --admin-password admin "$site"
+            bench --site "$site" set-config allow_tests 1 --parse
+          done
+      - name: Fresh installation and repeated migration
+        working-directory: /home/runner/frappe-bench/sites
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" fresh-install --site migration-fresh.localhost
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" test --site migration-fresh.localhost
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" idempotence --site migration-fresh.localhost
+      - name: Seed real legacy records
+        working-directory: /home/runner/frappe-bench/sites
+        run: |
+          export PYTHONPATH="$RUNNER_TEMP/servicems-legacy"
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" legacy-install --site migration-legacy.localhost
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" legacy-seed --site migration-legacy.localhost --snapshot "$RUNNER_TEMP/legacy.json"
+      - name: Upgrade, preserve records, and repeat migrations
+        working-directory: /home/runner/frappe-bench/sites
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          ../env/bin/python -c 'from frappe.migrate import SiteMigration; SiteMigration(skip_search_index=True).run(site="migration-legacy.localhost")'
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" verify-upgrade --site migration-legacy.localhost --snapshot "$RUNNER_TEMP/legacy.json"
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" idempotence --site migration-legacy.localhost
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" verify-upgrade --site migration-legacy.localhost --snapshot "$RUNNER_TEMP/legacy.json"
+          ../env/bin/python "$GITHUB_WORKSPACE/scripts/audit_v2_migration.py" test --site migration-legacy.localhost
