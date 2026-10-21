@@ -5,7 +5,7 @@ import json
 
 import frappe
 from frappe import _
-from frappe.utils import cint, now, nowdate, nowtime
+from frappe.utils import cint, flt, get_datetime, now, nowdate, nowtime, time_diff_in_hours
 from frappe.website.website_generator import WebsiteGenerator
 
 
@@ -34,6 +34,44 @@ class ServiceJobCard(WebsiteGenerator):
 		self.vaildate_complete()
 		self.validate_quality_check()
 		self.validate_bay_management()
+		self.validate_labour_entries()
+
+	def validate_labour_entries(self):
+		for row in self.labour_entries:
+			if row.stopped_at and get_datetime(row.stopped_at) <= get_datetime(row.started_at):
+				frappe.throw(_("Labour end must be after start on row {0}").format(row.idx))
+			row.hours = flt(time_diff_in_hours(row.stopped_at, row.started_at), 3) if row.stopped_at else 0
+			for other in self.labour_entries:
+				if other.name == row.name or row.technician != other.technician:
+					continue
+				if get_datetime(row.started_at) < get_datetime(other.stopped_at or now()) and get_datetime(other.started_at) < get_datetime(row.stopped_at or now()):
+					frappe.throw(_("Overlapping labour entries for {0}").format(row.technician))
+
+	@frappe.whitelist()
+	def start_labour(self, technician, task=None):
+		self.check_permission("write")
+		if self.docstatus != 0:
+			frappe.throw(_("Cannot start labour on a submitted Job Card"))
+		if not frappe.db.exists("Employee", technician):
+			frappe.throw(_("Select a valid Employee"))
+		active = frappe.get_all("Service Labour Entry", filters={"technician": technician, "stopped_at": ["is", "not set"]}, fields=["name"], limit_page_length=1)
+		if active:
+			frappe.throw(_("Technician already has an active labour entry"))
+		self.append("labour_entries", {"technician": technician, "task": task, "started_at": now()})
+		self.save()
+		return self.name
+
+	@frappe.whitelist()
+	def stop_labour(self, technician):
+		self.check_permission("write")
+		if self.docstatus != 0:
+			frappe.throw(_("Cannot stop labour on a submitted Job Card"))
+		active = [row for row in self.labour_entries if row.technician == technician and not row.stopped_at]
+		if len(active) != 1:
+			frappe.throw(_("Expected one running labour entry for this technician"))
+		active[0].stopped_at = now()
+		self.save()
+		return active[0].hours
 
 	def validate_bay_management(self):
 		if self.bay and not frappe.db.get_single_value("Service Settings", "enable_bay_management"):
