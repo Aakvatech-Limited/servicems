@@ -11,6 +11,9 @@ frappe.ui.form.on("Service Job Card", {
   },
   refresh: function (frm) {
     set_custom_buttons(frm);
+    frappe.db.get_single_value("Service Settings", "enable_bay_management").then((enabled) => {
+      frm.set_df_property("bay", "hidden", !Number(enabled));
+    });
     remove_delete_button(frm);
     toggleTyreManagementFields(frm);
     toggleTyreMovementFields(frm);
