@@ -14,6 +14,17 @@ frappe.ui.form.on("Service Job Card", {
     frappe.db.get_single_value("Service Settings", "enable_bay_management").then((enabled) => {
       frm.set_df_property("bay", "hidden", !Number(enabled));
     });
+    if (frm.doc.docstatus === 0 && !frm.is_new()) {
+      frm.add_custom_button(__("Start Labour"), () => {
+        frappe.prompt([{fieldname:"technician",fieldtype:"Link",options:"Employee",label:__("Technician"),reqd:1},
+          {fieldname:"task",fieldtype:"Link",options:"Service Task",label:__("Service Task")}],
+          (v) => frm.call("start_labour", v).then(() => frm.reload_doc()), __("Start Labour"));
+      }, __("Technicians"));
+      frm.add_custom_button(__("Stop Labour"), () => {
+        frappe.prompt([{fieldname:"technician",fieldtype:"Link",options:"Employee",label:__("Technician"),reqd:1}],
+          (v) => frm.call("stop_labour", v).then(() => frm.reload_doc()), __("Stop Labour"));
+      }, __("Technicians"));
+    }
     remove_delete_button(frm);
     toggleTyreManagementFields(frm);
     toggleTyreMovementFields(frm);
