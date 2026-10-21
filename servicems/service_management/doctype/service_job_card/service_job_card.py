@@ -41,8 +41,10 @@ class ServiceJobCard(WebsiteGenerator):
 			if row.stopped_at and get_datetime(row.stopped_at) <= get_datetime(row.started_at):
 				frappe.throw(_("Labour end must be after start on row {0}").format(row.idx))
 			row.hours = flt(time_diff_in_hours(row.stopped_at, row.started_at), 3) if row.stopped_at else 0
+			if self.status in ("Completed", "Closed") and not row.stopped_at:
+				frappe.throw(_("Stop all running labour entries before completion"))
 			for other in self.labour_entries:
-				if other.name == row.name or row.technician != other.technician:
+				if other is row or row.technician != other.technician:
 					continue
 				if get_datetime(row.started_at) < get_datetime(other.stopped_at or now()) and get_datetime(other.started_at) < get_datetime(row.stopped_at or now()):
 					frappe.throw(_("Overlapping labour entries for {0}").format(row.technician))
