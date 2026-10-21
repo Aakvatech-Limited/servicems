@@ -1,0 +1,181 @@
+{
+ "doctype": "Sidebar",
+ "name": "Service Management",
+ "title": "Service Management",
+ "module": "Service Management",
+ "app": "servicems",
+ "standard": 1,
+ "header_icon": "wrench",
+ "items": [
+  {
+   "type": "Section Break",
+   "label": "Daily Operations",
+   "collapsible": 1,
+   "keep_closed": 0,
+   "icon": "folder"
+  },
+  {
+   "type": "Link",
+   "label": "Job Cards",
+   "link_type": "DocType",
+   "link_to": "Service Job Card",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Bookings",
+   "link_type": "DocType",
+   "link_to": "Service Booking",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Vehicle Inspections",
+   "link_type": "DocType",
+   "link_to": "Service Vehicle Inspection",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Workshop Management",
+   "collapsible": 1,
+   "keep_closed": 0,
+   "icon": "folder"
+  },
+  {
+   "type": "Link",
+   "label": "Workshops",
+   "link_type": "DocType",
+   "link_to": "Service Workshop",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Technician Tasks",
+   "link_type": "DocType",
+   "link_to": "Service Task",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Vehicles & Service Masters",
+   "collapsible": 1,
+   "keep_closed": 0,
+   "icon": "folder"
+  },
+  {
+   "type": "Link",
+   "label": "Vehicles",
+   "link_type": "DocType",
+   "link_to": "Service Vehicle",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Vehicle Makes",
+   "link_type": "DocType",
+   "link_to": "Vehicle Make",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Vehicle Models",
+   "link_type": "DocType",
+   "link_to": "Vehicle Model",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Vehicle Types",
+   "link_type": "DocType",
+   "link_to": "Service Vehicle Type",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Service Templates",
+   "link_type": "DocType",
+   "link_to": "Service Template",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Pre-Inspection Templates",
+   "link_type": "DocType",
+   "link_to": "Service Pre Inspection Template",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Parts & Inventory",
+   "collapsible": 1,
+   "keep_closed": 0,
+   "icon": "folder"
+  },
+  {
+   "type": "Link",
+   "label": "Parts Entries",
+   "link_type": "DocType",
+   "link_to": "Service Parts Entry",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Spares",
+   "link_type": "DocType",
+   "link_to": "Spare",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Reports & Monitoring",
+   "collapsible": 1,
+   "keep_closed": 0,
+   "icon": "folder"
+  },
+  {
+   "type": "Link",
+   "label": "Job Card Detail",
+   "link_type": "Report",
+   "link_to": "Service Job Card Detail",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Configuration",
+   "collapsible": 1,
+   "keep_closed": 1,
+   "icon": "folder"
+  },
+  {
+   "type": "Link",
+   "label": "Service Settings",
+   "link_type": "DocType",
+   "link_to": "Service Settings",
+   "child": 1,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
+   "label": "Company Settings",
+   "link_type": "DocType",
+   "link_to": "Company Service Management Settings",
+   "child": 1,
+   "is_default_module": 0
+  }
+ ]
+}
