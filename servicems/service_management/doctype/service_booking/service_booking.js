@@ -4,6 +4,9 @@
 frappe.ui.form.on("Service Booking", {
   refresh: function (frm) {
     frm.trigger("set_filters");
+    frappe.db.get_single_value("Service Settings", "enable_bay_management").then((enabled) => {
+      frm.set_df_property("bay", "hidden", !Number(enabled));
+    });
     frm.trigger("disable_form");
     frm.trigger("close_booking");
   },
