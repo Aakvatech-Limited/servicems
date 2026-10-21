@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"sm0\",\"type\":\"header\",\"data\":{\"text\":\"Operations\",\"col\":12}},{\"id\":\"sm1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card\",\"col\":3}},{\"id\":\"sm2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Booking\",\"col\":3}},{\"id\":\"sm3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle Inspection\",\"col\":3}},{\"id\":\"sm4\",\"type\":\"header\",\"data\":{\"text\":\"Workshop\",\"col\":12}},{\"id\":\"sm5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Workshop\",\"col\":3}},{\"id\":\"sm6\",\"type\":\"header\",\"data\":{\"text\":\"Masters\",\"col\":12}},{\"id\":\"sm7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle\",\"col\":3}},{\"id\":\"sm8\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Template\",\"col\":3}},{\"id\":\"sm9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Task\",\"col\":3}},{\"id\":\"sm10\",\"type\":\"header\",\"data\":{\"text\":\"Reports\",\"col\":12}},{\"id\":\"sm11\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card Detail\",\"col\":3}},{\"id\":\"sm12\",\"type\":\"header\",\"data\":{\"text\":\"Settings\",\"col\":12}},{\"id\":\"sm13\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Settings\",\"col\":3}}]",
+ "content": "[{\"id\":\"smv160\",\"type\":\"header\",\"data\":{\"text\":\"Daily Operations\",\"col\":12}},{\"id\":\"smv161\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Job Cards\",\"col\":3}},{\"id\":\"smv162\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bookings\",\"col\":3}},{\"id\":\"smv163\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Inspections\",\"col\":3}},{\"id\":\"smv164\",\"type\":\"header\",\"data\":{\"text\":\"Workshop Management\",\"col\":12}},{\"id\":\"smv165\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workshops\",\"col\":3}},{\"id\":\"smv166\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Technician Tasks\",\"col\":3}},{\"id\":\"smv167\",\"type\":\"header\",\"data\":{\"text\":\"Vehicles & Service Masters\",\"col\":12}},{\"id\":\"smv168\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicles\",\"col\":3}},{\"id\":\"smv169\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Makes\",\"col\":3}},{\"id\":\"smv1610\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Models\",\"col\":3}},{\"id\":\"smv1611\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Types\",\"col\":3}},{\"id\":\"smv1612\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Templates\",\"col\":3}},{\"id\":\"smv1613\",\"type\":\"header\",\"data\":{\"text\":\"Parts & Inventory\",\"col\":12}},{\"id\":\"smv1614\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Parts Entries\",\"col\":3}},{\"id\":\"smv1615\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Spares\",\"col\":3}},{\"id\":\"smv1616\",\"type\":\"header\",\"data\":{\"text\":\"Reports & Monitoring\",\"col\":12}},{\"id\":\"smv1617\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Job Card Detail\",\"col\":3}},{\"id\":\"smv1618\",\"type\":\"header\",\"data\":{\"text\":\"Configuration\",\"col\":12}},{\"id\":\"smv1619\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Settings\",\"col\":3}},{\"id\":\"smv1620\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Company Settings\",\"col\":3}}]",
  "creation": "2024-04-16 16:38:59.620998",
  "custom_blocks": [],
  "docstatus": 0,
@@ -10,17 +10,7 @@
  "idx": 0,
  "is_hidden": 0,
  "label": "Service MS",
- "links": [
-  {
-   "type": "Link",
-   "label": "Service Settings",
-   "link_type": "DocType",
-   "link_to": "Service Settings",
-   "hidden": 0,
-   "link_count": 0,
-   "onboard": 0
-  }
- ],
+ "links": [],
  "modified": "2024-11-10 23:36:40.916651",
  "modified_by": "sydneykb38@gmail.com",
  "module": "Service Management",
@@ -36,7 +26,7 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Service Job Card",
+   "label": "Job Cards",
    "type": "DocType",
    "link_to": "Service Job Card",
    "stats_filter": "[]"
@@ -44,7 +34,7 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Service Booking",
+   "label": "Bookings",
    "type": "DocType",
    "link_to": "Service Booking",
    "stats_filter": "[]"
@@ -52,7 +42,7 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Service Vehicle Inspection",
+   "label": "Vehicle Inspections",
    "type": "DocType",
    "link_to": "Service Vehicle Inspection",
    "stats_filter": "[]"
@@ -60,7 +50,7 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Service Workshop",
+   "label": "Workshops",
    "type": "DocType",
    "link_to": "Service Workshop",
    "stats_filter": "[]"
@@ -68,23 +58,7 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Service Vehicle",
-   "type": "DocType",
-   "link_to": "Service Vehicle",
-   "stats_filter": "[]"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Service Template",
-   "type": "DocType",
-   "link_to": "Service Template",
-   "stats_filter": "[]"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Service Task",
+   "label": "Technician Tasks",
    "type": "DocType",
    "link_to": "Service Task",
    "stats_filter": "[]"
@@ -92,7 +66,63 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Service Job Card Detail",
+   "label": "Vehicles",
+   "type": "DocType",
+   "link_to": "Service Vehicle",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Vehicle Makes",
+   "type": "DocType",
+   "link_to": "Vehicle Make",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Vehicle Models",
+   "type": "DocType",
+   "link_to": "Vehicle Model",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Vehicle Types",
+   "type": "DocType",
+   "link_to": "Service Vehicle Type",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Templates",
+   "type": "DocType",
+   "link_to": "Service Template",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Parts Entries",
+   "type": "DocType",
+   "link_to": "Service Parts Entry",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Spares",
+   "type": "DocType",
+   "link_to": "Spare",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Job Card Detail",
    "type": "Report",
    "link_to": "Service Job Card Detail",
    "stats_filter": "[]"
@@ -103,6 +133,14 @@
    "label": "Service Settings",
    "type": "DocType",
    "link_to": "Service Settings",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Company Settings",
+   "type": "DocType",
+   "link_to": "Company Service Management Settings",
    "stats_filter": "[]"
   }
  ],
