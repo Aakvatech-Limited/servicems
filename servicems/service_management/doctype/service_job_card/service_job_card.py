@@ -33,6 +33,13 @@ class ServiceJobCard(WebsiteGenerator):
 		self.set_totals()
 		self.vaildate_complete()
 		self.validate_quality_check()
+		self.validate_bay_management()
+
+	def validate_bay_management(self):
+		if self.bay and not frappe.db.get_single_value("Service Settings", "enable_bay_management"):
+			previous_bay = None if self.is_new() else frappe.db.get_value("Service Job Card", self.name, "bay")
+			if self.bay != previous_bay:
+				frappe.throw(_("Enable Bay Management in Service Settings before allocating a bay."))
 
 	def validate_quality_check(self):
 		"""Keep historical completed cards intact; enforce QC for new transitions."""
