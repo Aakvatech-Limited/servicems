@@ -7,6 +7,12 @@ from frappe.utils import nowdate, nowtime
 
 
 class ServiceBooking(Document):
+	def validate(self):
+		if self.bay and not frappe.db.get_single_value("Service Settings", "enable_bay_management"):
+			previous_bay = None if self.is_new() else frappe.db.get_value("Service Booking", self.name, "bay")
+			if self.bay != previous_bay:
+				frappe.throw("Enable Bay Management in Service Settings before allocating a bay.")
+
 	def before_insert(self):
 		self.status = "Pending"
 		self.posting_date = nowdate()
