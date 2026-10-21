@@ -46,6 +46,10 @@
   "parts",
   "supplied_parts",
   "unbill_item",
+  "quality_check_section",
+  "quality_check_confirmed",
+  "quality_checked_by",
+  "quality_checked_on",
   "section_break_31",
   "invoice",
   "column_break_38",
@@ -635,6 +639,31 @@
    "fieldtype": "Link",
    "label": "Quotation",
    "options": "Quotation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "quality_check_section",
+   "fieldtype": "Section Break",
+   "label": "Final Quality Check",
+   "depends_on": "eval:doc.docstatus == 0"
+  },
+  {
+   "fieldname": "quality_check_confirmed",
+   "fieldtype": "Check",
+   "label": "Final Quality Check Confirmed",
+   "default": "0"
+  },
+  {
+   "fieldname": "quality_checked_by",
+   "fieldtype": "Link",
+   "label": "Quality Checked By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "quality_checked_on",
+   "fieldtype": "Datetime",
+   "label": "Quality Checked On",
    "read_only": 1
   }
  ],
