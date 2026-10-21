@@ -75,6 +75,7 @@ class TestNavigation(unittest.TestCase):
 			[b["data"]["text"] for b in json.loads(workspace.content) if b["type"] == "header"], SECTIONS
 		)
 		self.assertNotIn("Booking Page", [row.label for row in workspace.shortcuts])
+		self.assertEqual(sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in workspace.shortcuts), 1)
 
 	def test_upgrade_creates_missing_native_sidebar(self):
 		if frappe.db.exists("Sidebar", "Service Management"):
@@ -84,6 +85,17 @@ class TestNavigation(unittest.TestCase):
 		self.assertEqual(sidebar.standard, 1)
 		self.assertEqual(sidebar.module, "Service Management")
 		self.assertEqual([row.label for row in sidebar.items if row.type == "Section Break"], SECTIONS)
+
+	def test_booking_calendar_is_present_once_after_repeated_migration(self):
+		for _ in range(2):
+			execute()
+			workspace = frappe.get_doc("Workspace", "Service MS")
+			sidebar = frappe.get_doc("Sidebar", "Service Management")
+			self.assertEqual(sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in workspace.shortcuts), 1)
+			self.assertEqual(sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in sidebar.items), 1)
+			for rows in (workspace.shortcuts, sidebar.items):
+				labels = [row.label for row in rows if row.label in ("Job Cards", "Bookings", "Booking Calendar", "Vehicle Inspections")]
+				self.assertEqual(labels, ["Job Cards", "Bookings", "Booking Calendar", "Vehicle Inspections"])
 
 	def test_bay_toggle_is_idempotent_and_restores_write_flags(self):
 		execute()
@@ -119,6 +131,9 @@ class TestNavigation(unittest.TestCase):
 		sidebar = frappe.get_doc("Sidebar", "Service Management")
 		for row in [*workspace.shortcuts, *[item for item in sidebar.items if item.type == "Link"]]:
 			kind = row.type if row.doctype == "Workspace Shortcut" else row.link_type
+			if kind == "URL":
+				self.assertEqual(row.url, "/bookings")
+				continue
 			self.assertIn(kind, ("DocType", "Report"))
 			self.assertTrue(frappe.db.exists(kind, row.link_to), (kind, row.link_to))
 
