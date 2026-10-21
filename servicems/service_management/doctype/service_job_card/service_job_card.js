@@ -25,6 +25,9 @@ frappe.ui.form.on("Service Job Card", {
           (v) => frm.call("stop_labour", v).then(() => frm.reload_doc()), __("Stop Labour"));
       }, __("Technicians"));
     }
+    frappe.db.get_single_value("Service Settings", "require_final_quality_check").then((required) => {
+      frm.set_df_property("quality_check_section", "hidden", !Number(required));
+    });
     remove_delete_button(frm);
     toggleTyreManagementFields(frm);
     toggleTyreMovementFields(frm);
