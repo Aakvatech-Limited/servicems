@@ -7,7 +7,10 @@ from frappe.model.document import Document
 
 
 class ServiceSettings(Document):
-	pass
+	def on_update(self):
+		from servicems.navigation import sync_bay_navigation
+
+		sync_bay_navigation()
 
 
 @frappe.whitelist()
