@@ -5,7 +5,7 @@ import json
 
 import frappe
 from frappe import _
-from frappe.utils import cint, nowdate, nowtime
+from frappe.utils import cint, now, nowdate, nowtime
 from frappe.website.website_generator import WebsiteGenerator
 
 
@@ -32,6 +32,33 @@ class ServiceJobCard(WebsiteGenerator):
 		self.set_parts_rate()
 		self.set_totals()
 		self.vaildate_complete()
+		self.validate_quality_check()
+
+	def validate_quality_check(self):
+		"""Keep historical completed cards intact; enforce QC for new transitions."""
+		was_confirmed = False
+		if not self.is_new():
+			previous = self.get_doc_before_save()
+			was_confirmed = bool(previous and previous.quality_check_confirmed)
+
+		if self.quality_check_confirmed and not was_confirmed:
+			self.quality_checked_by = frappe.session.user
+			self.quality_checked_on = now()
+		elif not self.quality_check_confirmed:
+			self.quality_checked_by = None
+			self.quality_checked_on = None
+
+		if self.status != "Completed" or not frappe.db.get_single_value(
+			"Service Settings", "require_final_quality_check"
+		):
+			return
+
+		if not self.is_new():
+			previous = self.get_doc_before_save()
+			if previous and previous.status in ("Completed", "Closed"):
+				return
+		if not self.quality_check_confirmed:
+			frappe.throw(_("Final quality check must be confirmed before completion."))
 
 	def set_company_from_service_settings(self):
 		service_company = frappe.db.get_single_value("Service Settings", "company")
