@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 app_name = "servicems"
 app_title = "servicems"
 app_publisher = "Aakvatech Limited"
-app_description = "Service Management System for ERPNext"
+app_description = "Workshop and service management for Frappe v16+"
 app_icon = "octicon octicon-file-directory"
-app_color = "grey"
+app_color = "#bc2230"
 app_email = "info@aakvatech.com"
 app_license = "MIT"
 
@@ -191,4 +191,14 @@ user_data_fields = [
 
 website_route_rules = [
 	{"from_route": "/bookings/<path:app_path>", "to_route": "bookings"},
+]
+
+# Native Frappe v16 app launcher and Dock integration.
+add_to_apps_screen = [
+    {
+        "name": "servicems",
+        "logo": "/assets/servicems/images/servicems.svg",
+        "title": "Service MS",
+        "route": "/app/service-ms",
+    }
 ]
