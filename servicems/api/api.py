@@ -44,7 +44,7 @@ def search_link_data(
 			doctype,
 			txt,
 			query=None,
-			filters=None,
+			filters=filters,
 			page_length=20,
 			searchfield=None,
 			reference_doctype=None,

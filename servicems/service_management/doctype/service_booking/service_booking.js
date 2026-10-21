@@ -18,9 +18,14 @@ frappe.ui.form.on("Service Booking", {
     }
   },
   close_booking: (frm) => {
+    if (frm.is_new() || ["Closed", "Completed"].includes(frm.doc.status))
+      return;
+
     frm.add_custom_button(__("Close Booking"), function () {
-      frm.set_value("status", "Closed");
-      frm.save();
+      frm.doc.status = "Closed";
+      frm.refresh_field("status");
+      frm.dirty();
+      return frm.save();
     });
   },
   create_job_card: (frm) => {
@@ -37,7 +42,7 @@ frappe.ui.form.on("Service Booking", {
         service_booking: frm.doc.name,
         bay: frm.doc.bay,
       },
-      (doc) => {}
+      (doc) => {},
     );
   },
   set_filters: (frm) => {
