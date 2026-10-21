@@ -1,0 +1,128 @@
+{
+ "app": "servicems",
+ "doctype": "Workspace Sidebar",
+ "name": "Service MS",
+ "title": "Service MS",
+ "label": "Service MS",
+ "module": "Service Management",
+ "standard": 1,
+ "header_icon": "wrench",
+ "items": [
+  {
+   "type": "Section Break",
+   "label": "Operations",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Job Cards",
+   "link_to": "Service Job Card",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Bookings",
+   "link_to": "Service Booking",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Inspections",
+   "link_to": "Service Vehicle Inspection",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Workshop",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Service Workshops",
+   "link_to": "Service Workshop",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Masters",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Vehicles",
+   "link_to": "Service Vehicle",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Service Templates",
+   "link_to": "Service Template",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Service Types",
+   "link_to": "Service Task",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Reports",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Job Card Detail",
+   "link_to": "Service Job Card Detail",
+   "link_type": "Report",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Settings",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  },
+  {
+   "type": "Link",
+   "label": "Service Settings",
+   "link_to": "Service Settings",
+   "link_type": "DocType",
+   "child": 0,
+   "collapsible": 0,
+   "indent": 0
+  }
+ ]
+}
