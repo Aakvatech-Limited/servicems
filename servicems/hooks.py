@@ -74,7 +74,10 @@ fixtures = [
 
 # before_install = "servicems.install.before_install"
 after_install = "servicems.fleet_integration.ensure_service_job_card_tyre_fields"
-after_migrate = ["servicems.fleet_integration.ensure_service_job_card_tyre_fields"]
+after_migrate = [
+    "servicems.fleet_integration.ensure_service_job_card_tyre_fields",
+    "servicems.navigation.sync_bay_navigation",
+]
 
 # Desk Notifications
 # ------------------
