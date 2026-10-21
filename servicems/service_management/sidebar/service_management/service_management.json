@@ -33,6 +33,15 @@
   },
   {
    "type": "Link",
+   "label": "Booking Calendar",
+   "link_type": "URL",
+   "url": "/bookings",
+   "child": 1,
+   "open_in_new_tab": 0,
+   "is_default_module": 0
+  },
+  {
+   "type": "Link",
    "label": "Vehicle Inspections",
    "link_type": "DocType",
    "link_to": "Service Vehicle Inspection",
