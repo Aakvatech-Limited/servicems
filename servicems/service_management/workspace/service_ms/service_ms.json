@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"skwv7vtvjl\",\"type\":\"paragraph\",\"data\":{\"text\":\"Portal\",\"col\":12}},{\"id\":\"X7a87RULga\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Booking Page\",\"col\":3}},{\"id\":\"LHo9f8EsC-\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"TuI1c_ID-X\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"dFhp9HSsa0\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Service MS</span>\",\"col\":12}},{\"id\":\"yysftveJSP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card\",\"col\":3}},{\"id\":\"JfL6PqVHGH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Booking\",\"col\":3}},{\"id\":\"bYJ8rzhAP-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Workshop\",\"col\":3}},{\"id\":\"c8BIWRWo4u\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bay\",\"col\":3}},{\"id\":\"NCh6MVObz0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle Inspection\",\"col\":3}},{\"id\":\"mkzcsrSYYa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle\",\"col\":3}},{\"id\":\"9UvcXOqOJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Spare\",\"col\":3}},{\"id\":\"Jj2N28rDS2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workshop Service Type\",\"col\":3}}]",
+ "content": "[{\"id\":\"sm0\",\"type\":\"header\",\"data\":{\"text\":\"Operations\",\"col\":12}},{\"id\":\"sm1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card\",\"col\":3}},{\"id\":\"sm2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Booking\",\"col\":3}},{\"id\":\"sm3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle Inspection\",\"col\":3}},{\"id\":\"sm4\",\"type\":\"header\",\"data\":{\"text\":\"Workshop\",\"col\":12}},{\"id\":\"sm5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Workshop\",\"col\":3}},{\"id\":\"sm6\",\"type\":\"header\",\"data\":{\"text\":\"Masters\",\"col\":12}},{\"id\":\"sm7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Vehicle\",\"col\":3}},{\"id\":\"sm8\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Template\",\"col\":3}},{\"id\":\"sm9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Task\",\"col\":3}},{\"id\":\"sm10\",\"type\":\"header\",\"data\":{\"text\":\"Reports\",\"col\":12}},{\"id\":\"sm11\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Job Card Detail\",\"col\":3}},{\"id\":\"sm12\",\"type\":\"header\",\"data\":{\"text\":\"Settings\",\"col\":12}},{\"id\":\"sm13\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Service Settings\",\"col\":3}}]",
  "creation": "2024-04-16 16:38:59.620998",
  "custom_blocks": [],
  "docstatus": 0,
@@ -12,24 +12,13 @@
  "label": "Service MS",
  "links": [
   {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Service Booking",
-   "link_count": 0,
-   "link_to": "Service Booking",
+   "type": "Link",
+   "label": "Service Settings",
    "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "TEST",
-   "link_count": 0,
    "link_to": "Service Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
+   "hidden": 0,
+   "link_count": 0,
+   "onboard": 0
   }
  ],
  "modified": "2024-11-10 23:36:40.916651",
@@ -42,78 +31,79 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 1.0,
+ "sequence_id": 1,
  "shortcuts": [
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Booking Page",
-   "type": "URL",
-   "url": "/bookings"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Bay",
-   "link_to": "Bay",
-   "stats_filter": "[]",
-   "type": "DocType"
+   "label": "Service Job Card",
+   "type": "DocType",
+   "link_to": "Service Job Card",
+   "stats_filter": "[]"
   },
   {
    "color": "Grey",
    "doc_view": "List",
    "label": "Service Booking",
+   "type": "DocType",
    "link_to": "Service Booking",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Workshop Service Type",
-   "link_to": "Workshop Service Type",
-   "stats_filter": "[]",
-   "type": "DocType"
+   "stats_filter": "[]"
   },
   {
    "color": "Grey",
    "doc_view": "List",
    "label": "Service Vehicle Inspection",
+   "type": "DocType",
    "link_to": "Service Vehicle Inspection",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Spare",
-   "link_to": "Spare",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Service Job Card",
-   "link_to": "Service Job Card",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Service Vehicle",
-   "link_to": "Service Vehicle",
-   "stats_filter": "[]",
-   "type": "DocType"
+   "stats_filter": "[]"
   },
   {
    "color": "Grey",
    "doc_view": "List",
    "label": "Service Workshop",
+   "type": "DocType",
    "link_to": "Service Workshop",
-   "stats_filter": "[]",
-   "type": "DocType"
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Vehicle",
+   "type": "DocType",
+   "link_to": "Service Vehicle",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Template",
+   "type": "DocType",
+   "link_to": "Service Template",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Task",
+   "type": "DocType",
+   "link_to": "Service Task",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Job Card Detail",
+   "type": "Report",
+   "link_to": "Service Job Card Detail",
+   "stats_filter": "[]"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Service Settings",
+   "type": "DocType",
+   "link_to": "Service Settings",
+   "stats_filter": "[]"
   }
  ],
  "title": "Service MS"
