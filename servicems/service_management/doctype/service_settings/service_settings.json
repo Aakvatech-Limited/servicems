@@ -9,7 +9,9 @@
   "default_is_billable",
   "price_list",
   "item_groups",
-  "use_spares_instead_of_item"
+  "use_spares_instead_of_item",
+  "enable_bay_management",
+  "require_final_quality_check"
  ],
  "fields": [
   {
@@ -43,6 +45,19 @@
    "fieldname": "use_spares_instead_of_item",
    "fieldtype": "Check",
    "label": "Use Spares instead of Item"
+  },
+  {
+   "fieldname": "enable_bay_management",
+   "fieldtype": "Check",
+   "label": "Enable Bay Management",
+   "default": "0",
+   "description": "Controls bay allocation and scheduling features for new installations."
+  },
+  {
+   "fieldname": "require_final_quality_check",
+   "fieldtype": "Check",
+   "label": "Require Final Quality Check",
+   "default": "0"
   }
  ],
  "index_web_pages_for_search": 1,
