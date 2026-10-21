@@ -4,8 +4,6 @@ import frappe
 
 
 def execute():
-	if not frappe.db.has_column("tabSingles", "value"):
-		return
 	if frappe.db.get_single_value("Service Settings", "enable_bay_management"):
 		return
 	for doctype in ("Service Booking", "Service Job Card"):
