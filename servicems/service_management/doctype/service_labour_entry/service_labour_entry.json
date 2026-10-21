@@ -1,0 +1,53 @@
+{
+ "doctype": "DocType",
+ "name": "Service Labour Entry",
+ "module": "Service Management",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": [
+  "technician",
+  "task",
+  "started_at",
+  "stopped_at",
+  "hours"
+ ],
+ "fields": [
+  {
+   "fieldname": "technician",
+   "fieldtype": "Link",
+   "label": "Technician",
+   "options": "Employee",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Service Task",
+   "options": "Service Task",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "started_at",
+   "fieldtype": "Datetime",
+   "label": "Started At",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "stopped_at",
+   "fieldtype": "Datetime",
+   "label": "Stopped At",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "hours",
+   "fieldtype": "Float",
+   "label": "Actual Hours",
+   "precision": "3",
+   "read_only": 1,
+   "in_list_view": 1
+  }
+ ],
+ "permissions": []
+}
