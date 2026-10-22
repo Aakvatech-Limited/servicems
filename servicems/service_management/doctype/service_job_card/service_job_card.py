@@ -271,11 +271,29 @@ class ServiceJobCard(WebsiteGenerator):
 				},
 			)
 
+	def validate_stock_transfer_configuration(self, workshop, transaction_company):
+		"""Fail before creating a Stock Entry with incompatible workshop warehouses."""
+		if not transaction_company:
+			frappe.throw(_("Set a company before issuing workshop parts."))
+		if not workshop.parts_warehouse or not workshop.workshop_warehouse:
+			frappe.throw(_("Set both Parts Warehouse and Workshop Warehouse on the Service Workshop."))
+		if workshop.parts_warehouse == workshop.workshop_warehouse:
+			frappe.throw(_("Parts Warehouse and Workshop Warehouse must be different."))
+		for warehouse in (workshop.parts_warehouse, workshop.workshop_warehouse):
+			warehouse_company = frappe.db.get_value("Warehouse", warehouse, "company")
+			if warehouse_company != transaction_company:
+				frappe.throw(
+					_("Warehouse {0} must belong to transaction company {1}.").format(
+						warehouse, transaction_company
+					)
+				)
+
 	@frappe.whitelist()
 	def create_stock_entry(self, type):
 		if self.parts and len(self.parts) > 0:
 			workshop = frappe.get_doc("Service Workshop", self.workshop)
 			transaction_company = get_service_transaction_company(self.company)
+			self.validate_stock_transfer_configuration(workshop, transaction_company)
 			items = []
 			for item in self.parts:
 				if item.qty > 0:
