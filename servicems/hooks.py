@@ -203,6 +203,6 @@ add_to_apps_screen = [
         "name": "servicems",
         "logo": "/assets/servicems/images/servicems.svg",
         "title": "Service MS",
-        "route": "/desk/service-management",
+        "route": "/app/service-ms",
     }
 ]
