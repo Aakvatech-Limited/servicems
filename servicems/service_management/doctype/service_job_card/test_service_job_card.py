@@ -23,3 +23,33 @@ class TestServiceJobCard(unittest.TestCase):
 		card = ServiceJobCard({"doctype": "Service Job Card", "status": "Completed", "quality_check_confirmed": 0})
 		with patch.object(frappe.db, "get_single_value", return_value=0):
 			card.validate_quality_check()
+
+	def test_stock_transfer_rejects_missing_warehouses(self):
+		from types import SimpleNamespace
+		card = ServiceJobCard({"doctype": "Service Job Card"})
+		workshop = SimpleNamespace(parts_warehouse=None, workshop_warehouse="WORKSHOP")
+		with self.assertRaises(frappe.ValidationError):
+			card.validate_stock_transfer_configuration(workshop, "Example Co")
+
+	def test_stock_transfer_rejects_same_warehouse(self):
+		from types import SimpleNamespace
+		card = ServiceJobCard({"doctype": "Service Job Card"})
+		workshop = SimpleNamespace(parts_warehouse="STORES", workshop_warehouse="STORES")
+		with self.assertRaises(frappe.ValidationError):
+			card.validate_stock_transfer_configuration(workshop, "Example Co")
+
+	def test_stock_transfer_rejects_wrong_company(self):
+		from types import SimpleNamespace
+		card = ServiceJobCard({"doctype": "Service Job Card"})
+		workshop = SimpleNamespace(parts_warehouse="STORES", workshop_warehouse="WORKSHOP")
+		with patch.object(frappe.db, "get_value", return_value="Other Co"):
+			with self.assertRaises(frappe.ValidationError):
+				card.validate_stock_transfer_configuration(workshop, "Example Co")
+
+	def test_stock_transfer_accepts_matching_company(self):
+		from types import SimpleNamespace
+		card = ServiceJobCard({"doctype": "Service Job Card"})
+		workshop = SimpleNamespace(parts_warehouse="STORES", workshop_warehouse="WORKSHOP")
+		with patch.object(frappe.db, "get_value", return_value="Example Co") as lookup:
+			card.validate_stock_transfer_configuration(workshop, "Example Co")
+			self.assertEqual(lookup.call_count, 2)
