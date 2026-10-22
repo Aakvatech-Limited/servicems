@@ -52,7 +52,7 @@
    "type": "Section Break",
    "label": "Workshop Management",
    "collapsible": 1,
-   "keep_closed": 0,
+   "keep_closed": 1,
    "icon": "folder"
   },
   {
@@ -75,7 +75,7 @@
    "type": "Section Break",
    "label": "Vehicles & Service Masters",
    "collapsible": 1,
-   "keep_closed": 0,
+   "keep_closed": 1,
    "icon": "folder"
   },
   {
@@ -130,7 +130,7 @@
    "type": "Section Break",
    "label": "Parts & Inventory",
    "collapsible": 1,
-   "keep_closed": 0,
+   "keep_closed": 1,
    "icon": "folder"
   },
   {
@@ -153,7 +153,7 @@
    "type": "Section Break",
    "label": "Reports & Monitoring",
    "collapsible": 1,
-   "keep_closed": 0,
+   "keep_closed": 1,
    "icon": "folder"
   },
   {
