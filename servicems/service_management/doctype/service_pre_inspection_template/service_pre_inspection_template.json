@@ -7,10 +7,17 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "require_photographs",
   "template_name",
   "pre_inspection_items"
  ],
  "fields": [
+  {
+   "fieldname": "require_photographs",
+   "fieldtype": "Check",
+   "label": "Require Photos for Completed Inspections",
+   "default": "1"
+  },
   {
    "fieldname": "template_name",
    "fieldtype": "Data",
