@@ -14,6 +14,23 @@ def get_service_transaction_company(fallback_company=None):
 	return company or fallback_company
 
 
+def reconcile_parts_quantities(issued, consumed=0, returned=0):
+	"""Validate one Job Card allocation in stock UOM; no ledger mutations."""
+	quantities = [flt(value, 6) for value in (issued, consumed, returned)]
+	if any(value < 0 for value in quantities):
+		frappe.throw(_("Parts quantities cannot be negative."))
+	issued_qty, consumed_qty, returned_qty = quantities
+	if consumed_qty + returned_qty > issued_qty + 0.000001:
+		frappe.throw(_("Consumed and returned quantity exceeds quantity issued."))
+	outstanding = flt(issued_qty - consumed_qty - returned_qty, 6)
+	return {
+		"issued": issued_qty,
+		"consumed": consumed_qty,
+		"returned": returned_qty,
+		"outstanding": max(outstanding, 0),
+	}
+
+
 class ServiceJobCard(WebsiteGenerator):
 	def after_insert(self):
 		if self.service_booking:
