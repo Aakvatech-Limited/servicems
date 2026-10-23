@@ -6,6 +6,13 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "service_job_card",
+  "inspection_stage",
+  "inspection_status",
+  "inspection_template",
+  "inspected_by",
+  "inspected_on",
+  "inspection_remarks",
   "driver_name",
   "vehicle_plate_number",
   "trailer_no",
@@ -39,6 +46,47 @@
   "image_upload"
  ],
  "fields": [
+  {
+   "fieldname": "service_job_card",
+   "fieldtype": "Link",
+   "options": "Service Job Card",
+   "label": "Service Job Card"
+  },
+  {
+   "fieldname": "inspection_stage",
+   "fieldtype": "Select",
+   "options": "\nPre-Service\nPost-Service",
+   "label": "Inspection Stage"
+  },
+  {
+   "fieldname": "inspection_status",
+   "fieldtype": "Select",
+   "options": "Draft\nCompleted",
+   "default": "Draft",
+   "label": "Inspection Status"
+  },
+  {
+   "fieldname": "inspection_template",
+   "fieldtype": "Link",
+   "options": "Service Pre Inspection Template",
+   "label": "Inspection Template"
+  },
+  {
+   "fieldname": "inspected_by",
+   "fieldtype": "Link",
+   "options": "Employee",
+   "label": "Inspection Technician"
+  },
+  {
+   "fieldname": "inspected_on",
+   "fieldtype": "Datetime",
+   "label": "Inspected On"
+  },
+  {
+   "fieldname": "inspection_remarks",
+   "fieldtype": "Small Text",
+   "label": "Inspection Remarks"
+  },
   {
    "fetch_from": "trip_reference.driver",
    "fieldname": "driver_name",
