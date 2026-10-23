@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 import frappe
-from servicems.service_management.doctype.service_job_card.service_job_card import ServiceJobCard
+from servicems.service_management.doctype.service_job_card.service_job_card import ServiceJobCard, reconcile_parts_quantities
 
 
 class TestServiceJobCard(unittest.TestCase):
@@ -53,3 +53,22 @@ class TestServiceJobCard(unittest.TestCase):
 		with patch.object(frappe.db, "get_value", return_value="Example Co") as lookup:
 			card.validate_stock_transfer_configuration(workshop, "Example Co")
 			self.assertEqual(lookup.call_count, 2)
+
+	def test_parts_reconciliation_exact(self):
+		result = reconcile_parts_quantities(10, 7, 2)
+		self.assertEqual(result["outstanding"], 1)
+
+	def test_parts_reconciliation_fully_allocated(self):
+		self.assertEqual(reconcile_parts_quantities(10, 7, 3)["outstanding"], 0)
+
+	def test_parts_reconciliation_rejects_overconsumption(self):
+		with self.assertRaises(frappe.ValidationError):
+			reconcile_parts_quantities(10, 11, 0)
+
+	def test_parts_reconciliation_rejects_excess_returns(self):
+		with self.assertRaises(frappe.ValidationError):
+			reconcile_parts_quantities(10, 7, 4)
+
+	def test_parts_reconciliation_rejects_negative(self):
+		with self.assertRaises(frappe.ValidationError):
+			reconcile_parts_quantities(-1, 0, 0)
