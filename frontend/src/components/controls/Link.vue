@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1.5"  v-if="!attrs.disabled">
+  <div class="space-y-1.5" v-if="!attrs.disabled">
     <label class="block" :class="labelClasses" v-if="attrs.label">
       {{ attrs.label }}
     </label>
@@ -12,7 +12,6 @@
       :placeholder="attrs.placeholder"
       :filterable="false"
     >
-
       <template #target="{ open, togglePopover }">
         <slot name="target" v-bind="{ open, togglePopover }" />
       </template>
@@ -32,9 +31,11 @@
       <template #footer="{ value, close }">
         <div v-if="attrs.onCreate">
           <Button
+            type="button"
             variant="ghost"
             class="w-full !justify-start"
-            :label=Create New
+            :label="Create"
+            New
             @click="attrs.onCreate(value, close)"
           >
             <template #prefix>
@@ -44,9 +45,10 @@
         </div>
         <div>
           <Button
+            type="button"
             variant="ghost"
             class="w-full !justify-start"
-            :label=Clear
+            label="Clear"
             @click="() => clearValue(close)"
           >
             <template #prefix>
@@ -63,9 +65,11 @@
 import Autocomplete from '../../components/controls/Autocomplete.vue'
 import { watchDebounced } from '@vueuse/core'
 import { createResource } from 'frappe-ui'
+import { useToast } from '@/composables/useToast.js'
 import { useAttrs, computed, ref, watch } from 'vue'
 
 const props = defineProps({
+  filters: { type: Object, default: () => ({}) },
   doctype: {
     type: String,
     required: true,
@@ -83,15 +87,16 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const attrs = useAttrs()
+const { handleResourceError } = useToast()
 
 const valuePropPassed = computed(() => 'value' in attrs)
 
 const value = computed({
   get: () => (valuePropPassed.value ? attrs.value : props.modelValue),
   set: (val) => {
-    return (
-      val?.value &&
-      emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
+    emit(
+      valuePropPassed.value ? 'change' : 'update:modelValue',
+      val?.value || '',
     )
   },
 })
@@ -107,22 +112,28 @@ watchDebounced(
     text.value = val
     reload(val)
   },
-  { debounce: 300, immediate: true }
+  { debounce: 300, immediate: true },
 )
 
 watchDebounced(
   () => props.doctype,
   () => reload(''),
-  { debounce: 300, immediate: true }
+  { debounce: 300, immediate: true },
+)
+
+watch(
+  () => props.filters,
+  () => reload(text.value),
+  { deep: true },
 )
 
 const options = createResource({
   url: 'servicems.api.api.search_link_data',
-  cache: [props.doctype, text.value, props.hideMe],
-  method: 'POST',
+  method: 'GET',
   params: {
     txt: text.value,
     doctype: props.doctype,
+    filters: JSON.stringify(props.filters),
   },
   transform: (data) => {
     let allData = data.map((option) => {
@@ -145,7 +156,8 @@ function reload(val) {
   if (
     options.data?.length &&
     val === options.params?.txt &&
-    props.doctype === options.params?.doctype
+    props.doctype === options.params?.doctype &&
+    JSON.stringify(props.filters) === options.params?.filters
   )
     return
 
@@ -153,9 +165,10 @@ function reload(val) {
     params: {
       txt: val,
       doctype: props.doctype,
+      filters: JSON.stringify(props.filters),
     },
   })
-  options.reload()
+  options.reload().catch(handleResourceError)
 }
 
 function clearValue(close) {

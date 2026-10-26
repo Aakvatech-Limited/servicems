@@ -1,20 +1,26 @@
 <template>
-  <div class="h-screen w-60 bg-gray-200 flex flex-col items-start p-6">
+  <div
+    class="w-full shrink-0 bg-gray-200 flex flex-row items-center gap-3 p-4 md:min-h-screen md:w-48 md:flex-col md:items-start md:p-6 lg:w-60"
+  >
     <div
-      v-if = "settings.doc && settings.doc.app_logo"
-      class="mb-8 w-24 h-auto  rounded-full flex items-center justify-center mx-8"
+      v-if="settings.doc && settings.doc.app_logo"
+      class="w-20 h-auto shrink-0 flex items-center justify-center md:mb-5"
       @click="goToHome()"
     >
-      <img :src="settings.doc.app_logo" alt="logo" class="w-full rounded-full" />
+      <img
+        :src="settings.doc.app_logo"
+        alt="logo"
+        class="w-full rounded-full"
+      />
     </div>
     <Button
-      class="mb-8 w-full hover:bg-green-500/50 text-black font-bold py-6 px-4 rounded border-4 border-gray-300"
+      class="w-full hover:bg-green-500/50 text-black font-bold py-4 px-3 rounded border border-gray-300 md:mb-5"
       label="Bookings"
       @click="goToBookings()"
     />
 
-    <Button 
-      class="w-full hover:bg-green-500/50 text-black font-bold py-6 px-4 rounded border-4 border-gray-300"
+    <Button
+      class="w-full hover:bg-green-500/50 text-black font-bold py-4 px-3 rounded border border-gray-300"
       label="Job Card"
       @click="goToJobCard()"
     />
@@ -22,11 +28,10 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
 import { createDocumentResource } from 'frappe-ui'
 import { useToast } from '@/composables/useToast.js'
 
-const { handleResourceError } = useToast();
+const { handleResourceError } = useToast()
 
 function goToBookings() {
   window.location.href = '/app/service-booking'
@@ -41,12 +46,11 @@ function goToHome() {
 }
 
 let settings = createDocumentResource({
-    doctype: "Navbar Settings",
-    name: "Navbar Settings",
+  doctype: 'Navbar Settings',
+  name: 'Navbar Settings',
 
-    onError: (err) => {
-        handleResourceError(err)
-    }
-  }
-)
+  onError: (err) => {
+    handleResourceError(err)
+  },
+})
 </script>
