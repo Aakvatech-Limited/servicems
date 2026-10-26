@@ -127,6 +127,13 @@ jobs:
           bench --site test_site install-app servicems
           bench --site test_site set-config allow_tests true
 
+      - name: Seed required ERPNext test master data
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench --site test_site execute frappe.client.insert --kwargs '{"doc":{"doctype":"Warehouse Type","name":"Transit"}}'
+          bench --site test_site execute frappe.client.insert --kwargs '{"doc":{"doctype":"Supplier Group","supplier_group_name":"All Supplier Groups","is_group":1}}'
+          bench --site test_site execute frappe.client.insert --kwargs '{"doc":{"doctype":"Customer Group","customer_group_name":"All Customer Groups","is_group":1}}'
+
       - name: Run Tests
         working-directory: /home/runner/frappe-bench
         run: bench --site test_site run-tests --app servicems
