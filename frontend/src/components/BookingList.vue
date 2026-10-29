@@ -47,7 +47,7 @@
             class="rounded border border-cyan-100 bg-cyan-50 p-2 text-sm text-gray-900 hover:bg-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-700"
           >
             <span class="block break-words font-semibold">{{
-              booking.name
+              booking.customer_name
             }}</span>
           </a>
           <p v-if="!day.bookings.length" class="text-sm text-gray-500">

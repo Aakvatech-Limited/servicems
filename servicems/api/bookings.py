@@ -24,6 +24,7 @@ def get_calendar_bookings(from_date, to_date, workshop=None, vehicle=None):
 			"name",
 			"booking_date",
 			"customer",
+			"customer.customer_name as customer_name",
 			"service_vehicle",
 			"status",
 			"workshop",
