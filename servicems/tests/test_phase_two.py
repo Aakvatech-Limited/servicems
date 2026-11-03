@@ -5,14 +5,14 @@ from pathlib import Path
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import UnitTestCase
+from frappe.tests import IntegrationTestCase
 
 from servicems.billing import make_invoice, make_quotation
 from servicems.costing import get_costs
 from servicems.parts import allocations, post_parts
 
 
-class TestPhaseTwo(UnitTestCase):
+class TestPhaseTwo(IntegrationTestCase):
 	def setUp(self):
 		super().setUp()
 		self.addCleanup(frappe.db.rollback)
@@ -854,3 +854,74 @@ class TestPhaseTwo(UnitTestCase):
 		self.assertEqual(allocations(self.card)[source.items[0].name]["outstanding"], 0)
 		with self.assertRaises(frappe.ValidationError):
 			self.move("Consume", source, 1)
+
+	def test_real_warehouse_company_mismatch_is_rejected(self):
+		company = frappe.get_doc(
+			dict(
+				doctype="Company",
+				company_name="P2 Foreign " + self.token,
+				abbr="F" + self.token,
+				default_currency="TZS",
+				country="Tanzania",
+			)
+		).insert()
+		warehouse = frappe.get_doc(
+			dict(doctype="Warehouse", warehouse_name="P2 Foreign " + self.token, company=company.name)
+		).insert()
+		self.workshop.workshop_warehouse = warehouse.name
+		self.workshop.save()
+		with self.assertRaisesRegex(frappe.ValidationError, "must belong to transaction company"):
+			self.issue()
+		self.assertEqual(frappe.db.count("Stock Entry", {"service_job_card": self.card.name}), 0)
+
+	def test_post_service_with_multiple_uploaded_photographs(self):
+		from frappe.utils.file_manager import save_file
+
+		template = frappe.get_doc(
+			dict(
+				doctype="Service Pre Inspection Template",
+				template_name="P2 Post " + self.token,
+				pre_inspection_items=[
+					dict(inspection_item="Final result", inspection_type="Data", require_photo=1)
+				],
+			)
+		).insert()
+		inspection = frappe.get_doc(
+			dict(
+				doctype="Service Vehicle Inspection",
+				service_job_card=self.card.name,
+				inspection_stage="Post-Service",
+				inspection_status="Draft",
+				inspection_template=template.name,
+			)
+		).insert()
+		photos = []
+		for index in range(2):
+			content = (
+				base64.b64decode(
+					"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a7WQAAAAASUVORK5CYII="
+				)
+				+ b"\n" * index
+			)
+			photo = save_file(
+				f"p2-post-{self.token}-{index}.png",
+				content,
+				"Service Vehicle Inspection",
+				inspection.name,
+				is_private=1,
+			)
+			self.addCleanup(Path(photo.get_full_path()).unlink, missing_ok=True)
+			photos.append(photo)
+		self.assertNotEqual(photos[0].file_url, photos[1].file_url)
+		inspection.image_upload = photos[0].file_url
+		inspection.checklist[0].photograph = photos[1].file_url
+		inspection.checklist[0].answer = "Repaired"
+		inspection.inspection_status = "Completed"
+		inspection.save()
+		self.assertEqual(inspection.inspection_stage, "Post-Service")
+		self.assertEqual(
+			frappe.db.count(
+				"File", {"attached_to_doctype": inspection.doctype, "attached_to_name": inspection.name}
+			),
+			2,
+		)

@@ -318,11 +318,9 @@ def validate_closure(card):
 
 
 def validate_discounts(doc):
-	if (
-		doc.get("discount_amount")
-		or doc.get("additional_discount_percentage")
-		or any(row.get("discount_amount") or row.get("discount_percentage") for row in doc.items)
-	):
+	# ERPNext may express an approved payer contribution as a line discount
+	# from the price list. validate_invoice independently checks the final rate.
+	if doc.get("discount_amount") or doc.get("additional_discount_percentage"):
 		frappe.throw(
 			_(
 				"Revise and approve Job Card quotation rates before applying a discount; invoice charges must match the approved rates."
