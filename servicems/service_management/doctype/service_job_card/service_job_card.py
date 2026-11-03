@@ -1,11 +1,11 @@
 # Copyright (c) 2021, Aakvatech Limited and contributors
 # For license information, please see license.txt
 
-import json
+import math
 
 import frappe
 from frappe import _
-from frappe.utils import cint, flt, get_datetime, now, nowdate, nowtime, time_diff_in_hours
+from frappe.utils import flt, get_datetime, now, nowdate, nowtime, time_diff_in_hours
 from frappe.website.website_generator import WebsiteGenerator
 
 
@@ -17,10 +17,10 @@ def get_service_transaction_company(fallback_company=None):
 def reconcile_parts_quantities(issued, consumed=0, returned=0):
 	"""Validate one Job Card allocation in stock UOM; no ledger mutations."""
 	quantities = [flt(value, 6) for value in (issued, consumed, returned)]
-	if any(value < 0 for value in quantities):
+	if any(not math.isfinite(value) or value < 0 for value in quantities):
 		frappe.throw(_("Parts quantities cannot be negative."))
 	issued_qty, consumed_qty, returned_qty = quantities
-	if consumed_qty + returned_qty > issued_qty + 0.000001:
+	if consumed_qty + returned_qty > issued_qty + 0.0000005:
 		frappe.throw(_("Consumed and returned quantity exceeds quantity issued."))
 	outstanding = flt(issued_qty - consumed_qty - returned_qty, 6)
 	return {
@@ -52,6 +52,9 @@ class ServiceJobCard(WebsiteGenerator):
 		self.validate_quality_check()
 		self.validate_bay_management()
 		self.validate_labour_entries()
+		from servicems.costing import validate_costing
+
+		validate_costing(self)
 
 	def validate_labour_entries(self):
 		for row in self.labour_entries:
@@ -63,7 +66,9 @@ class ServiceJobCard(WebsiteGenerator):
 			for other in self.labour_entries:
 				if other is row or row.technician != other.technician:
 					continue
-				if get_datetime(row.started_at) < get_datetime(other.stopped_at or now()) and get_datetime(other.started_at) < get_datetime(row.stopped_at or now()):
+				if get_datetime(row.started_at) < get_datetime(other.stopped_at or now()) and get_datetime(
+					other.started_at
+				) < get_datetime(row.stopped_at or now()):
 					frappe.throw(_("Overlapping labour entries for {0}").format(row.technician))
 
 	@frappe.whitelist()
@@ -71,9 +76,15 @@ class ServiceJobCard(WebsiteGenerator):
 		self.check_permission("write")
 		if self.docstatus != 0:
 			frappe.throw(_("Cannot start labour on a submitted Job Card"))
+		frappe.db.sql("select name from `tabEmployee` where name=%s for update", technician)
 		if not frappe.db.exists("Employee", technician):
 			frappe.throw(_("Select a valid Employee"))
-		active = frappe.get_all("Service Labour Entry", filters={"technician": technician, "stopped_at": ["is", "not set"]}, fields=["name"], limit_page_length=1)
+		active = frappe.get_all(
+			"Service Labour Entry",
+			filters={"technician": technician, "stopped_at": ["is", "not set"]},
+			fields=["name"],
+			limit_page_length=1,
+		)
 		if active:
 			frappe.throw(_("Technician already has an active labour entry"))
 		self.append("labour_entries", {"technician": technician, "task": task, "started_at": now()})
@@ -94,7 +105,9 @@ class ServiceJobCard(WebsiteGenerator):
 
 	def validate_bay_management(self):
 		if self.bay and not frappe.db.get_single_value("Service Settings", "enable_bay_management"):
-			previous_bay = None if self.is_new() else frappe.db.get_value("Service Job Card", self.name, "bay")
+			previous_bay = (
+				None if self.is_new() else frappe.db.get_value("Service Job Card", self.name, "bay")
+			)
 			if self.bay != previous_bay:
 				frappe.throw(_("Enable Bay Management in Service Settings before allocating a bay."))
 
@@ -127,16 +140,31 @@ class ServiceJobCard(WebsiteGenerator):
 	def set_company_from_service_settings(self):
 		service_company = frappe.db.get_single_value("Service Settings", "company")
 		default_company = frappe.defaults.get_global_default("company")
-		self.company = service_company or default_company or self.company
+		self.company = self.company or service_company or default_company
 
 	def before_submit(self):
-		use_parts_entry = frappe.get_value(
-			"Company Service Management Settings", self.company, "use_parts_entry"
-		)
+		from servicems.parts import allocations
 
-		if not use_parts_entry:
-			self.create_stock_entry("before_submit")
-			self.create_invoice()
+		buckets = allocations(self)
+		issued_plans = {bucket["row"].service_part_row for bucket in buckets.values()}
+		if any(
+			row.qty
+			and not row.customer_supplied
+			and not row.use_existing_spares
+			and row.name not in issued_plans
+			for row in self.parts
+		):
+			frappe.throw(
+				_(
+					"Issue all planned owned parts, or remove unused planned rows, before closing the Job Card."
+				)
+			)
+		if any(bucket["outstanding"] for bucket in buckets.values()):
+			frappe.throw(_("Consume or return all outstanding workshop parts before closing the Job Card."))
+		if not self.internal_maintenance:
+			from servicems.billing import validate_closure
+
+			validate_closure(self)
 
 	def on_submit(self):
 		if self.status != "Completed":
@@ -219,6 +247,7 @@ class ServiceJobCard(WebsiteGenerator):
 
 	@frappe.whitelist()
 	def create_parts_entry(self, type):
+		self.check_permission("write")
 		if not self.parts:
 			frappe.throw(_("Add Parts and Consumable Supplied first."))
 
@@ -253,8 +282,7 @@ class ServiceJobCard(WebsiteGenerator):
 			),
 		)
 
-		frappe.flags.ignore_account_permission = True
-		service_parts_entry.insert(ignore_permissions=True)
+		service_parts_entry.insert()
 		service_parts_entry.submit()
 
 		if not service_parts_entry.get("name"):
@@ -306,131 +334,33 @@ class ServiceJobCard(WebsiteGenerator):
 				)
 
 	@frappe.whitelist()
-	def create_stock_entry(self, type):
-		if self.parts and len(self.parts) > 0:
-			workshop = frappe.get_doc("Service Workshop", self.workshop)
-			transaction_company = get_service_transaction_company(self.company)
-			self.validate_stock_transfer_configuration(workshop, transaction_company)
-			items = []
-			for item in self.parts:
-				if item.qty > 0:
-					items.append(
-						{
-							"s_warehouse": workshop.parts_warehouse,
-							"t_warehouse": workshop.workshop_warehouse,
-							"item_code": item.item,
-							"qty": item.qty,
-							"uom": frappe.get_value("Item", item.item, "stock_uom"),
-						}
-					)
+	def create_stock_entry(self, type="call"):
+		from servicems.parts import post_parts
 
-			if len(items) == 0:
-				return
+		self.check_permission("write")
+		if self.is_new():
+			frappe.throw(_("Save the Job Card before issuing parts."))
+		from servicems.parts import allocations, lock_card
 
-			doc = frappe.get_doc(
-				dict(
-					doctype="Stock Entry",
-					posting_date=nowdate(),
-					posting_time=nowtime(),
-					stock_entry_type="Material Transfer",
-					purpose="Material Transfer",
-					company=transaction_company,
-					service_job_card=self.name,
-					from_warehouse=workshop.parts_warehouse,
-					to_warehouse=workshop.workshop_warehouse,
-					items=items,
-				),
-			)
-			frappe.flags.ignore_account_permission = True
-			doc.insert(ignore_permissions=True)
-			doc.submit()
-			frappe.msgprint(_("Stock Entry Created {0}").format(doc.name), alert=True)
-
-			if doc.get("name"):
-				left_parts = []
-				# nosemgrep: frappe-semgrep-rules.rules.frappe-modifying-child-tables-while-iterating
-				for row in self.parts:  # appends to supplied_parts; parts reassigned after the loop
-					if row.qty > 0:
-						new_row = self.append("supplied_parts", {})
-						new_row.item = row.item
-						new_row.qty = row.qty
-						new_row.rate = row.rate
-						new_row.is_billable = row.is_billable
-						new_row.stock_entry = doc.name
-					else:
-						left_parts.append(row)
-				self.parts = left_parts
-				if type == "call":
-					self.save()
-
-	def create_invoice(self):
-		if self.status != "Completed":
+		card = lock_card(self.name)
+		already_issued = {bucket["row"].service_part_row for bucket in allocations(card).values()}
+		items = [
+			{"part_row": row.name, "qty": row.qty}
+			for row in card.parts
+			if not row.use_existing_spares
+			and not row.customer_supplied
+			and row.qty
+			and row.name not in already_issued
+		]
+		if not items:
 			return
-		items = []
-		workshop = frappe.get_doc("Service Workshop", self.workshop)
-		transaction_company = get_service_transaction_company(self.company)
-		if self.services and len(self.services) > 0:
-			for item in self.services:
-				if not item.is_billable:
-					continue
+		return post_parts(self.name, "Issue", items, frappe.generate_hash(length=32))
 
-				items.append(
-					{
-						"item_code": item.item,
-						"qty": 1,
-						"uom": frappe.get_value("Item", item.item, "stock_uom"),
-						"warehouse": workshop.workshop_warehouse,
-						"rate": item.rate if item.is_billable else 0,
-					}
-				)
-		if self.supplied_parts and len(self.supplied_parts) > 0:
-			for item in self.supplied_parts:
-				if not item.is_billable or item.is_return or item.qty == 0:
-					continue
+	@frappe.whitelist()
+	def create_invoice(self):
+		from servicems.billing import make_invoice
 
-				items.append(
-					{
-						"item_code": item.item,
-						"qty": item.qty,
-						"uom": frappe.get_value("Item", item.item, "stock_uom"),
-						"warehouse": workshop.workshop_warehouse,
-						"rate": item.rate if item.is_billable else 0,
-					}
-				)
-			taxes = frappe.get_value(
-				"Sales Taxes and Charges Template",
-				{"company": transaction_company, "is_default": 1},
-				["name", "tax_category"],
-				as_dict=1,
-			)
-
-			if len(items) == 0:
-				return
-			date = nowdate()
-			doc = frappe.get_doc(
-				dict(
-					doctype="Sales Invoice",
-					customer=self.customer,
-					posting_date=date,
-					due_date=date,
-					update_stock=1,
-					service_job_card=self.name,
-					company=transaction_company,
-					ignore_pricing_rule=1,
-					set_warehouse=workshop.workshop_warehouse,
-					items=items,
-					taxes_and_charges=taxes.name,
-					tax_category=taxes.tax_category,
-				),
-			)
-			frappe.flags.ignore_account_permission = True
-			doc.set_taxes()
-			doc.set_missing_values(for_validate=True)
-			doc.flags.ignore_mandatory = True
-			doc.calculate_taxes_and_totals()
-			doc.insert(ignore_permissions=True)
-			self.invoice = doc.name
-			frappe.msgprint(_("Sales Invoice Created {0}").format(doc.name), alert=True)
+		return make_invoice(self.name)
 
 	def vaildate_complete(self):
 		if self.status != "Completed":
@@ -469,97 +399,38 @@ def get_item_price(item_code, price_list, company):
 
 
 @frappe.whitelist()
-def get_selected_items(items):
-	selected_items = json.loads(items)
+def get_selected_items(items, request_id):
+	from servicems.parts import post_parts
 
-	if selected_items:
-		doc = frappe.get_doc(selected_items[0]["parenttype"], selected_items[0]["parent"])
-		source_doc = frappe.get_doc("Stock Entry", selected_items[0]["stock_entry"])
-
-		new_doc = frappe.new_doc("Stock Entry")
-		new_doc.company = source_doc.company
-		new_doc.stock_entry_type = source_doc.stock_entry_type
-		new_doc.purpose = source_doc.purpose
-		new_doc.posting_date = nowdate()
-		new_doc.posting_time = nowtime()
-		new_doc.from_warehouse = source_doc.to_warehouse
-		new_doc.to_warehouse = source_doc.from_warehouse
-		new_doc.is_return = 1
-		new_doc.service_job_card = doc.name
-
-		for item in selected_items:
-			if not item.get("qty_to_return"):
-				frappe.throw(
-					_(
-						'<h4 class="text-center" style="background-color: yellow; font-weight: bold;">\
-                    Can not process stock entry for empty quantity to return<h4>'
-					)
-				)
-
-			for entry in source_doc.items:
-				if item.get("item") == entry.item_code:
-					new_doc.append(
-						"items",
-						{
-							"s_warehouse": entry.t_warehouse,
-							"t_warehouse": entry.s_warehouse,
-							"item_code": item.get("item"),
-							"item_name": entry.item_name,
-							"description": entry.description,
-							"item_group": entry.item_group,
-							"qty": item.get("qty_to_return"),
-							"transfer_qty": item.get("qty_to_return"),
-							"uom": entry.uom,
-							"stock_uom": entry.stock_uom,
-							"conversion_factor": entry.conversion_factor,
-							"expense_account": entry.expense_account,
-							"basic_rate": item.get("rate"),
-							"basic_amount": item.get("rate"),
-							"amount": item.get("rate"),
-							"cost_center": entry.cost_center,
-						},
-					)
-
-		new_doc.save(ignore_permissions=True)
-		new_doc.submit()
-		if new_doc.get("name"):
-			updated_supplied_parts(doc, selected_items, new_doc.get("name"))
-			frappe.msgprint(f"Stock Entry: {frappe.bold(new_doc.name)} Created Successfully")
-		else:
-			frappe.throw("Stock Entry was not created, try again")
-
-
-def updated_supplied_parts(doc, selected_items, name):
-	for row in doc.supplied_parts:
-		if not row.is_billable:
-			continue
-		for d in selected_items:
-			if row.item == d["item"]:
-				row.qty_returned = d.get("qty_to_return")
-				row.qty = cint(d.get("qty")) - cint(d.get("qty_to_return"))
-				row.return_stock_enty = name
-				if (cint(d.get("qty")) - cint(d.get("qty_to_return"))) == 0:
-					row.is_billable = 0
-					row.is_return = 1
-	doc.save()
-	doc.reload()
+	selected = frappe.parse_json(items)
+	if not selected:
+		frappe.throw(_("Select parts to return."))
+	card = frappe.get_doc("Service Job Card", selected[0]["parent"])
+	card.check_permission("write")
+	request = []
+	for value in selected:
+		if value.get("parent") != card.name:
+			frappe.throw(_("Select parts from one Job Card."))
+		request.append({"issue_detail": value.get("issue_detail"), "qty": value.get("qty_to_return")})
+	return post_parts(card.name, "Return", request, request_id)
 
 
 @frappe.whitelist()
 def get_all_supplied_parts(job_card):
-	return frappe.get_all(
-		"Supplied Parts",
-		filters={"parent": job_card, "is_billable": 1, "is_return": 0},
-		fields=[
-			"idx",
-			"item",
-			"item_name",
-			"qty",
-			"rate",
-			"stock_entry",
-			"parent",
-			"parenttype",
-		],
-		order_by="idx ASC",
-		page_length=100,
-	)
+	from servicems.parts import get_allocations
+
+	return [
+		dict(
+			idx=idx,
+			item=bucket["row"].item_code,
+			item_name=bucket["row"].item_name,
+			qty=bucket["outstanding"],
+			rate=0,
+			stock_entry=bucket["row"].stock_entry,
+			issue_detail=detail,
+			parent=job_card,
+			parenttype="Service Job Card",
+		)
+		for idx, (detail, bucket) in enumerate(get_allocations(job_card).items(), 1)
+		if bucket["outstanding"]
+	]

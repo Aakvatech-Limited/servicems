@@ -61,11 +61,15 @@ fixtures = [
 	{
 		"dt": "Custom Field",
 		"filters": [
-			["name", "in", [
-				"Sales Invoice-service_job_card",
-				"Quotation-service_job_card",
-				"Stock Entry-service_job_card",
-			]],
+			[
+				"name",
+				"in",
+				[
+					"Sales Invoice-service_job_card",
+					"Quotation-service_job_card",
+					"Stock Entry-service_job_card",
+				],
+			],
 		],
 	},
 ]
@@ -74,11 +78,14 @@ fixtures = [
 # ------------
 
 # before_install = "servicems.install.before_install"
-after_install = ["servicems.fleet_integration.ensure_service_job_card_tyre_fields", "servicems.phase_two_setup.execute"]
+after_install = [
+	"servicems.fleet_integration.ensure_service_job_card_tyre_fields",
+	"servicems.phase_two_setup.execute",
+]
 after_migrate = [
-    "servicems.fleet_integration.ensure_service_job_card_tyre_fields",
-    "servicems.navigation.sync_bay_navigation",
-    "servicems.phase_two_setup.execute",
+	"servicems.fleet_integration.ensure_service_job_card_tyre_fields",
+	"servicems.navigation.sync_bay_navigation",
+	"servicems.phase_two_setup.execute",
 ]
 
 # Desk Notifications
@@ -110,14 +117,6 @@ after_migrate = [
 # Document Events
 # ---------------
 # Hook on document methods and events
-
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# }
-# }
 
 # Scheduled Tasks
 # ---------------
@@ -200,10 +199,27 @@ website_route_rules = [
 
 # Native Frappe v16 app launcher and Dock integration.
 add_to_apps_screen = [
-    {
-        "name": "servicems",
-        "logo": "/assets/servicems/images/servicems.svg",
-        "title": "Service MS",
-        "route": "/app/service-ms",
-    }
+	{
+		"name": "servicems",
+		"logo": "/assets/servicems/images/servicems.svg",
+		"title": "Service MS",
+		"route": "/app/service-ms",
+	}
 ]
+
+
+doc_events = {
+	"File": {
+		"validate": "servicems.service_management.doctype.service_vehicle_inspection.service_vehicle_inspection.protect_completed_photo",
+	},
+	"Quotation": {"validate": "servicems.billing.validate_quotation"},
+	"Sales Invoice": {"validate": "servicems.billing.validate_invoice"},
+	"Purchase Invoice": {"validate": "servicems.billing.validate_supplier_invoice"},
+	"Stock Entry": {
+		"before_submit": "servicems.parts.validate_entry",
+		"before_cancel": "servicems.parts.validate_cancel",
+	},
+}
+
+
+extend_doctype_class = {"File": ["servicems.inspection_files.InspectionEvidenceMixin"]}

@@ -119,56 +119,6 @@ def get_service_bays():
 
 @frappe.whitelist()
 def create_quotation(job_card_id):
-	job_card_doc = frappe.get_doc("Service Job Card", job_card_id)
-	warehouse = frappe.get_cached_value("Service Workshop", job_card_doc.workshop, "workshop_warehouse")
-	transaction_company = get_service_transaction_company(job_card_doc.company)
+	from servicems.billing import make_quotation
 
-	quo_doc = frappe.new_doc("Quotation")
-	quo_doc.company = transaction_company
-	quo_doc.quotation_to = "Customer"
-	quo_doc.party_name = job_card_doc.customer
-	quo_doc.order_type = "Sales"
-	if frappe.get_meta("Quotation").has_field("service_job_card"):
-		quo_doc.service_job_card = job_card_doc.name
-	quo_doc.items = []
-
-	for service in job_card_doc.services:
-		if not service.is_billable:
-			continue
-
-		quo_doc.append(
-			"items",
-			{
-				"item_code": service.item,
-				"qty": 1,
-				"rate": service.rate or 0,
-				"warehouse": warehouse,
-				"stock_uom": frappe.get_cached_value("Item", service.item, "stock_uom"),
-			},
-		)
-
-	for part in job_card_doc.supplied_parts:
-		if not part.is_billable or part.is_return or part.qty == 0:
-			continue
-
-		quo_doc.append(
-			"items",
-			{
-				"item_code": part.item,
-				"qty": part.qty,
-				"rate": part.rate or 0,
-				"warehouse": warehouse,
-				"stock_uom": frappe.get_cached_value("Item", part.item, "stock_uom"),
-			},
-		)
-
-	quo_doc.run_method("set_missing_values")
-	quo_doc.run_method("calculate_taxes_and_totals")
-	frappe.flags.ignore_permissions = True
-	quo_doc.save()
-
-	job_card_doc.quotation = quo_doc.name
-	job_card_doc.save()
-	job_card_doc.reload()
-
-	return quo_doc.name
+	return make_quotation(job_card_id)

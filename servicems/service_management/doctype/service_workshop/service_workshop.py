@@ -9,4 +9,4 @@ class ServiceWorkshop(Document):
 	def validate(self):
 		service_company = frappe.db.get_single_value("Service Settings", "company")
 		default_company = frappe.defaults.get_global_default("company")
-		self.company = service_company or default_company or self.company
+		self.company = self.company or service_company or default_company

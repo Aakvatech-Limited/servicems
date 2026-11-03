@@ -11,23 +11,186 @@ frappe.ui.form.on("Service Job Card", {
   },
   refresh: function (frm) {
     set_custom_buttons(frm);
-    frappe.db.get_single_value("Service Settings", "enable_bay_management").then((enabled) => {
-      frm.set_df_property("bay", "hidden", !Number(enabled));
-    });
-    if (frm.doc.docstatus === 0 && !frm.is_new()) {
-      frm.add_custom_button(__("Start Labour"), () => {
-        frappe.prompt([{fieldname:"technician",fieldtype:"Link",options:"Employee",label:__("Technician"),reqd:1},
-          {fieldname:"task",fieldtype:"Link",options:"Service Task",label:__("Service Task")}],
-          (v) => frm.call("start_labour", v).then(() => frm.reload_doc()), __("Start Labour"));
-      }, __("Technicians"));
-      frm.add_custom_button(__("Stop Labour"), () => {
-        frappe.prompt([{fieldname:"technician",fieldtype:"Link",options:"Employee",label:__("Technician"),reqd:1}],
-          (v) => frm.call("stop_labour", v).then(() => frm.reload_doc()), __("Stop Labour"));
-      }, __("Technicians"));
+    if (!frm.is_new() && frm.doc.docstatus !== 2) {
+      ["Consume", "Return"].forEach((operation) =>
+        frm.add_custom_button(
+          __(operation + " Parts"),
+          () => {
+            frappe
+              .call("servicems.parts.get_allocations", {
+                job_card: frm.doc.name,
+              })
+              .then((r) => {
+                const rows = Object.entries(r.message || {}).filter(
+                  ([, value]) => value.outstanding > 0
+                );
+                const dialog = new frappe.ui.Dialog({
+                  title: __(operation + " Parts"),
+                  fields: [
+                    {
+                      fieldname: "issue_detail",
+                      fieldtype: "Select",
+                      label: __("Issued Item Row"),
+                      reqd: 1,
+                      options: rows.map(([key, value]) => ({
+                        value: key,
+                        label: `${value.row.stock_entry} / ${value.row.item_code} / ${key} (${value.outstanding})`,
+                      })),
+                    },
+                    {
+                      fieldname: "qty",
+                      fieldtype: "Float",
+                      label: __("Quantity"),
+                      reqd: 1,
+                    },
+                  ],
+                  primary_action_label: __("Post"),
+                  primary_action: (values) => {
+                    const request_id =
+                      dialog.posting_request_id ||
+                      (dialog.posting_request_id = frappe.utils.get_random(32));
+                    frappe
+                      .call("servicems.parts.post_parts", {
+                        job_card: frm.doc.name,
+                        operation,
+                        items: [
+                          {
+                            issue_detail: values.issue_detail,
+                            qty: values.qty,
+                          },
+                        ],
+                        request_id,
+                      })
+                      .then(() => {
+                        dialog.hide();
+                        frm.reload_doc();
+                      });
+                  },
+                });
+                dialog.show();
+              });
+          },
+          __("Parts")
+        )
+      );
+      frm.add_custom_button(
+        __("Create Invoice"),
+        () => {
+          frappe.prompt(
+            {
+              fieldname: "customer",
+              fieldtype: "Link",
+              options: "Customer",
+              label: __("Payer Customer"),
+              default: frm.doc.customer,
+              reqd: 1,
+            },
+            (values) =>
+              frappe
+                .call("servicems.billing.make_invoice", {
+                  job_card: frm.doc.name,
+                  customer: values.customer,
+                })
+                .then((r) =>
+                  frappe.set_route("Form", "Sales Invoice", r.message)
+                )
+          );
+        },
+        __("Billing")
+      );
+      ["Pre-Service", "Post-Service"].forEach((stage) =>
+        frm.add_custom_button(
+          __(stage + " Inspection"),
+          () =>
+            frappe.new_doc("Service Vehicle Inspection", {
+              service_job_card: frm.doc.name,
+              inspection_stage: stage,
+              inspection_status: "Draft",
+            }),
+          __("Inspections")
+        )
+      );
+      frm.add_custom_button(
+        __("Refresh Actual Costs"),
+        () =>
+          frappe
+            .call("servicems.costing.get_job_costs", { job_card: frm.doc.name })
+            .then((r) =>
+              frappe.msgprint({
+                title: __("Actual Job Costs"),
+                message: Object.entries(r.message)
+                  .map(
+                    ([key, value]) =>
+                      `${frappe.utils.escape_html(key)}: ${
+                        value === null ? __("Pending cost confirmation") : value
+                      }`
+                  )
+                  .join("<br>"),
+              })
+            ),
+        __("Costing")
+      );
     }
-    frappe.db.get_single_value("Service Settings", "require_final_quality_check").then((required) => {
-      frm.set_df_property("quality_check_section", "hidden", !Number(required));
-    });
+    frappe.db
+      .get_single_value("Service Settings", "enable_bay_management")
+      .then((enabled) => {
+        frm.set_df_property("bay", "hidden", !Number(enabled));
+      });
+    if (frm.doc.docstatus === 0 && !frm.is_new()) {
+      frm.add_custom_button(
+        __("Start Labour"),
+        () => {
+          frappe.prompt(
+            [
+              {
+                fieldname: "technician",
+                fieldtype: "Link",
+                options: "Employee",
+                label: __("Technician"),
+                reqd: 1,
+              },
+              {
+                fieldname: "task",
+                fieldtype: "Link",
+                options: "Service Task",
+                label: __("Service Task"),
+              },
+            ],
+            (v) => frm.call("start_labour", v).then(() => frm.reload_doc()),
+            __("Start Labour")
+          );
+        },
+        __("Technicians")
+      );
+      frm.add_custom_button(
+        __("Stop Labour"),
+        () => {
+          frappe.prompt(
+            [
+              {
+                fieldname: "technician",
+                fieldtype: "Link",
+                options: "Employee",
+                label: __("Technician"),
+                reqd: 1,
+              },
+            ],
+            (v) => frm.call("stop_labour", v).then(() => frm.reload_doc()),
+            __("Stop Labour")
+          );
+        },
+        __("Technicians")
+      );
+    }
+    frappe.db
+      .get_single_value("Service Settings", "require_final_quality_check")
+      .then((required) => {
+        frm.set_df_property(
+          "quality_check_section",
+          "hidden",
+          !Number(required)
+        );
+      });
     remove_delete_button(frm);
     toggleTyreManagementFields(frm);
     toggleTyreMovementFields(frm);
@@ -97,7 +260,7 @@ frappe.ui.form.on("Service Job Card", {
 							<td id="idx" data-idx="${row.idx}">${row.idx}</td>
 							<td id="item" data-item="${row.item}">${row.item}</td>
 							<td id="item_name" data-item_name="${row.item_name}">${row.item_name}</td>
-							<td id="stock_entry" data-stock_entry="${row.stock_entry}"></td>
+							<td id="stock_entry" data-issue_detail="${row.issue_detail}" data-stock_entry="${row.stock_entry}"></td>
 							<td id="rate" data-rate="${row.rate}">${row.rate}</td>
 							<td id="parent" data-parent="${row.parent}"></td>
 							<td id="qty" data-qty="${row.qty}">${row.qty}</td>
@@ -115,12 +278,16 @@ frappe.ui.form.on("Service Job Card", {
               get_qty_to_return(wrapper);
             });
 
+            const return_request_id = frappe.utils.get_random(32);
             d.set_primary_action(__("Select Item"), function () {
               let items = [];
 
               wrapper.find("tr:has(input:checkbox:checked)").each(function () {
                 items.push({
                   item: $(this).find("#item").attr("data-item"),
+                  issue_detail: $(this)
+                    .find("#stock_entry")
+                    .attr("data-issue_detail"),
                   item_name: $(this).find("#item_name").attr("data-item_name"),
                   stock_entry: $(this)
                     .find("#stock_entry")
@@ -132,7 +299,7 @@ frappe.ui.form.on("Service Job Card", {
                     .find("#parenttype")
                     .attr("data-parenttype"),
                   qty_to_return: $(this)
-                    .find("#parenttype")
+                    .find("#qty_to_return")
                     .attr("data-qty_to_return"),
                 });
               });
@@ -143,6 +310,7 @@ frappe.ui.form.on("Service Job Card", {
                     "servicems.service_management.doctype.service_job_card.service_job_card.get_selected_items",
                     {
                       items: items,
+                      request_id: return_request_id,
                     }
                   )
                   .then((r) => {
@@ -391,7 +559,7 @@ const set_if_field_exists = (frm, fieldname, value) => {
 
 function set_custom_buttons(frm) {
   if (!frm.is_dirty() && frm.doc.docstatus == 0) {
-    if (!frm.doc.quotation) {
+    {
       frm.add_custom_button(
         "Quotation",
         () => {
@@ -436,18 +604,18 @@ var get_qty_to_return = function (wrapper) {
             let row_qty = $(this).parent().siblings().eq(-2).text();
 
             if (
-              parseInt($("#return").val()) <= parseInt(row_qty) &&
-              parseInt($("#return").val()) > 0
+              parseFloat($(this).val()) <= parseFloat(row_qty) &&
+              parseFloat($(this).val()) > 0
             ) {
               // store data to qty_to_return
               $(this)
                 .parent()
                 .siblings()
                 .last()
-                .attr("data-qty_to_return", $("#return").val());
-              $("#return").css("border", "1px solid blue");
+                .attr("data-qty_to_return", $(this).val());
+              $(this).css("border", "1px solid blue");
             } else {
-              $("#return")
+              $(this)
                 .css({ border: "4px solid red", "font-weight": "bold" })
                 .val("");
               frappe.msgprint({
