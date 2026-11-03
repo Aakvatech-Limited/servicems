@@ -8,7 +8,11 @@
  "field_order": [
   "inspection_item",
   "inspection_type",
-  "option"
+  "option",
+  "answer",
+  "remarks",
+  "require_photo",
+  "photograph"
  ],
  "fields": [
   {
@@ -26,6 +30,26 @@
    "fieldname": "option",
    "fieldtype": "Text",
    "label": "Option"
+  },
+  {
+   "fieldname": "answer",
+   "label": "Answer",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "remarks",
+   "label": "Remarks",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "require_photo",
+   "label": "Require Item Photograph",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "photograph",
+   "label": "Item Photograph",
+   "fieldtype": "Attach Image"
   }
  ],
  "index_web_pages_for_search": 1,

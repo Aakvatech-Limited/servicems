@@ -9,7 +9,12 @@
   "task",
   "started_at",
   "stopped_at",
-  "hours"
+  "hours",
+  "internal_cost_rate",
+  "customer_charge_rate",
+  "is_billable",
+  "actual_cost",
+  "charge_amount"
  ],
  "fields": [
   {
@@ -47,6 +52,33 @@
    "precision": "3",
    "read_only": 1,
    "in_list_view": 1
+  },
+  {
+   "fieldname": "internal_cost_rate",
+   "label": "Internal Cost per Hour",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "customer_charge_rate",
+   "label": "Customer Charge per Hour",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "is_billable",
+   "label": "Billable",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "actual_cost",
+   "label": "Actual Cost",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "charge_amount",
+   "label": "Charge Amount",
+   "fieldtype": "Currency",
+   "read_only": 1
   }
  ],
  "permissions": []

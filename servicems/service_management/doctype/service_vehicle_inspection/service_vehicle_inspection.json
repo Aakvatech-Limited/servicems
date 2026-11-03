@@ -43,7 +43,13 @@
   "service_suspension_checklist",
   "service_air_systemothers_checklist_section",
   "service_air_system_checklist",
-  "image_upload"
+  "image_upload",
+  "checklist",
+  "template_snapshot",
+  "completed_by",
+  "corrects_inspection",
+  "correction_reason",
+  "legacy_job_card"
  ],
  "fields": [
   {
@@ -245,6 +251,45 @@
    "fieldname": "image_upload",
    "fieldtype": "Attach Image",
    "label": "Upload Respective Vehicle Image"
+  },
+  {
+   "fieldname": "checklist",
+   "label": "Template Checklist",
+   "fieldtype": "Table",
+   "options": "Pre Inspection Item"
+  },
+  {
+   "fieldname": "template_snapshot",
+   "label": "Template Snapshot",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "completed_by",
+   "label": "Completed By",
+   "fieldtype": "Link",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "corrects_inspection",
+   "label": "Corrects Inspection",
+   "fieldtype": "Link",
+   "options": "Service Vehicle Inspection",
+   "read_only": 1
+  },
+  {
+   "fieldname": "correction_reason",
+   "label": "Correction Reason",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "legacy_job_card",
+   "label": "Legacy Acceptance Source",
+   "fieldtype": "Link",
+   "options": "Service Job Card",
+   "read_only": 1
   }
  ],
  "links": [],

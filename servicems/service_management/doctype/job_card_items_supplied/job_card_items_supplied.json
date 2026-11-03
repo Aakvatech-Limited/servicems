@@ -10,7 +10,8 @@
   "rate",
   "is_billable",
   "use_existing_spares",
-  "service_parts_entry"
+  "service_parts_entry",
+  "customer_supplied"
  ],
  "fields": [
   {
@@ -61,6 +62,11 @@
    "fieldname": "use_existing_spares",
    "fieldtype": "Check",
    "label": "Use Existing Spares"
+  },
+  {
+   "fieldname": "customer_supplied",
+   "label": "Customer Supplied (No Owned Stock)",
+   "fieldtype": "Check"
   }
  ],
  "index_web_pages_for_search": 1,

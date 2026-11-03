@@ -107,7 +107,25 @@
   "trailer_axle_right_1_and_2",
   "trailer_axle_2_right_1_and_2",
   "trailer_axle_3_right_1_and_2",
-  "spare_wheel_2"
+  "spare_wheel_2",
+  "costing_section",
+  "internal_maintenance",
+  "expense_account",
+  "cost_center",
+  "labour_item",
+  "estimated_cost",
+  "actual_labour_hours",
+  "actual_labour_cost",
+  "actual_parts_cost",
+  "external_service_cost",
+  "total_actual_cost",
+  "cost_variance",
+  "parts_revenue",
+  "labour_revenue",
+  "external_service_revenue",
+  "gross_margin",
+  "costs_confirmed",
+  "payer_allocations"
  ],
  "fields": [
   {
@@ -709,6 +727,112 @@
    "label": "Technician Labour",
    "options": "Service Labour Entry",
    "read_only": 1
+  },
+  {
+   "fieldname": "costing_section",
+   "label": "Actual Costing",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "internal_maintenance",
+   "label": "Internal Maintenance",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "expense_account",
+   "label": "Maintenance Expense Account",
+   "fieldtype": "Link",
+   "options": "Account"
+  },
+  {
+   "fieldname": "cost_center",
+   "label": "Maintenance Cost Center",
+   "fieldtype": "Link",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "labour_item",
+   "label": "Labour Billing Item",
+   "fieldtype": "Link",
+   "options": "Item"
+  },
+  {
+   "fieldname": "estimated_cost",
+   "label": "Estimated Cost",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "actual_labour_hours",
+   "label": "Actual Labour Hours",
+   "fieldtype": "Float",
+   "read_only": 1
+  },
+  {
+   "fieldname": "actual_labour_cost",
+   "label": "Actual Labour Cost",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "actual_parts_cost",
+   "label": "Actual Parts Cost",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "external_service_cost",
+   "label": "External Service Cost",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_actual_cost",
+   "label": "Total Actual Cost",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cost_variance",
+   "label": "Actual Less Estimated Cost",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "parts_revenue",
+   "label": "Parts Revenue",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "labour_revenue",
+   "label": "Labour Revenue",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "external_service_revenue",
+   "label": "External Service Revenue",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gross_margin",
+   "label": "Gross Margin",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.costs_confirmed",
+   "description": "Provisional until all supplier expenses and internal labour rates are recorded."
+  },
+  {
+   "fieldname": "costs_confirmed",
+   "label": "All Supplier and Labour Costs Recorded",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "payer_allocations",
+   "label": "Payer Allocations",
+   "fieldtype": "Table",
+   "options": "Service Payer Allocation"
   }
  ],
  "has_web_view": 1,

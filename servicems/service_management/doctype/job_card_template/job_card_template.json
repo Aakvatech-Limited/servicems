@@ -11,7 +11,8 @@
   "is_billable",
   "bypass_billable",
   "applied",
-  "price_list"
+  "price_list",
+  "charge_category"
  ],
  "fields": [
   {
@@ -63,6 +64,13 @@
    "fieldname": "bypass_billable",
    "fieldtype": "Check",
    "label": "Bypass Billable"
+  },
+  {
+   "fieldname": "charge_category",
+   "label": "Charge Category",
+   "fieldtype": "Select",
+   "options": "Labour\nExternal Service",
+   "default": "Labour"
   }
  ],
  "index_web_pages_for_search": 1,

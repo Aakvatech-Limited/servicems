@@ -1,0 +1,38 @@
+{
+ "doctype": "DocType",
+ "name": "Service Payer Allocation",
+ "module": "Service Management",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": [
+  "customer",
+  "responsibility",
+  "approved_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "label": "Payer Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "responsibility",
+   "label": "Responsibility",
+   "fieldtype": "Select",
+   "options": "Owner\nInsurance\nDeductible\nNon-covered\nWarranty\nThird Party",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "approved_amount",
+   "label": "Approved Net Amount",
+   "fieldtype": "Currency",
+   "reqd": 1,
+   "in_list_view": 1
+  }
+ ],
+ "permissions": []
+}
