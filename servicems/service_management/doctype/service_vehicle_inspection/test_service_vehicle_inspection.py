@@ -1,13 +1,17 @@
-import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import frappe
-from servicems.service_management.doctype.service_vehicle_inspection.service_vehicle_inspection import ServiceVehicleInspection
+from frappe.tests import UnitTestCase
+
+from servicems.service_management.doctype.service_vehicle_inspection.service_vehicle_inspection import (
+	ServiceVehicleInspection,
+)
 
 
-class TestServiceVehicleInspection(unittest.TestCase):
+class TestServiceVehicleInspection(UnitTestCase):
 	def make_inspection(self, **kwargs):
-		values = {"doctype": "Service Vehicle Inspection", "inspection_status": "Draft"}
+		values = {"doctype": "Service Vehicle Inspection", "inspection_status": "Draft", "__islocal": 1}
 		values.update(kwargs)
 		return ServiceVehicleInspection(values)
 
@@ -23,22 +27,35 @@ class TestServiceVehicleInspection(unittest.TestCase):
 		inspection = self.make_inspection(
 			inspection_status="Completed", service_job_card="SJC-001", inspection_stage="Post-Service"
 		)
-		with self.assertRaises(frappe.ValidationError):
-			inspection.validate()
+		with patch.object(frappe, "get_doc"):
+			with self.assertRaisesRegex(frappe.ValidationError, "Select an inspection template"):
+				inspection.validate()
 
-	def test_template_with_photos_requires_evidence(self):
+	def test_photos_are_required_even_when_template_opted_out(self):
 		inspection = self.make_inspection(
-			inspection_status="Completed", service_job_card="SJC-001",
-			inspection_stage="Pre-Service", inspection_template="BASIC"
+			inspection_status="Completed",
+			service_job_card="SJC-001",
+			inspection_stage="Pre-Service",
+			inspection_template="BASIC",
+			template_snapshot="[]",
 		)
-		with patch.object(frappe.db, "get_value", return_value=1):
+		with patch.object(frappe, "get_doc"):
 			with self.assertRaises(frappe.ValidationError):
 				inspection.validate()
 
-	def test_template_without_photos_allows_completion(self):
+	def test_item_photo_rule_survives_stage_photo(self):
 		inspection = self.make_inspection(
-			inspection_status="Completed", service_job_card="SJC-001",
-			inspection_stage="Pre-Service", inspection_template="BASIC"
+			inspection_status="Completed",
+			service_job_card="SJC-001",
+			inspection_stage="Post-Service",
+			inspection_template="BASIC",
+			image_upload="/files/stage.png",
 		)
-		with patch.object(frappe.db, "get_value", return_value=0):
-			inspection.validate()
+		row = inspection.append("checklist", {"inspection_item": "Damage", "require_photo": 1})
+		template = SimpleNamespace(pre_inspection_items=[row], check_permission=lambda permission: None)
+		with (
+			patch.object(frappe, "get_doc", return_value=template),
+			patch.object(frappe.db, "get_value", return_value=frappe._dict(name="photo", file_type="PNG")),
+		):
+			with self.assertRaisesRegex(frappe.ValidationError, "photograph is required for inspection item"):
+				inspection.validate()

@@ -61,7 +61,7 @@ IGNORE_TEST_RECORD_DEPENDENCIES = [
 ]
 
 
-def create_test_data():
+def create_test_data(commit=True):
 	"""Create every record the servicems tests need and commit them."""
 	if not frappe.conf.allow_tests:
 		raise RuntimeError("Migration fixtures require a disposable site with allow_tests enabled")
@@ -96,7 +96,8 @@ def create_test_data():
 	create_vehicle_masters()
 	create_vehicles()
 	create_service_templates()
-	frappe.db.commit()  # nosemgrep
+	if commit:
+		frappe.db.commit()  # nosemgrep
 
 
 def create_company():

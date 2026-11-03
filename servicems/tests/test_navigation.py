@@ -1,9 +1,9 @@
 import json
-import unittest
 
 import frappe
 from frappe.model.sync import get_doc_files
 from frappe.modules.import_file import import_doc, import_file_by_path
+from frappe.tests import UnitTestCase
 
 from servicems.navigation import sync_bay_navigation
 from servicems.patches.v2_0.sync_v16_navigation import backup_navigation, execute
@@ -18,7 +18,7 @@ SECTIONS = [
 ]
 
 
-class TestNavigation(unittest.TestCase):
+class TestNavigation(UnitTestCase):
 	"""Run with an initialized Frappe site; roll back every navigation write."""
 
 	def setUp(self):
@@ -75,7 +75,9 @@ class TestNavigation(unittest.TestCase):
 			[b["data"]["text"] for b in json.loads(workspace.content) if b["type"] == "header"], SECTIONS
 		)
 		self.assertNotIn("Booking Page", [row.label for row in workspace.shortcuts])
-		self.assertEqual(sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in workspace.shortcuts), 1)
+		self.assertEqual(
+			sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in workspace.shortcuts), 1
+		)
 
 	def test_upgrade_creates_missing_native_sidebar(self):
 		if frappe.db.exists("Sidebar", "Service Management"):
@@ -91,10 +93,21 @@ class TestNavigation(unittest.TestCase):
 			execute()
 			workspace = frappe.get_doc("Workspace", "Service MS")
 			sidebar = frappe.get_doc("Sidebar", "Service Management")
-			self.assertEqual(sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in workspace.shortcuts), 1)
-			self.assertEqual(sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in sidebar.items), 1)
+			self.assertEqual(
+				sum(
+					row.label == "Booking Calendar" and row.url == "/bookings" for row in workspace.shortcuts
+				),
+				1,
+			)
+			self.assertEqual(
+				sum(row.label == "Booking Calendar" and row.url == "/bookings" for row in sidebar.items), 1
+			)
 			for rows in (workspace.shortcuts, sidebar.items):
-				labels = [row.label for row in rows if row.label in ("Job Cards", "Bookings", "Booking Calendar", "Vehicle Inspections")]
+				labels = [
+					row.label
+					for row in rows
+					if row.label in ("Job Cards", "Bookings", "Booking Calendar", "Vehicle Inspections")
+				]
 				self.assertEqual(labels, ["Job Cards", "Bookings", "Booking Calendar", "Vehicle Inspections"])
 
 	def test_bay_toggle_is_idempotent_and_restores_write_flags(self):

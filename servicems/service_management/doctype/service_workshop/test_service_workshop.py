@@ -2,8 +2,8 @@
 # See license.txt
 
 # import frappe
-import unittest
+from frappe.tests import UnitTestCase
 
 
-class TestServiceWorkshop(unittest.TestCase):
+class TestServiceWorkshop(UnitTestCase):
 	pass

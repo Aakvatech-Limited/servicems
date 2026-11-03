@@ -1,20 +1,21 @@
-import unittest
-
 import frappe
+from frappe.tests import UnitTestCase
 from frappe.utils import add_to_date, now_datetime
 
 from servicems.patches.v2_0.preserve_existing_bay_management import execute as preserve_bays
 from servicems.tests import migration_fixtures as fixtures
 
 
-class TestMigrationCompatibility(unittest.TestCase):
+class TestMigrationCompatibility(UnitTestCase):
 	"""Integration tests for disposable sites; every test rolls back its business records."""
 
 	@classmethod
 	def setUpClass(cls):
+		super().setUpClass()
+		cls.addClassCleanup(frappe.db.rollback)
 		if not frappe.conf.allow_tests:
 			raise RuntimeError("Run migration fixtures only on a disposable site with allow_tests enabled")
-		fixtures.create_test_data()
+		fixtures.create_test_data(commit=False)
 		if not frappe.db.exists("Gender", "Male"):
 			frappe.get_doc({"doctype": "Gender", "gender": "Male"}).insert()
 		if not frappe.db.exists("Employee", {"first_name": "_Test SMS Technician"}):
@@ -22,6 +23,7 @@ class TestMigrationCompatibility(unittest.TestCase):
 				{
 					"doctype": "Employee",
 					"first_name": "_Test SMS Technician",
+					"national_identity": "TEST-SMS-ONLY",
 					"gender": "Male",
 					"date_of_birth": "1990-01-01",
 					"date_of_joining": "2020-01-01",
@@ -29,7 +31,6 @@ class TestMigrationCompatibility(unittest.TestCase):
 					"status": "Active",
 				}
 			).insert()
-		frappe.db.commit()
 
 	def setUp(self):
 		frappe.db.savepoint("servicems_compatibility_test")
