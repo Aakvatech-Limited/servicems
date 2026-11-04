@@ -56,7 +56,7 @@ Stored seconds remain intact during date-only rescheduling.
 | Bay-enabled calendar | [1920 × 1080](bay-enabled.png) |
 | Bay-disabled calendar | [1920 × 1080](bay-disabled.png) |
 
-## Deployment scope and review limitation
+## Design comparison and deployment scope
 
 Only ServiceMS frontend was built. Target-site Page reload, calendar navigation
 synchronization and cache clearing were used. No framework upgrades, migrations,
@@ -64,7 +64,22 @@ bench-wide updates, maintenance mode or service restarts occurred. Existing loca
 generated assets were preserved before building and excluded from commits.
 Marked Calendar UAT records remain on the test site for Product Owner review.
 
-The Product Owner replied that the approved design was attached, but no design
-image was available to this session. Exact comparison with that reference remains
-pending. These screenshots show the actual implementation; they are not mockups.
-PR #67 remains draft and unmerged for Product Owner approval.
+The approved desktop/mobile mockup was subsequently supplied and compared with
+actual browser captures. The supported structure is retained: Bay-by-day Week
+grid, right-hand selected-day agenda, Day/Week/Month controls, New Booking and
+mobile agenda cards. Cards now show booking ID, registration, vehicle model and
+consistent status badges. Clicking a Week header selects/highlights that date and
+updates the daily agenda. Six additional authenticated browser checks passed;
+the 13 responsive/scrolling checks and native navigation/edit checks were rerun.
+
+Supported differences from the mockup are deliberate: this installed Frappe
+version supplies its own native Dock/header/Sidebar; booking IDs use the actual
+SB naming series; statuses are Pending, In Progress, Completed and Closed. No
+end times or Confirmed/Planned statuses are invented. There is no Service Type
+field on Service Booking, so existing workshop/customer/vehicle/status filters
+remain. The native primary button styling is preserved.
+
+These screenshots show the actual implementation, not mockups. Exact pixel
+matching of the outer mockup shell would require replacing native Frappe chrome
+and is outside the requested scope. No implementation blocker remains from the
+design comparison. PR #67 remains draft and unmerged for Product Owner approval.

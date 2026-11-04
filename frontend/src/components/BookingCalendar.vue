@@ -19,7 +19,9 @@
       </button>
     </header>
 
-    <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+    <div
+      class="sm-calendar-toolbar mb-3 flex flex-wrap items-center justify-between gap-3"
+    >
       <div class="flex items-center gap-2">
         <button
           class="sm-control"
@@ -41,7 +43,7 @@
         <strong class="ml-1 text-sm">{{ rangeLabel }}</strong>
       </div>
       <div
-        class="flex rounded-md border border-gray-200 p-1"
+        class="sm-view-switch flex rounded-md border border-gray-200 p-1"
         role="group"
         aria-label="Calendar view"
       >
@@ -195,12 +197,20 @@
             <div
               v-for="day in visibleDays"
               :key="day"
-              class="bg-gray-50 p-3 text-center text-xs font-semibold"
+              class="sm-week-heading bg-gray-50 text-center text-xs font-semibold"
+              :class="{ 'sm-selected-day': day === agendaDate }"
             >
-              {{ formatDay(day, { weekday: 'short' })
-              }}<span class="block font-normal">{{
-                formatDay(day, { day: 'numeric', month: 'short' })
-              }}</span>
+              <button
+                type="button"
+                class="w-full p-3"
+                :aria-pressed="day === agendaDate"
+                @click="agendaDate = day"
+              >
+                {{ formatDay(day, { weekday: 'short' }) }}
+                <span class="block font-normal">{{
+                  formatDay(day, { day: 'numeric', month: 'short' })
+                }}</span>
+              </button>
             </div>
             <template v-for="group in groups" :key="group.key">
               <div class="bg-white p-3 text-sm font-semibold">
@@ -227,18 +237,7 @@
                   :class="statusClass(booking.status)"
                   @click="selectBooking(booking)"
                 >
-                  <span class="font-bold">{{
-                    timeLabel(booking.booking_time)
-                  }}</span>
-                  <span class="block font-semibold">{{
-                    booking.registration_number
-                  }}</span>
-                  <span class="block truncate">{{
-                    booking.customer_name
-                  }}</span>
-                  <span class="mt-1 block text-[10px]">{{
-                    booking.status
-                  }}</span>
+                  <BookingSummary :booking="booking" compact />
                 </button>
               </div>
             </template>
@@ -280,17 +279,14 @@
             v-for="booking in recordsForDay(agendaDate)"
             :key="booking.name"
             class="sm-agenda mb-2 w-full text-left"
+            :class="statusClass(booking.status)"
             type="button"
             @click="selectBooking(booking)"
           >
-            <strong class="text-xs"
-              >{{ timeLabel(booking.booking_time) }} ·
-              {{ booking.registration_number }}</strong
-            >
-            <span class="mt-1 block text-xs">{{ booking.customer_name }}</span>
-            <span class="mt-1 block text-xs text-gray-500">{{
-              booking.status
-            }}</span>
+            <BookingSummary
+              :booking="booking"
+              :show-bay="bayManagementEnabled"
+            />
           </button>
           <p
             v-if="!recordsForDay(agendaDate).length"
@@ -327,16 +323,13 @@
               :key="booking.name"
               type="button"
               class="sm-agenda mb-2 w-full text-left"
+              :class="statusClass(booking.status)"
               @click="selectBooking(booking)"
             >
-              <strong
-                >{{ timeLabel(booking.booking_time) }} ·
-                {{ booking.registration_number }}</strong
-              >
-              <span class="block text-sm"
-                >{{ booking.customer_name }} · {{ booking.workshop }}</span
-              >
-              <span class="text-xs">{{ booking.status }}</span>
+              <BookingSummary
+                :booking="booking"
+                :show-bay="bayManagementEnabled"
+              />
             </button>
           </div>
           <aside
@@ -379,24 +372,10 @@
           :key="booking.name"
           type="button"
           class="sm-agenda mb-2 w-full text-left"
+          :class="statusClass(booking.status)"
           @click="selectBooking(booking)"
         >
-          <span class="flex items-center justify-between gap-3">
-            <strong
-              >{{ timeLabel(booking.booking_time) }} ·
-              {{ booking.registration_number }}</strong
-            >
-            <span class="rounded bg-gray-100 px-2 py-1 text-xs">{{
-              booking.status
-            }}</span>
-          </span>
-          <span class="mt-1 block text-sm">{{ booking.customer_name }}</span>
-          <span class="mt-1 block text-xs text-gray-500"
-            >{{ booking.workshop
-            }}<template v-if="bayManagementEnabled && booking.bay">
-              · {{ booking.bay }}</template
-            ></span
-          >
+          <BookingSummary :booking="booking" :show-bay="bayManagementEnabled" />
         </button>
       </div>
       <p v-if="!bookings.length" class="mt-4 text-sm text-gray-500">
@@ -518,6 +497,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { frappeRequest } from 'frappe-ui'
 import CreateBooking from './CalendarCreateBooking.vue'
 import RecordLink from './CalendarRecordLink.vue'
+import BookingSummary from './CalendarBookingSummary.vue'
 import {
   addDays,
   daysBetween,
@@ -861,20 +841,43 @@ watch(query, () => {
   line-height: 1.4;
 }
 .sm-pending {
-  background: #fff2da;
-  border-color: #dc9b27;
+  background: #faf5ff;
+  border-color: #a855f7;
 }
 .sm-progress {
-  background: #e5efff;
-  border-color: #377cce;
+  background: #fffbeb;
+  border-color: #f59e0b;
 }
 .sm-complete {
   background: #e8f8ee;
   border-color: #299653;
 }
 .sm-closed {
-  background: #fee6e9;
-  border-color: #bc2230;
+  background: #f8fafc;
+  border-color: #64748b;
+}
+.sm-calendar-toolbar .sm-view-switch {
+  order: -1;
+}
+.sm-week-heading.sm-selected-day {
+  background: #eaf2ff;
+  color: #1d4ed8;
+}
+.sm-week-heading button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+.sm-agenda.sm-pending {
+  border-left-color: #a855f7;
+}
+.sm-agenda.sm-progress {
+  border-left-color: #f59e0b;
+}
+.sm-agenda.sm-complete {
+  border-left-color: #299653;
+}
+.sm-agenda.sm-closed {
+  border-left-color: #64748b;
 }
 .sm-agenda {
   border: 1px solid #e0e7f0;
