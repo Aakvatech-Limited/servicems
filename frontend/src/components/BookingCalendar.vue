@@ -64,7 +64,8 @@
         </div>
       </div>
 
-      <div v-else-if="view === 'week'" class="hidden lg:block">
+      <div v-else-if="view === 'week'" class="hidden lg:flex gap-3">
+        <div class="min-w-0 flex-1">
         <div class="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200"
           :style="{ gridTemplateColumns: '165px repeat(7, minmax(0, 1fr))' }">
           <div class="bg-gray-50 p-3 text-xs font-bold">Workshop / Bay</div>
@@ -88,6 +89,22 @@
             </div>
           </template>
         </div>
+        </div>
+        <aside class="w-60 shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-3">
+          <h2 class="text-sm font-bold">{{ formatDay(agendaDate, {weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'}) }}</h2>
+          <p class="my-2 text-xs text-gray-500">{{ recordsForDay(agendaDate).length }} bookings</p>
+          <div class="mb-3 flex gap-2">
+            <button type="button" class="sm-control" @click="agendaDate = addDays(agendaDate, -1)">‹</button>
+            <button type="button" class="sm-control" @click="agendaDate = addDays(agendaDate, 1)">›</button>
+          </div>
+          <button v-for="booking in recordsForDay(agendaDate)" :key="booking.name"
+            class="sm-agenda mb-2 w-full text-left" type="button" @click="selectBooking(booking)">
+            <strong class="text-xs">{{ timeLabel(booking.booking_time) }} · {{ booking.registration_number }}</strong>
+            <span class="mt-1 block text-xs">{{ booking.customer_name }}</span>
+            <span class="mt-1 block text-xs text-gray-500">{{ booking.status }}</span>
+          </button>
+          <p v-if="!recordsForDay(agendaDate).length" class="text-xs text-gray-500">No bookings on this date.</p>
+        </aside>
       </div>
 
       <div v-else-if="view === 'day'" class="hidden md:block">
@@ -110,7 +127,7 @@
         </div>
       </div>
 
-      <div class="lg:hidden" :class="view === 'day' ? 'md:hidden' : ''">
+      <div class="lg:hidden" :class="view === 'day' || view === 'month' ? 'md:hidden' : ''">
         <h2 class="mb-3 text-base font-semibold">{{ formatDay(agendaDate, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</h2>
         <label class="mb-3 block text-sm">Agenda date
           <input v-model="agendaDate" type="date" class="sm-input mt-1" />
@@ -143,8 +160,8 @@
           <template v-if="bayManagementEnabled && selected.bay"><dt>Bay</dt><dd>{{ selected.bay }}</dd></template>
         </dl>
         <div class="flex flex-wrap gap-2">
-          <a class="sm-control" :href="bookingUrl(selected)">Open Booking</a>
-          <a v-if="selected.job_card" class="sm-control" :href="jobCardUrl(selected)">Open Job Card</a>
+          <a class="sm-control" :href="bookingUrl(selected)" target="_top">Open Booking</a>
+          <a v-if="selected.job_card" class="sm-control" :href="jobCardUrl(selected)" target="_top">Open Job Card</a>
           <button v-if="selected.status === 'Pending'" type="button" class="sm-primary" @click="rescheduleOpen = true">Reschedule</button>
         </div>
         <form v-if="rescheduleOpen && selected.status === 'Pending'" class="mt-4 grid gap-2" @submit.prevent="reschedule">
