@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { addDays, daysBetween, monday, monthStart, rowGroups, shiftDate, timeLabel, viewRange } from '../src/utils/calendarViews.mjs'
+import { addDays, daysBetween, monday, monthStart, rowGroups, shiftDate, siteToday, timeLabel, viewRange } from '../src/utils/calendarViews.mjs'
 
 test('week starts Monday and spans seven days', () => {
   assert.deepEqual(viewRange('2026-11-05', 'week'), {
@@ -41,4 +41,17 @@ test('booking time displays the stored start only', () => {
 })
 test('invalid dates cannot silently roll over', () => {
   assert.throws(() => viewRange('2026-02-30', 'day'))
+})
+
+test('database Time values normalize single digit hours for editing', () => {
+  assert.equal(timeLabel('9:05:00'), '09:05')
+  assert.equal(timeLabel('0:00:00'), '00:00')
+})
+test('today follows the site timezone across midnight', () => {
+  assert.equal(siteToday('Africa/Dar_es_Salaam', new Date('2026-11-04T22:30:00Z')), '2026-11-05')
+  assert.equal(siteToday('America/New_York', new Date('2026-11-05T01:30:00Z')), '2026-11-04')
+})
+test('Bay grouping never drops readable bookings whose Bay is not in lookup results', () => {
+  const rows = [{name: 'unknown', bay: 'Old Bay'}, {name: 'unassigned', bay: ''}]
+  assert.deepEqual(rowGroups(rows, true, [], '').flatMap((group) => group.entries), rows)
 })

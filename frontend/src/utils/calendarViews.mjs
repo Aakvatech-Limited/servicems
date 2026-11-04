@@ -56,7 +56,8 @@ export function daysBetween(from, to) {
   return out
 }
 export function timeLabel(value) {
-  return typeof value === 'string' && value ? value.slice(0, 5) : 'Time not set'
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(value || '')
+  return match ? match[1].padStart(2, '0') + ':' + match[2] : 'Time not set'
 }
 export function rowGroups(bookings, baysEnabled, bays, workshop) {
   if (!baysEnabled)
@@ -67,8 +68,17 @@ export function rowGroups(bookings, baysEnabled, bays, workshop) {
     workshop: bay.service_workshop,
     entries: bookings.filter((row) => row.bay === bay.name),
   }))
+  const known = new Set((bays || []).map((bay) => bay.name))
+  const other = bookings.filter((row) => row.bay && !known.has(row.bay))
+  if (other.length) selected.push({key: 'other', label: 'Other allocated Bays', entries: other})
   const unassigned = bookings.filter((row) => !row.bay)
   if (unassigned.length || !selected.length)
     selected.push({ key: 'unassigned', label: 'No Bay', entries: unassigned })
   return selected
+}
+
+export function siteToday(timeZone, now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-GB', {timeZone, year: 'numeric', month: '2-digit', day: '2-digit'}).formatToParts(now)
+  const value = (type) => parts.find((part) => part.type === type).value
+  return `${value('year')}-${value('month')}-${value('day')}`
 }

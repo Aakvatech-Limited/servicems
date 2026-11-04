@@ -191,7 +191,6 @@ frappe.ui.form.on("Service Job Card", {
           !Number(required)
         );
       });
-    remove_delete_button(frm);
     toggleTyreManagementFields(frm);
     toggleTyreMovementFields(frm);
 

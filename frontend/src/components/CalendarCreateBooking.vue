@@ -1,38 +1,40 @@
 <template>
   <div
     v-if="showDialog"
-    class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
-    @click.self="$emit('closeDialog')"
+    class="sm-modal"
+    @click.self="close"
+    @keydown.esc="close"
   >
     <section
-      class="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl"
+      class="sm-booking-dialog"
       role="dialog"
       aria-modal="true"
       aria-label="Create Booking"
+      tabindex="-1"
     >
-      <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-lg font-bold">New Booking</h2>
+      <header class="mb-4 flex items-center justify-between">
+        <h2 class="text-lg font-semibold">New Booking</h2>
         <button
           type="button"
           class="sm-control"
           :disabled="saving"
-          @click="$emit('closeDialog')"
+          aria-label="Close booking form"
+          @click="close"
         >
           ✕
         </button>
-      </div>
+      </header>
       <form
         class="grid grid-cols-1 gap-3 sm:grid-cols-2"
         @submit.prevent="submit"
       >
-        <label class="col-span-full flex items-center gap-2 text-sm"
-          ><input
-            v-model="newCustomerMode"
-            type="checkbox"
-            :disabled="saving"
-          />
-          Create new Customer</label
+        <label
+          v-if="context.can_create_customer"
+          class="col-span-full flex items-center gap-2 text-sm"
         >
+          <input v-model="newCustomerMode" type="checkbox" :disabled="saving" />
+          Create new Customer
+        </label>
         <template v-if="newCustomerMode">
           <label class="sm-label col-span-full"
             ><span>Customer Name *</span
@@ -42,63 +44,87 @@
               required
           /></label>
           <label class="sm-label"
-            ><span>Customer Type *</span>
-            <select v-model="newCustomer.customer_type" class="sm-input">
+            ><span>Customer Type *</span
+            ><select v-model="newCustomer.customer_type" class="sm-input">
               <option>Individual</option>
               <option>Company</option>
               <option>Partnership</option>
-            </select>
-          </label>
+            </select></label
+          >
           <label class="sm-label"
-            ><span>Customer Group *</span>
-            <select
+            ><span>Customer Group *</span
+            ><RecordLink
               v-model="newCustomer.customer_group"
-              class="sm-input"
+              doctype="Customer Group"
+              label="Customer Group"
+              :filters="{ is_group: 0 }"
               required
-            >
-              <option value="" disabled>Select group</option>
-              <option
-                v-for="item in customerGroups"
-                :key="item.name"
-                :value="item.name"
-              >
-                {{ item.name }}
-              </option>
-            </select>
-          </label>
+          /></label>
           <label class="sm-label"
-            ><span>Territory *</span>
-            <select v-model="newCustomer.territory" class="sm-input" required>
-              <option value="" disabled>Select territory</option>
-              <option
-                v-for="item in territories"
-                :key="item.name"
-                :value="item.name"
-              >
-                {{ item.name }}
-              </option>
-            </select>
-          </label>
+            ><span>Territory *</span
+            ><RecordLink
+              v-model="newCustomer.territory"
+              doctype="Territory"
+              label="Territory"
+              :filters="{ is_group: 0 }"
+              required
+          /></label>
           <label class="sm-label"
             ><span>Mobile number</span
             ><input v-model="newCustomer.mobile_no" type="tel" class="sm-input"
           /></label>
+          <label
+            v-for="field in context.customer_required_fields || []"
+            :key="field.fieldname"
+            class="sm-label"
+          >
+            <span>{{ field.label }} *</span>
+            <select
+              v-if="field.fieldtype === 'Select'"
+              v-model="newCustomer[field.fieldname]"
+              class="sm-input"
+              required
+            >
+              <option value="" disabled>Select {{ field.label }}</option>
+              <option
+                v-for="option in field.options.split('\n').filter(Boolean)"
+                :key="option"
+              >
+                {{ option }}
+              </option>
+            </select>
+            <RecordLink
+              v-else-if="field.fieldtype === 'Link'"
+              v-model="newCustomer[field.fieldname]"
+              :doctype="field.options"
+              :label="field.label"
+              required
+            />
+            <input
+              v-else
+              v-model="newCustomer[field.fieldname]"
+              :type="field.fieldtype === 'Date' ? 'date' : 'text'"
+              class="sm-input"
+              required
+            />
+          </label>
         </template>
         <label v-else class="sm-label col-span-full"
-          ><span>Customer *</span>
-          <select v-model="customer" required class="sm-input">
-            <option value="" disabled>Select customer</option>
-            <option
-              v-for="item in customers"
-              :key="item.name"
-              :value="item.name"
-            >
-              {{ item.customer_name || item.name }}
-            </option>
-          </select>
-        </label>
-        <label class="col-span-full flex items-center gap-2 text-sm"
-          ><input v-model="newVehicleMode" type="checkbox" :disabled="saving" />
+          ><span>Customer *</span
+          ><RecordLink
+            v-model="customer"
+            doctype="Customer"
+            label="Customer"
+            required
+        /></label>
+        <label
+          v-if="context.can_create_vehicle"
+          class="col-span-full flex items-center gap-2 text-sm"
+          ><input
+            v-model="newVehicleMode"
+            type="checkbox"
+            :disabled="saving || newCustomerMode"
+          />
           Create new Vehicle</label
         >
         <template v-if="newVehicleMode">
@@ -110,22 +136,13 @@
               required
           /></label>
           <label class="sm-label"
-            ><span>Vehicle Model *</span>
-            <select
+            ><span>Vehicle Model *</span
+            ><RecordLink
               v-model="newVehicle.vehicle_model"
-              class="sm-input"
+              doctype="Vehicle Model"
+              label="Vehicle Model"
               required
-            >
-              <option value="" disabled>Select model</option>
-              <option
-                v-for="item in vehicleModels"
-                :key="item.name"
-                :value="item.name"
-              >
-                {{ item.name }}
-              </option>
-            </select>
-          </label>
+          /></label>
           <label class="sm-label"
             ><span>Engine Number</span
             ><input v-model="newVehicle.engine_number" class="sm-input"
@@ -136,23 +153,15 @@
           /></label>
         </template>
         <label v-else class="sm-label col-span-full"
-          ><span>Service Vehicle *</span>
-          <select
+          ><span>Service Vehicle *</span
+          ><RecordLink
             v-model="vehicle"
-            required
-            class="sm-input"
+            doctype="Service Vehicle"
+            label="Service Vehicle"
+            :filters="{ customer }"
             :disabled="!customer || newCustomerMode"
-          >
-            <option value="" disabled>Select vehicle</option>
-            <option
-              v-for="item in availableVehicles"
-              :key="item.name"
-              :value="item.name"
-            >
-              {{ item.registration_number || item.name }}
-            </option>
-          </select>
-        </label>
+            required
+        /></label>
         <label class="sm-label"
           ><span>Date *</span
           ><input v-model="date" class="sm-input" type="date" required
@@ -162,34 +171,28 @@
           ><input v-model="time" class="sm-input" type="time"
         /></label>
         <label class="sm-label col-span-full"
-          ><span>Workshop *</span>
-          <select v-model="workshopValue" class="sm-input" required>
-            <option value="" disabled>Select workshop</option>
-            <option
-              v-for="item in workshops"
-              :key="item.name"
-              :value="item.name"
-            >
-              {{ item.name }}
-            </option>
-          </select>
-        </label>
-        <label v-if="bayEnabled" class="sm-label col-span-full"
-          ><span>Bay (optional)</span>
-          <select v-model="bay" class="sm-input">
-            <option value="">No Bay</option>
-            <option
-              v-for="item in matchingBays"
-              :key="item.name"
-              :value="item.name"
-            >
-              {{ item.name }}
-            </option>
-          </select>
-        </label>
+          ><span>Workshop *</span
+          ><RecordLink
+            v-model="workshopValue"
+            doctype="Service Workshop"
+            label="Workshop"
+            required
+        /></label>
+        <label
+          v-if="context.bay_management_enabled"
+          class="sm-label col-span-full"
+          ><span>Bay (optional)</span
+          ><RecordLink
+            v-model="bay"
+            doctype="Bay"
+            label="Bay"
+            placeholder="No Bay"
+            :filters="{ service_workshop: workshopValue }"
+            :disabled="!workshopValue"
+        /></label>
         <label class="sm-label col-span-full"
-          ><span>Service Description</span>
-          <textarea
+          ><span>Service Description</span
+          ><textarea
             v-model="description"
             class="sm-input"
             rows="2"
@@ -197,8 +200,8 @@
           ></textarea>
         </label>
         <p class="col-span-full text-xs text-gray-500">
-          New Customers, Vehicles and Bookings are created together; validation
-          failures do not leave partial records.
+          Start time in {{ context.timezone || 'site timezone' }}. New records
+          are saved together with the booking.
         </p>
         <div
           v-if="loadError || error"
@@ -207,12 +210,12 @@
         >
           {{ loadError || error }}
         </div>
-        <footer class="col-span-full mt-3 flex justify-end gap-2">
+        <footer class="col-span-full mt-2 flex justify-end gap-2">
           <button
             type="button"
             class="sm-control"
             :disabled="saving"
-            @click="$emit('closeDialog')"
+            @click="close"
           >
             Cancel
           </button>
@@ -228,58 +231,44 @@
     </section>
   </div>
 </template>
-
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { frappeRequest } from 'frappe-ui'
+import RecordLink from './CalendarRecordLink.vue'
 const props = defineProps({
   showDialog: Boolean,
   booking_date: String,
   workshop: String,
 })
 const emit = defineEmits(['closeDialog', 'refreshData'])
-const customer = ref('')
-const vehicle = ref('')
-const date = ref('')
-const time = ref('')
-const workshopValue = ref('')
-const bay = ref('')
-const description = ref('')
-const newCustomerMode = ref(false)
-const newVehicleMode = ref(false)
-const newCustomer = ref({
-  customer_name: '',
-  customer_type: 'Individual',
-  customer_group: '',
-  territory: '',
-  mobile_no: '',
-})
-const newVehicle = ref({
-  registration_number: '',
-  vehicle_model: '',
-  engine_number: '',
-  chassis_number: '',
-})
-const customerGroups = ref([])
-const territories = ref([])
-const vehicleModels = ref([])
-const customers = ref([])
-const vehicles = ref([])
-const workshops = ref([])
-const bays = ref([])
-const bayEnabled = ref(false)
-const loading = ref(false)
-const saving = ref(false)
-const error = ref('')
-const loadError = ref('')
-const availableVehicles = computed(() =>
-  vehicles.value.filter((item) => item.customer === customer.value)
-)
-const matchingBays = computed(() =>
-  bays.value.filter((item) => item.service_workshop === workshopValue.value)
-)
+const customer = ref(''),
+  vehicle = ref(''),
+  date = ref(''),
+  time = ref(''),
+  workshopValue = ref(''),
+  bay = ref(''),
+  description = ref('')
+const newCustomerMode = ref(false),
+  newVehicleMode = ref(false)
+const newCustomer = ref({}),
+  newVehicle = ref({}),
+  context = ref({})
+const loading = ref(false),
+  saving = ref(false),
+  error = ref(''),
+  loadError = ref('')
+let opener
+function close() {
+  if (!saving.value) {
+    emit('closeDialog')
+    nextTick(() => opener?.focus())
+  }
+}
 watch(customer, () => {
   vehicle.value = ''
+})
+watch(workshopValue, () => {
+  bay.value = ''
 })
 watch(newCustomerMode, (on) => {
   if (on) {
@@ -288,24 +277,21 @@ watch(newCustomerMode, (on) => {
     vehicle.value = ''
   }
 })
-watch(newVehicleMode, (on) => {
+watch(newVehicleMode, () => {
   vehicle.value = ''
-  if (!on && newCustomerMode.value) newVehicleMode.value = true
-})
-watch(workshopValue, () => {
-  bay.value = ''
 })
 watch(
   () => props.showDialog,
   async (open) => {
     if (!open) return
+    opener = document.activeElement
     date.value = props.booking_date || ''
+    time.value = ''
     workshopValue.value = props.workshop || ''
     customer.value = ''
     vehicle.value = ''
     bay.value = ''
     description.value = ''
-    time.value = ''
     newCustomerMode.value = false
     newVehicleMode.value = false
     newCustomer.value = {
@@ -325,93 +311,14 @@ watch(
     loadError.value = ''
     loading.value = true
     try {
-      const [
-        customerRows,
-        vehicleRows,
-        workshopRows,
-        settings,
-        groupRows,
-        territoryRows,
-        modelRows,
-      ] = await Promise.all([
-        frappeRequest({
-          url: 'frappe.client.get_list',
-          method: 'GET',
-          params: {
-            doctype: 'Customer',
-            fields: JSON.stringify(['name', 'customer_name']),
-            limit_page_length: 500,
-          },
-        }),
-        frappeRequest({
-          url: 'frappe.client.get_list',
-          method: 'GET',
-          params: {
-            doctype: 'Service Vehicle',
-            fields: JSON.stringify(['name', 'registration_number', 'customer']),
-            limit_page_length: 500,
-          },
-        }),
-        frappeRequest({
-          url: 'frappe.client.get_list',
-          method: 'GET',
-          params: {
-            doctype: 'Service Workshop',
-            fields: JSON.stringify(['name']),
-            limit_page_length: 500,
-          },
-        }),
-        frappeRequest({
-          url: 'frappe.client.get',
-          method: 'GET',
-          params: { doctype: 'Service Settings', name: 'Service Settings' },
-        }),
-        frappeRequest({
-          url: 'frappe.client.get_list',
-          method: 'GET',
-          params: {
-            doctype: 'Customer Group',
-            fields: JSON.stringify(['name']),
-            limit_page_length: 500,
-          },
-        }),
-        frappeRequest({
-          url: 'frappe.client.get_list',
-          method: 'GET',
-          params: {
-            doctype: 'Territory',
-            fields: JSON.stringify(['name']),
-            limit_page_length: 500,
-          },
-        }),
-        frappeRequest({
-          url: 'frappe.client.get_list',
-          method: 'GET',
-          params: {
-            doctype: 'Vehicle Model',
-            fields: JSON.stringify(['name']),
-            limit_page_length: 500,
-          },
-        }),
-      ])
-      customers.value = customerRows || []
-      vehicles.value = vehicleRows || []
-      workshops.value = workshopRows || []
-      customerGroups.value = groupRows || []
-      territories.value = territoryRows || []
-      vehicleModels.value = modelRows || []
-      bayEnabled.value = Boolean(Number(settings.enable_bay_management))
-      bays.value = bayEnabled.value
-        ? await frappeRequest({
-            url: 'frappe.client.get_list',
-            method: 'GET',
-            params: {
-              doctype: 'Bay',
-              fields: JSON.stringify(['name', 'service_workshop']),
-              limit_page_length: 500,
-            },
-          })
-        : []
+      context.value = await frappeRequest({
+        url: 'servicems.api.calendar.get_booking_context',
+        method: 'GET',
+      })
+      for (const field of context.value.customer_required_fields || [])
+        newCustomer.value[field.fieldname] = ''
+      await nextTick()
+      document.querySelector('.sm-booking-dialog input:not(:disabled)')?.focus()
     } catch (e) {
       loadError.value =
         e.messages?.join(' ') || e.message || 'Unable to load booking options.'
@@ -435,7 +342,7 @@ async function submit() {
           booking_date: date.value,
           booking_time: time.value,
           workshop: workshopValue.value,
-          bay: bayEnabled.value ? bay.value : '',
+          bay: context.value.bay_management_enabled ? bay.value : '',
           service_description: description.value,
         },
         new_customer: newCustomerMode.value ? { ...newCustomer.value } : null,
@@ -453,18 +360,41 @@ async function submit() {
 }
 </script>
 <style scoped>
+.sm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #0006;
+  overflow: hidden;
+}
+.sm-booking-dialog {
+  width: 100%;
+  max-width: 576px;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 10px;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 12px 40px #0003;
+}
 .sm-control {
   border: 1px solid #dce2ec;
   border-radius: 6px;
   padding: 8px 11px;
   font-size: 13px;
+  background: white;
 }
 .sm-primary {
-  background: #0b5be4;
-  color: #fff;
-  border-radius: 7px;
+  background: #171717;
+  color: white;
+  border-radius: 6px;
   padding: 9px 14px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13px;
 }
 .sm-primary:disabled {
@@ -473,16 +403,29 @@ async function submit() {
 .sm-input {
   display: block;
   width: 100%;
+  min-width: 0;
   border: 1px solid #dce2ec;
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 13px;
   background: white;
 }
+.sm-label {
+  min-width: 0;
+}
 .sm-label span {
   font-size: 12px;
   color: #55647b;
   display: block;
   margin-bottom: 3px;
+}
+@media (max-width: 639px) {
+  .sm-modal {
+    padding: 8px;
+    align-items: flex-end;
+  }
+  .sm-booking-dialog {
+    padding: 16px;
+  }
 }
 </style>

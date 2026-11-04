@@ -38,8 +38,10 @@ class TestCalendarApi(TestCase):
 		result = calendar.get_calendar_bookings("2026-11-05", "2026-11-06", workshop="Workshop")
 		self.assertEqual(result["bookings"], [])
 		self.assertFalse(result["bay_management_enabled"])
-		self.assertEqual(get_list.call_args.kwargs["filters"]["workshop"], "Workshop")
-		self.assertEqual(get_list.call_args.args[0], "Service Booking")
+		booking_query = next(
+			call for call in get_list.call_args_list if call.args and call.args[0] == "Service Booking"
+		)
+		self.assertEqual(booking_query.kwargs["filters"]["workshop"], "Workshop")
 
 	@patch.object(frappe, "has_permission")
 	@patch.object(frappe, "get_doc")
@@ -96,3 +98,47 @@ class TestCalendarApi(TestCase):
 			with self.assertRaises(frappe.ValidationError):
 				calendar.reschedule_booking("SB-001", "2026-11-05", "10:00")
 		get_doc.return_value.save.assert_not_called()
+
+	@patch.object(calendar, "_validate_bay")
+	@patch.object(calendar, "_bay_enabled", return_value=True)
+	@patch.object(frappe, "get_doc")
+	def test_reschedule_locks_booking_and_validates_bay(self, get_doc, bay_enabled, validate_bay):
+		doc = get_doc.return_value
+		doc.status = "Pending"
+		doc.name = "SB-001"
+		doc.workshop = "Workshop"
+		doc.bay = "Bay-1"
+		calendar.reschedule_booking("SB-001", "2026-11-05", "09:30")
+		get_doc.assert_called_once_with("Service Booking", "SB-001", for_update=True)
+		validate_bay.assert_called_once_with("Bay-1", "Workshop", "2026-11-05", "09:30", exclude="SB-001")
+		doc.save.assert_called_once()
+
+	@patch.object(calendar, "_validate_bay")
+	@patch.object(calendar, "_bay_enabled", return_value=False)
+	@patch.object(frappe, "get_doc")
+	def test_reschedule_preserves_historical_bay_when_disabled(self, get_doc, bay_enabled, validate_bay):
+		doc = get_doc.return_value
+		doc.status = "Pending"
+		doc.bay = "Historical Bay"
+		calendar.reschedule_booking("SB-001", "2026-11-05", "09:30")
+		validate_bay.assert_not_called()
+		self.assertEqual(doc.bay, "Historical Bay")
+		doc.save.assert_called_once()
+
+	@patch.object(calendar, "_bay_enabled", return_value=False)
+	def test_disabled_bay_cannot_be_newly_allocated(self, bay_enabled):
+		with patch.object(frappe, "throw", side_effect=frappe.ValidationError):
+			with self.assertRaises(frappe.ValidationError):
+				calendar._validate_bay("Bay-1", "Workshop", "2026-11-05", "09:00")
+
+	@patch.object(calendar, "_bay_enabled", return_value=True)
+	@patch.object(frappe, "get_doc")
+	@patch.object(frappe.db, "sql")
+	def test_same_start_conflicts_use_current_reads_after_bay_lock(self, sql, get_doc, bay_enabled):
+		get_doc.return_value.service_workshop = "Workshop"
+		sql.side_effect = [[("Bay-1",)], [("Existing",)]]
+		with patch.object(frappe, "throw", side_effect=frappe.ValidationError):
+			with self.assertRaises(frappe.ValidationError):
+				calendar._validate_bay("Bay-1", "Workshop", "2026-11-05", "09:00")
+		self.assertIn("FOR UPDATE", sql.call_args_list[0].args[0])
+		self.assertIn("FOR UPDATE", sql.call_args_list[1].args[0])

@@ -1,14 +1,20 @@
 <template>
   <section
-    class="sm-calendar mx-auto w-full max-w-[1600px] p-3 sm:p-5"
+    class="sm-calendar w-full p-3 sm:p-4"
+    :class="{ 'sm-dialog-open': selected || showCreate }"
     aria-label="Booking Calendar"
   >
     <header class="mb-5 flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Booking Calendar</h1>
-        <p class="mt-1 text-sm text-gray-500">Workshop booking schedule</p>
+        <p class="text-sm text-gray-600">Workshop booking schedule</p>
+        <p class="mt-1 text-xs text-gray-500">Start times · {{ timezone }}</p>
       </div>
-      <button class="sm-primary" type="button" @click="openCreate()">
+      <button
+        v-if="canCreate"
+        class="sm-primary"
+        type="button"
+        @click="openCreate()"
+      >
         + New Booking
       </button>
     </header>
@@ -57,7 +63,28 @@
       </div>
     </div>
 
-    <div class="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mb-3 flex items-center justify-between sm:hidden">
+      <button
+        type="button"
+        class="sm-control"
+        :aria-expanded="showFilters"
+        @click="showFilters = !showFilters"
+      >
+        Filters{{ activeFilters ? ' (' + activeFilters + ')' : '' }}
+      </button>
+      <button
+        v-if="activeFilters"
+        type="button"
+        class="text-xs text-gray-600"
+        @click="clearFilters"
+      >
+        Clear filters
+      </button>
+    </div>
+    <div
+      class="mb-4 grid-cols-1 gap-2 sm:grid sm:grid-cols-2 xl:grid-cols-5"
+      :class="showFilters ? 'grid' : 'hidden'"
+    >
       <label class="sm-field"
         ><span>Workshop</span>
         <select v-model="workshop" class="sm-input">
@@ -67,6 +94,23 @@
           </option>
         </select>
       </label>
+      <label class="sm-field"
+        ><span>Customer</span
+        ><RecordLink
+          v-model="customer"
+          doctype="Customer"
+          label="Filter Customer"
+          placeholder="All customers"
+      /></label>
+      <label class="sm-field"
+        ><span>Vehicle</span
+        ><RecordLink
+          v-model="vehicle"
+          doctype="Service Vehicle"
+          label="Filter Vehicle"
+          placeholder="All vehicles"
+          :filters="customer ? { customer } : {}"
+      /></label>
       <label class="sm-field"
         ><span>Customer / registration</span>
         <input
@@ -145,7 +189,9 @@
             class="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200"
             :style="{ gridTemplateColumns: '165px repeat(7, minmax(0, 1fr))' }"
           >
-            <div class="bg-gray-50 p-3 text-xs font-bold">Workshop / Bay</div>
+            <div class="bg-gray-50 p-3 text-xs font-bold">
+              {{ bayManagementEnabled ? 'Workshop / Bay' : 'Workshop' }}
+            </div>
             <div
               v-for="day in visibleDays"
               :key="day"
@@ -199,7 +245,7 @@
           </div>
         </div>
         <aside
-          class="w-60 shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-3"
+          class="hidden xl:block w-60 shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-3"
         >
           <h2 class="text-sm font-bold">
             {{
@@ -294,7 +340,7 @@
             </button>
           </div>
           <aside
-            class="w-64 shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-4"
+            class="hidden xl:block w-64 shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-4"
           >
             <h3 class="font-bold">Day summary</h3>
             <p class="mt-1 text-sm text-gray-500">
@@ -358,13 +404,9 @@
       </p>
     </template>
 
-    <div
-      v-if="selected"
-      class="fixed inset-0 z-50 flex items-end justify-center bg-black/30 sm:items-center"
-      @click.self="selected = null"
-    >
+    <div v-if="selected" class="sm-details-modal" @click.self="selected = null">
       <section
-        class="w-full max-w-md rounded-t-xl bg-white p-5 shadow-lg sm:rounded-xl"
+        class="sm-details-dialog"
         role="dialog"
         aria-modal="true"
         aria-label="Booking details"
@@ -411,7 +453,7 @@
             >Open Job Card</a
           >
           <button
-            v-if="selected.status === 'Pending'"
+            v-if="canWrite && selected.status === 'Pending'"
             type="button"
             class="sm-primary"
             @click="rescheduleOpen = true"
@@ -472,9 +514,10 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { frappeRequest } from 'frappe-ui'
 import CreateBooking from './CalendarCreateBooking.vue'
+import RecordLink from './CalendarRecordLink.vue'
 import {
   addDays,
   daysBetween,
@@ -484,24 +527,40 @@ import {
   shiftDate,
   timeLabel,
   viewRange,
-  monday,
+  siteToday,
 } from '@/utils/calendarViews.mjs'
 
 const statuses = ['Pending', 'In Progress', 'Completed', 'Closed']
 const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-const localToday = () => {
-  const d = new Date()
-  return [
-    d.getFullYear(),
-    String(d.getMonth() + 1).padStart(2, '0'),
-    String(d.getDate()).padStart(2, '0'),
-  ].join('-')
-}
+const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
+const localToday = () => siteToday(timezone.value)
 const cursor = ref(localToday())
 const agendaDate = ref(cursor.value)
 const view = ref('week')
 const workshop = ref('')
 const status = ref('')
+const customer = ref('')
+const vehicle = ref('')
+const showFilters = ref(false)
+const activeFilters = computed(
+  () =>
+    [
+      workshop.value,
+      customer.value,
+      vehicle.value,
+      status.value,
+      query.value,
+    ].filter(Boolean).length
+)
+function clearFilters() {
+  workshop.value = ''
+  customer.value = ''
+  vehicle.value = ''
+  status.value = ''
+  query.value = ''
+}
+const canCreate = ref(false)
+const canWrite = ref(false)
 const query = ref('')
 const bookings = ref([])
 const bays = ref([])
@@ -552,6 +611,7 @@ const groups = computed(() =>
     workshop.value
   )
 )
+let initialized = false
 let requestNumber = 0
 let searchTimer
 function recordsForDay(day) {
@@ -618,6 +678,8 @@ async function load() {
           to_date: range.value.to,
           workshop: workshop.value,
           status: status.value,
+          customer: customer.value,
+          vehicle: vehicle.value,
           search: query.value,
         },
       }),
@@ -632,6 +694,18 @@ async function load() {
       }),
     ])
     if (id !== requestNumber) return
+    timezone.value = response.timezone || timezone.value
+    canCreate.value = Boolean(response.can_create)
+    canWrite.value = Boolean(response.can_write)
+    if (!initialized) {
+      initialized = true
+      const today = localToday()
+      if (cursor.value !== today) {
+        cursor.value = today
+        agendaDate.value = today
+        return
+      }
+    }
     bookings.value = response.bookings || []
     bays.value = response.bays || []
     bayManagementEnabled.value = Boolean(response.bay_management_enabled)
@@ -669,7 +743,20 @@ async function reschedule() {
     saving.value = false
   }
 }
-watch([cursor, view, workshop, status], load, { immediate: true })
+watch([cursor, view, workshop, status, customer, vehicle], load, {
+  immediate: true,
+})
+watch(customer, () => {
+  vehicle.value = ''
+})
+watch(agendaDate, (date) => {
+  if (date && (date < range.value.from || date > range.value.to))
+    cursor.value = date
+})
+onBeforeUnmount(() => {
+  clearTimeout(searchTimer)
+  requestNumber++
+})
 watch(query, () => {
   clearTimeout(searchTimer)
   searchTimer = setTimeout(load, 300)
@@ -678,10 +765,52 @@ watch(query, () => {
 
 <style scoped>
 .sm-calendar {
+  height: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   color: #273244;
 }
+.sm-dialog-open {
+  overflow: hidden;
+}
+.sm-details-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  overflow: hidden;
+  background: #0005;
+}
+.sm-details-dialog {
+  width: 100%;
+  max-width: 448px;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+  border-radius: 10px;
+  background: white;
+}
+.sm-field {
+  min-width: 0;
+}
+.sm-event {
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 639px) {
+  .sm-details-modal {
+    align-items: flex-end;
+    padding: 8px;
+  }
+}
 .sm-primary {
-  background: #0b5be4;
+  background: #171717;
   color: white;
   border-radius: 7px;
   padding: 9px 14px;

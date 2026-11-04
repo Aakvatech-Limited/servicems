@@ -8,7 +8,7 @@ import re
 
 import frappe
 from frappe import _
-from frappe.utils import date_diff, getdate
+from frappe.utils import date_diff, get_system_timezone, getdate
 
 ACTIVE_STATUSES = ("Pending", "In Progress")
 BOOKING_STATUSES = ("Pending", "In Progress", "Completed", "Closed")
@@ -69,17 +69,19 @@ def _validate_bay(bay, workshop, booking_date, booking_time, exclude=None):
 	bay_doc.check_permission("read")
 	if bay_doc.service_workshop != workshop:
 		frappe.throw(_("The selected Bay does not belong to this Workshop."))
+	# Serialize calendar allocation by Bay. Use current (locking) reads so a
+	# transaction waiting here sees a concurrent booking after its commit.
+	frappe.db.sql("SELECT name FROM `tabBay` WHERE name = %s FOR UPDATE", (bay,))
 	# No duration field exists; do not claim to detect overlapping intervals.
 	if booking_time:
-		filters = {
-			"bay": bay,
-			"booking_date": booking_date,
-			"booking_time": booking_time,
-			"status": ["in", ACTIVE_STATUSES],
-		}
-		if exclude:
-			filters["name"] = ["!=", exclude]
-		if frappe.get_all("Service Booking", filters=filters, limit=1, pluck="name"):
+		conflicts = frappe.db.sql(
+			"""SELECT name FROM `tabService Booking`
+			WHERE bay = %(bay)s AND booking_date = %(date)s
+			AND booking_time = %(time)s AND status IN ('Pending', 'In Progress')
+			AND docstatus < 2 AND name != %(exclude)s LIMIT 1 FOR UPDATE""",
+			{"bay": bay, "date": booking_date, "time": booking_time, "exclude": exclude or ""},
+		)
+		if conflicts:
 			frappe.throw(_("This Bay already has a booking at the selected start time."))
 
 
@@ -135,12 +137,16 @@ def _enrich(bookings):
 
 
 @frappe.whitelist()
-def get_calendar_bookings(from_date, to_date, workshop=None, vehicle=None, status=None, search=None):
+def get_calendar_bookings(
+	from_date, to_date, workshop=None, vehicle=None, customer=None, status=None, search=None
+):
 	"""Return individually permission-filtered bookings and optional visible Bays."""
 	start, end = _date_range(from_date, to_date)
 	filters = {"booking_date": ["between", [start, end]], "docstatus": ["<", 2]}
 	if workshop:
 		filters["workshop"] = _text(workshop, "Workshop")
+	if customer:
+		filters["customer"] = _text(customer, "Customer")
 	if vehicle:
 		filters["service_vehicle"] = _text(vehicle, "Vehicle")
 	if status:
@@ -177,7 +183,7 @@ def get_calendar_bookings(from_date, to_date, workshop=None, vehicle=None, statu
 			for row in result
 			if any(
 				search in str(row.get(field) or "").casefold()
-				for field in ("name", "customer_name", "registration_number", "service_vehicle")
+				for field in ("name", "customer", "customer_name", "registration_number", "service_vehicle")
 			)
 		]
 	bay_management_enabled = _bay_enabled()
@@ -191,7 +197,42 @@ def get_calendar_bookings(from_date, to_date, workshop=None, vehicle=None, statu
 			order_by="name asc",
 			page_length=1000,
 		)
-	return {"bookings": result, "bay_management_enabled": bay_management_enabled, "bays": bays}
+	return {
+		"bookings": result,
+		"bay_management_enabled": bay_management_enabled,
+		"bays": bays,
+		"timezone": get_system_timezone(),
+		"can_create": bool(frappe.has_permission("Service Booking", "create")),
+		"can_write": bool(frappe.has_permission("Service Booking", "write")),
+	}
+
+
+def _customer_required_fields():
+	"""Expose editable required fields from the site's actual Customer metadata."""
+	known = {"customer_name", "customer_type", "customer_group", "territory"}
+	return [
+		{"fieldname": f.fieldname, "label": f.label, "fieldtype": f.fieldtype, "options": f.options or ""}
+		for f in frappe.get_meta("Customer").fields
+		if f.reqd
+		and not f.read_only
+		and f.fieldname not in known
+		and f.fieldtype in ("Data", "Select", "Link", "Int", "Float", "Date", "Phone")
+	]
+
+
+@frappe.whitelist()
+def get_booking_context():
+	if not (
+		frappe.has_permission("Service Booking", "read") or frappe.has_permission("Service Booking", "create")
+	):
+		frappe.throw(_("You do not have permission to access bookings."), frappe.PermissionError)
+	return {
+		"bay_management_enabled": _bay_enabled(),
+		"timezone": get_system_timezone(),
+		"can_create_customer": bool(frappe.has_permission("Customer", "create")),
+		"can_create_vehicle": bool(frappe.has_permission("Service Vehicle", "create")),
+		"customer_required_fields": _customer_required_fields(),
+	}
 
 
 @frappe.whitelist(methods=["POST"])
@@ -219,7 +260,15 @@ def create_booking(booking, new_customer=None, new_vehicle=None):
 	if new_customer is not None:
 		customer = _as_values(
 			new_customer,
-			("customer_name", "customer_type", "customer_group", "territory", "tax_id", "mobile_no"),
+			(
+				"customer_name",
+				"customer_type",
+				"customer_group",
+				"territory",
+				"tax_id",
+				"mobile_no",
+				*[f["fieldname"] for f in _customer_required_fields()],
+			),
 		)
 		values["customer"] = frappe.get_doc({"doctype": "Customer", **customer}).insert().name
 	if not values.get("customer"):
@@ -262,12 +311,15 @@ def reschedule_booking(name, booking_date, booking_time="", bay=None):
 	_text(name, "Booking", limit=140)
 	_date_range(booking_date, booking_date)
 	booking_time = _time(booking_time)
-	doc = frappe.get_doc("Service Booking", name)
+	doc = frappe.get_doc("Service Booking", name, for_update=True)
 	doc.check_permission("write")
 	if doc.status != "Pending":
 		frappe.throw(_("Only pending bookings can be rescheduled."))
 	effective_bay = doc.bay if bay is None else _text(bay, "Bay", allow_empty=True)
-	# Historical Bay values remain readable when Bay Management is switched off.\n    # Do not turn an otherwise valid date/time edit into a Bay migration.\n    if _bay_enabled() or bay is not None:\n        _validate_bay(effective_bay, doc.workshop, booking_date, booking_time, exclude=doc.name)
+	# Preserve historical Bay values when the feature is disabled.
+	if _bay_enabled() or bay is not None:
+		_validate_bay(effective_bay, doc.workshop, booking_date, booking_time, exclude=doc.name)
+
 	doc.booking_date = booking_date
 	doc.booking_time = booking_time
 	if bay is not None:
