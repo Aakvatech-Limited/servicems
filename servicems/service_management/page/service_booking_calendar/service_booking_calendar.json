@@ -1,0 +1,10 @@
+{
+  "doctype": "Page",
+  "name": "service-booking-calendar",
+  "page_name": "service-booking-calendar",
+  "title": "Booking Calendar",
+  "module": "Service Management",
+  "standard": "Yes",
+  "system_page": 0,
+  "roles": []
+}
