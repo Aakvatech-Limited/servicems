@@ -140,7 +140,7 @@ async function submit() {
 </script>
 <style scoped>
 .sm-control { border:1px solid #dce2ec; border-radius:6px; padding:8px 11px; font-size:13px; }
-.sm-primary { background:#bc2230; color:#fff; border-radius:7px; padding:9px 14px; font-weight:700; font-size:13px; }
+.sm-primary { background:#0b5be4; color:#fff; border-radius:7px; padding:9px 14px; font-weight:700; font-size:13px; }
 .sm-primary:disabled { opacity:.55; }
 .sm-input { display:block; width:100%; border:1px solid #dce2ec; border-radius:6px; padding:8px 10px; font-size:13px; background:white; }
 .sm-label span { font-size:12px; color:#55647b; display:block; margin-bottom:3px; }
