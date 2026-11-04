@@ -321,7 +321,7 @@ watch(query, () => {
 
 <style scoped>
 .sm-calendar { color: #273244; }
-.sm-primary { background: #bc2230; color: white; border-radius: 7px; padding: 9px 14px; font-size: 13px; font-weight: 700; }
+.sm-primary { background: #0b5be4; color: white; border-radius: 7px; padding: 9px 14px; font-size: 13px; font-weight: 700; }
 .sm-primary:disabled { opacity: .55; }
 .sm-control { border: 1px solid #dce2ec; border-radius: 6px; background: #fff; padding: 8px 10px; font-size: 13px; }
 .sm-input { display: block; width: 100%; border: 1px solid #dce2ec; background: white; border-radius: 6px; padding: 8px 10px; font-size: 13px; }
