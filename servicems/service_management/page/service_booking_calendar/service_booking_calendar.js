@@ -11,6 +11,7 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
   iframe.src = "/bookings?embedded=1";
   iframe.title = __("ServiceMS Booking Calendar");
   iframe.setAttribute("loading", "eager");
-  iframe.style.cssText = "display:block;width:100%;height:calc(100vh - 170px);min-height:580px;border:0;background:#fff;";
+  iframe.style.cssText =
+    "display:block;width:100%;height:calc(100vh - 170px);min-height:580px;border:0;background:#fff;";
   container.empty().append(iframe);
 };
