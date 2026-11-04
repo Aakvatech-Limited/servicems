@@ -160,3 +160,28 @@ class TestCalendarRecords(TestCase):
 					"workshop": self.workshop,
 				}
 			)
+
+	def test_native_calendar_link_sync_preserves_other_items_and_collapse(self):
+		from servicems.navigation import _navigation_write
+
+		doc = frappe.get_doc("Sidebar", "Service Management")
+		other = [row.as_dict() for row in doc.items if row.label != "Booking Calendar"]
+		entry = next(row for row in doc.items if row.label == "Booking Calendar")
+		entry.link_type = "URL"
+		entry.url = "/bookings"
+		entry.link_to = ""
+		with _navigation_write():
+			doc.save(ignore_permissions=True)
+		calendar.sync_calendar_navigation()
+		updated = frappe.get_doc("Sidebar", "Service Management")
+		entry = next(row for row in updated.items if row.label == "Booking Calendar")
+		self.assertEqual((entry.link_type, entry.link_to), ("Page", "service-booking-calendar"))
+
+		# Parent modified timestamps change on save; navigation row values must not.
+		def values(rows):
+			return [{k: v for k, v in row.items() if k not in ("modified", "modified_by")} for row in rows]
+
+		self.assertEqual(
+			values(other), values([row.as_dict() for row in updated.items if row.label != "Booking Calendar"])
+		)
+		self.assertFalse(calendar.sync_calendar_navigation()["Sidebar"])

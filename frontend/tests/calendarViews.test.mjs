@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { addDays, daysBetween, monday, monthStart, rowGroups, shiftDate, siteToday, timeLabel, viewRange } from '../src/utils/calendarViews.mjs'
+import { addDays, daysBetween, monday, monthStart, rowGroups, rescheduleTimeValue, shiftDate, siteToday, timeLabel, viewRange } from '../src/utils/calendarViews.mjs'
 
 test('week starts Monday and spans seven days', () => {
   assert.deepEqual(viewRange('2026-11-05', 'week'), {
@@ -54,4 +54,10 @@ test('today follows the site timezone across midnight', () => {
 test('Bay grouping never drops readable bookings whose Bay is not in lookup results', () => {
   const rows = [{name: 'unknown', bay: 'Old Bay'}, {name: 'unassigned', bay: ''}]
   assert.deepEqual(rowGroups(rows, true, [], '').flatMap((group) => group.entries), rows)
+})
+
+test('date-only rescheduling preserves hidden stored seconds', () => {
+  assert.equal(rescheduleTimeValue('09:05', '9:05:30'), '09:05:30')
+  assert.equal(rescheduleTimeValue('09:06', '9:05:30'), '09:06')
+  assert.equal(rescheduleTimeValue('', ''), '')
 })

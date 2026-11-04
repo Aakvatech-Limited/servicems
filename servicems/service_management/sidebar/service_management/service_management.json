@@ -1,6 +1,6 @@
 {
  "doctype": "Sidebar",
- "modified": "2026-10-21 16:00:00.000000",
+ "modified": "2026-11-05 01:19:08.561500",
  "name": "Service Management",
  "title": "Service Management",
  "module": "Service Management",
@@ -34,11 +34,11 @@
   {
    "type": "Link",
    "label": "Booking Calendar",
-   "link_type": "URL",
-   "url": "/bookings",
+   "link_type": "Page",
    "child": 1,
    "open_in_new_tab": 0,
-   "is_default_module": 0
+   "is_default_module": 0,
+   "link_to": "service-booking-calendar"
   },
   {
    "type": "Link",

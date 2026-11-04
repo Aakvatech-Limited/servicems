@@ -331,3 +331,33 @@ def reschedule_booking(name, booking_date, booking_time="", bay=None):
 		"booking_time": str(doc.booking_time or ""),
 		"bay": doc.bay,
 	}
+
+
+def sync_calendar_navigation():
+	"""Point only the calendar entry at the native Page, preserving site navigation."""
+	if not frappe.db.exists("Page", "service-booking-calendar"):
+		return {}
+	from servicems.navigation import _navigation_write
+
+	result = {}
+	for doctype, name, table, type_field in (
+		("Sidebar", "Service Management", "items", "link_type"),
+		("Workspace", "Service MS", "shortcuts", "type"),
+	):
+		if not frappe.db.exists(doctype, name):
+			continue
+		doc = frappe.get_doc(doctype, name)
+		changed = False
+		for row in doc.get(table):
+			if row.label != "Booking Calendar":
+				continue
+			if row.get(type_field) != "Page" or row.link_to != "service-booking-calendar" or row.url:
+				row.set(type_field, "Page")
+				row.link_to = "service-booking-calendar"
+				row.url = ""
+				changed = True
+		if changed:
+			with _navigation_write():
+				doc.save(ignore_permissions=True)
+		result[doctype] = changed
+	return result

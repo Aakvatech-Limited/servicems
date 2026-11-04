@@ -82,3 +82,10 @@ export function siteToday(timeZone, now = new Date()) {
   const value = (type) => parts.find((part) => part.type === type).value
   return `${value('year')}-${value('month')}-${value('day')}`
 }
+
+export function rescheduleTimeValue(input, previous) {
+  // A date-only edit must retain seconds that the minute-only control does not show.
+  if (previous && input === timeLabel(previous))
+    return input + ':' + (previous.split(':')[2] || '00')
+  return input
+}

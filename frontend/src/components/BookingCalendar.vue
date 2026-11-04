@@ -524,6 +524,7 @@ import {
   formatDay,
   monthStart,
   rowGroups,
+  rescheduleTimeValue,
   shiftDate,
   timeLabel,
   viewRange,
@@ -729,7 +730,10 @@ async function reschedule() {
       params: {
         name: selected.value.name,
         booking_date: rescheduleDate.value,
-        booking_time: rescheduleTime.value,
+        booking_time: rescheduleTimeValue(
+          rescheduleTime.value,
+          selected.value.booking_time
+        ),
         bay: bayManagementEnabled.value ? rescheduleBay.value : undefined,
       },
     })
