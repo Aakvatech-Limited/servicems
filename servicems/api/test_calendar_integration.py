@@ -185,3 +185,54 @@ class TestCalendarRecords(TestCase):
 			values(other), values([row.as_dict() for row in updated.items if row.label != "Booking Calendar"])
 		)
 		self.assertFalse(calendar.sync_calendar_navigation()["Sidebar"])
+
+	def test_native_lookup_reaches_customer_and_vehicle_beyond_first_500(self):
+		from frappe.desk.search import search_link
+
+		prefix = "Calendar Paging " + self.suffix
+		customers = []
+		for index in range(501):
+			values = {**self.customer, "customer_name": f"{prefix} {index:04d}"}
+			customers.append(frappe.get_doc({"doctype": "Customer", **values}).insert().name)
+		first_page = frappe.get_list(
+			"Customer",
+			filters={"customer_name": ["like", prefix + "%"]},
+			fields=["name"],
+			order_by="modified desc",
+			limit=500,
+		)
+		self.assertNotIn(customers[0], [row.name for row in first_page])
+		self.assertIn(
+			customers[0], [row["value"] for row in search_link("Customer", customers[0], page_length=20)]
+		)
+		vehicles = []
+		for index in range(501):
+			vehicles.append(
+				frappe.get_doc(
+					{
+						"doctype": "Service Vehicle",
+						"registration_number": f"CP-{self.suffix}-{index:04d}",
+						"customer": customers[0],
+						"vehicle_model": self.model,
+					}
+				)
+				.insert()
+				.name
+			)
+		first_page = frappe.get_list(
+			"Service Vehicle",
+			filters={"customer": customers[0]},
+			fields=["name"],
+			order_by="modified desc",
+			limit=500,
+		)
+		self.assertNotIn(vehicles[0], [row.name for row in first_page])
+		self.assertIn(
+			vehicles[0],
+			[
+				row["value"]
+				for row in search_link(
+					"Service Vehicle", vehicles[0], filters={"customer": customers[0]}, page_length=20
+				)
+			],
+		)
