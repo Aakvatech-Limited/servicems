@@ -221,7 +221,7 @@ def reschedule_booking(name, booking_date, booking_time="", bay=None):
     if doc.status != "Pending":
         frappe.throw(_("Only pending bookings can be rescheduled."))
     effective_bay = doc.bay if bay is None else _text(bay, "Bay", allow_empty=True)
-    _validate_bay(effective_bay, doc.workshop, booking_date, booking_time, exclude=doc.name)
+    # Historical Bay values remain readable when Bay Management is switched off.\n    # Do not turn an otherwise valid date/time edit into a Bay migration.\n    if _bay_enabled() or bay is not None:\n        _validate_bay(effective_bay, doc.workshop, booking_date, booking_time, exclude=doc.name)
     doc.booking_date = booking_date
     doc.booking_time = booking_time
     if bay is not None:
