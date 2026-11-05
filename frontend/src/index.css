@@ -196,3 +196,23 @@ html, body { background: var(--sm-bg); color: var(--sm-foreground); }
  .sm-calendar .sm-calendar-toolbar { gap:8px; }
  .sm-calendar .sm-calendar-subtitle { line-height:1.5; }
 }
+
+.sm-calendar .sm-month-legend { flex-wrap:wrap; align-items:center; gap:12px; margin:0 0 9px; color:var(--sm-muted); }
+.sm-calendar .sm-legend-item { display:flex; align-items:center; gap:5px; font-size:11px; }
+.sm-calendar .sm-legend-dot { display:inline-block; height:9px; width:9px; border-radius:50%; background:var(--sm-status-border); }
+:root[data-theme="dark"] .sm-calendar .sm-pending,
+:root.dark .sm-calendar .sm-pending {
+  background:var(--sm-pending-bg); color:var(--sm-pending-fg); border-left-color:var(--sm-pending-border);
+}
+:root[data-theme="dark"] .sm-calendar .sm-progress,
+:root.dark .sm-calendar .sm-progress {
+  background:var(--sm-progress-bg); color:var(--sm-progress-fg); border-left-color:var(--sm-progress-border);
+}
+:root[data-theme="dark"] .sm-calendar .sm-complete,
+:root.dark .sm-calendar .sm-complete {
+  background:var(--sm-complete-bg); color:var(--sm-complete-fg); border-left-color:var(--sm-complete-border);
+}
+:root[data-theme="dark"] .sm-calendar .sm-closed,
+:root.dark .sm-calendar .sm-closed {
+  background:var(--sm-closed-bg); color:var(--sm-closed-fg); border-left-color:var(--sm-closed-border);
+}
