@@ -333,7 +333,6 @@ def reschedule_booking(name, booking_date, booking_time="", bay=None):
 	}
 
 
-
 @frappe.whitelist()
 def get_calendar_holidays(from_date, to_date, workshop=None):
 	"""Return the configured company Holiday List for booking-calendar display.
@@ -383,7 +382,6 @@ def get_calendar_holidays(from_date, to_date, workshop=None):
 		for row in rows
 	]
 	return {"holiday_list": holiday_list, "holidays": holidays}
-
 
 
 def sync_calendar_navigation():

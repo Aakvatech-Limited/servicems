@@ -160,9 +160,17 @@
           {{ item }}
         </span>
         <span class="sm-legend-divider" aria-hidden="true"></span>
-        <span class="sm-legend-item"><span class="sm-holiday-legend-icon" aria-hidden="true">▦</span> Holiday</span>
-        <span class="sm-legend-item"><span class="sm-weekend-legend-swatch" aria-hidden="true"></span> Weekend</span>
-        <span class="sm-holiday-source" v-if="holidayList">Holiday List: {{ holidayList }}</span>
+        <span class="sm-legend-item"
+          ><span class="sm-holiday-legend-icon" aria-hidden="true">▦</span>
+          Holiday</span
+        >
+        <span class="sm-legend-item"
+          ><span class="sm-weekend-legend-swatch" aria-hidden="true"></span>
+          Weekend</span
+        >
+        <span class="sm-holiday-source" v-if="holidayList"
+          >Holiday List: {{ holidayList }}</span
+        >
       </div>
       <div v-if="view === 'month'" class="sm-month-layout hidden lg:block">
         <div
@@ -186,7 +194,8 @@
               'sm-month-today': day && day === localToday(),
               'sm-month-selected': day && day === agendaDate,
               'sm-month-weekend': day && isWeekend(day),
-              'sm-month-holiday': day && holidayForDay(day) && !holidayForDay(day).weekly_off,
+              'sm-month-holiday':
+                day && holidayForDay(day) && !holidayForDay(day).weekly_off,
             }"
           >
             <template v-if="day">
@@ -203,11 +212,18 @@
                   {{ recordsForDay(day).length }}
                 </span>
               </div>
-              <div v-if="holidayForDay(day)" class="sm-month-holiday-label"
-                :class="{ 'sm-weekly-off-label': holidayForDay(day).weekly_off }"
-                :title="holidayForDay(day).description">
+              <div
+                v-if="holidayForDay(day)"
+                class="sm-month-holiday-label"
+                :class="{
+                  'sm-weekly-off-label': holidayForDay(day).weekly_off,
+                }"
+                :title="holidayForDay(day).description"
+              >
                 <span class="sm-holiday-mark" aria-hidden="true">▦</span>
-                <span class="sm-holiday-text">{{ holidayForDay(day).description }}</span>
+                <span class="sm-holiday-text">{{
+                  holidayForDay(day).description
+                }}</span>
               </div>
               <div class="sm-month-events">
                 <button
@@ -784,7 +800,11 @@ async function load() {
       const holidayResponse = await frappeRequest({
         url: 'servicems.api.calendar.get_calendar_holidays',
         method: 'GET',
-        params: { from_date: range.value.from, to_date: range.value.to, workshop: workshop.value },
+        params: {
+          from_date: range.value.from,
+          to_date: range.value.to,
+          workshop: workshop.value,
+        },
       })
       if (id !== requestNumber) return
       holidays.value = holidayResponse.holidays || []

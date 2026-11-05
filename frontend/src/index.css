@@ -454,7 +454,12 @@ body {
 }
 .sm-calendar {
   --sm-calendar-gutter: 10px;
-  background: linear-gradient(140deg, var(--sm-surface-muted), var(--sm-bg) 35%, var(--sm-bg));
+  background: linear-gradient(
+    140deg,
+    var(--sm-surface-muted),
+    var(--sm-bg) 35%,
+    var(--sm-bg)
+  );
 }
 .sm-calendar .sm-calendar-intro {
   margin-bottom: 10px;
