@@ -67,4 +67,7 @@ jobs:
           corepack enable
           yarn install
           node --test tests/*.test.mjs
+          # Existing Vite config imports this plugin, but it is absent from
+          # the tracked frontend manifest. Install for CI validation only.
+          yarn add --dev --no-lockfile unplugin-vue-define-options
           yarn build
