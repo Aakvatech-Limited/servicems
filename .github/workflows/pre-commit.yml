@@ -66,5 +66,5 @@ jobs:
         run: |
           corepack enable
           yarn install
-          node --test --test-isolation=none tests/*.test.mjs
+          node --test tests/*.test.mjs
           yarn build
