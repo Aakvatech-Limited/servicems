@@ -8,7 +8,7 @@ import re
 
 import frappe
 from frappe import _
-from frappe.utils import date_diff, get_system_timezone, getdate
+from frappe.utils import date_diff, get_system_timezone, getdate, strip_html_tags
 
 ACTIVE_STATUSES = ("Pending", "In Progress")
 BOOKING_STATUSES = ("Pending", "In Progress", "Completed", "Closed")
@@ -331,6 +331,59 @@ def reschedule_booking(name, booking_date, booking_time="", bay=None):
 		"booking_time": str(doc.booking_time or ""),
 		"bay": doc.bay,
 	}
+
+
+
+@frappe.whitelist()
+def get_calendar_holidays(from_date, to_date, workshop=None):
+	"""Return the configured company Holiday List for booking-calendar display.
+
+	Only the company's configured default list is exposed, and only to users
+	with Service Booking read access. No arbitrary Holiday List can be queried.
+	"""
+	start, end = _date_range(from_date, to_date)
+	frappe.has_permission("Service Booking", "read", throw=True)
+
+	company = None
+	if workshop:
+		workshop_name = _text(workshop, "Workshop")
+		visible = frappe.get_list(
+			"Service Workshop", filters={"name": workshop_name}, fields=["name", "company"], page_length=1
+		)
+		if not visible:
+			return {"holiday_list": None, "holidays": []}
+		company = visible[0].company
+	else:
+		company = frappe.db.get_single_value("Service Settings", "company")
+
+	if not company:
+		return {"holiday_list": None, "holidays": []}
+	holiday_list = frappe.db.get_value("Company", company, "default_holiday_list")
+	if not holiday_list:
+		return {"holiday_list": None, "holidays": []}
+
+	rows = frappe.get_all(
+		"Holiday",
+		filters={
+			"parenttype": "Holiday List",
+			"parent": holiday_list,
+			"holiday_date": ["between", [start, end]],
+		},
+		fields=["holiday_date", "description", "weekly_off", "is_half_day"],
+		order_by="holiday_date asc",
+		page_length=400,
+	)
+	holidays = [
+		{
+			"date": str(row.holiday_date),
+			"description": strip_html_tags(row.description or "").strip()[:140] or _("Holiday"),
+			"weekly_off": bool(row.weekly_off),
+			"is_half_day": bool(row.is_half_day),
+		}
+		for row in rows
+	]
+	return {"holiday_list": holiday_list, "holidays": holidays}
+
 
 
 def sync_calendar_navigation():
