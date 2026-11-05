@@ -4,11 +4,10 @@
     :class="{ 'sm-dialog-open': selected || showCreate }"
     aria-label="Booking Calendar"
   >
-    <header class="mb-5 flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <p class="text-sm text-gray-600">Workshop booking schedule</p>
-        <p class="mt-1 text-xs text-gray-500">Start times · {{ timezone }}</p>
-      </div>
+    <header class="sm-calendar-intro mb-3 flex items-center justify-between gap-3">
+      <p class="sm-calendar-subtitle text-xs">
+        Workshop booking schedule · Start times in {{ timezone }}
+      </p>
       <button
         v-if="canCreate"
         class="sm-primary"
@@ -65,30 +64,9 @@
       </div>
     </div>
 
-    <div class="mb-3 flex items-center justify-between sm:hidden">
-      <button
-        type="button"
-        class="sm-control"
-        :aria-expanded="showFilters"
-        @click="showFilters = !showFilters"
-      >
-        Filters{{ activeFilters ? ' (' + activeFilters + ')' : '' }}
-      </button>
-      <button
-        v-if="activeFilters"
-        type="button"
-        class="text-xs text-gray-600"
-        @click="clearFilters"
-      >
-        Clear filters
-      </button>
-    </div>
-    <div
-      class="mb-4 grid-cols-1 gap-2 sm:grid sm:grid-cols-2 xl:grid-cols-5"
-      :class="showFilters ? 'grid' : 'hidden'"
-    >
-      <label class="sm-field"
-        ><span>Workshop</span>
+    <div class="sm-filter-bar mb-3">
+      <label class="sm-field">
+        <span>Workshop</span>
         <select v-model="workshop" class="sm-input">
           <option value="">All workshops</option>
           <option v-for="name in workshops" :key="name" :value="name">
@@ -96,35 +74,18 @@
           </option>
         </select>
       </label>
-      <label class="sm-field"
-        ><span>Customer</span
-        ><RecordLink
-          v-model="customer"
-          doctype="Customer"
-          label="Filter Customer"
-          placeholder="All customers"
-      /></label>
-      <label class="sm-field"
-        ><span>Vehicle</span
-        ><RecordLink
-          v-model="vehicle"
-          doctype="Service Vehicle"
-          label="Filter Vehicle"
-          placeholder="All vehicles"
-          :filters="customer ? { customer } : {}"
-      /></label>
-      <label class="sm-field"
-        ><span>Customer / registration</span>
+      <label class="sm-field sm-filter-search">
+        <span>Search bookings</span>
         <input
           v-model="query"
           class="sm-input"
           type="search"
           maxlength="100"
-          placeholder="Search bookings"
+          placeholder="Customer, registration or booking ID"
         />
       </label>
-      <label class="sm-field"
-        ><span>Status</span>
+      <label class="sm-field sm-filter-status">
+        <span>Status</span>
         <select v-model="status" class="sm-input">
           <option value="">All statuses</option>
           <option v-for="name in statuses" :key="name" :value="name">
@@ -132,6 +93,43 @@
           </option>
         </select>
       </label>
+      <button
+        type="button"
+        class="sm-control sm-filter-toggle"
+        :aria-expanded="showFilters"
+        aria-controls="sm-advanced-calendar-filters"
+        @click="showFilters = !showFilters"
+      >
+        {{ showFilters ? 'Less filters' : 'More filters' }}{{ advancedFilterCount ? ' (' + advancedFilterCount + ')' : '' }}
+      </button>
+    </div>
+    <div
+      v-if="showFilters"
+      id="sm-advanced-calendar-filters"
+      class="sm-advanced-filters mb-4"
+    >
+      <label class="sm-field">
+        <span>Customer</span>
+        <RecordLink
+          v-model="customer"
+          doctype="Customer"
+          label="Filter Customer"
+          placeholder="All customers"
+        />
+      </label>
+      <label class="sm-field">
+        <span>Vehicle</span>
+        <RecordLink
+          v-model="vehicle"
+          doctype="Service Vehicle"
+          label="Filter Vehicle"
+          placeholder="All vehicles"
+          :filters="customer ? { customer } : {}"
+        />
+      </label>
+      <button v-if="activeFilters" type="button" class="sm-control sm-filter-clear" @click="clearFilters">
+        Clear all filters
+      </button>
     </div>
 
     <div v-if="loading" role="status" class="sm-message">Loading bookings…</div>
@@ -140,46 +138,59 @@
       <button class="sm-control ml-3" type="button" @click="load">Retry</button>
     </div>
     <template v-else>
-      <div v-if="view === 'month'" class="hidden md:block">
-        <div
-          class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-gray-500"
-        >
-          <span v-for="label in weekdays" :key="label" class="p-2">{{
-            label
-          }}</span>
+      <div v-if="view === 'month'" class="sm-month-layout hidden lg:block">
+        <div class="sm-month-weekdays grid grid-cols-7 gap-1 text-center text-xs font-bold">
+          <span v-for="label in weekdays" :key="label" class="p-2">{{ label }}</span>
         </div>
-        <div class="grid grid-cols-7 gap-1">
+        <div class="sm-month-grid grid grid-cols-7 gap-1" role="grid" aria-label="Monthly bookings">
           <div
             v-for="(day, idx) in monthCells"
             :key="idx"
-            class="min-h-28 rounded-md border border-gray-200 bg-white p-2"
+            class="sm-month-cell"
+            :class="{
+              'sm-month-outside': !day,
+              'sm-month-today': day && day === localToday(),
+              'sm-month-selected': day && day === agendaDate,
+            }"
           >
             <template v-if="day">
-              <button
-                class="mb-2 text-sm font-semibold"
-                type="button"
-                @click="focusDay(day)"
-              >
-                {{ Number(day.slice(-2)) }}
-              </button>
-              <button
-                v-for="booking in recordsForDay(day).slice(0, 3)"
-                :key="booking.name"
-                type="button"
-                class="mb-1 block w-full truncate rounded bg-blue-50 px-1 py-1 text-left text-xs"
-                @click="selectBooking(booking)"
-              >
-                {{ timeLabel(booking.booking_time) }}
-                {{ booking.registration_number }}
-              </button>
-              <button
-                v-if="recordsForDay(day).length > 3"
-                class="text-xs text-blue-700"
-                type="button"
-                @click="focusDay(day)"
-              >
-                +{{ recordsForDay(day).length - 3 }} more
-              </button>
+              <div class="sm-month-cell-header">
+                <button
+                  type="button"
+                  class="sm-month-day-number"
+                  :aria-label="'Open day ' + day"
+                  @click="focusDay(day)"
+                >
+                  {{ Number(day.slice(-2)) }}
+                </button>
+                <span v-if="recordsForDay(day).length" class="sm-month-count">
+                  {{ recordsForDay(day).length }}
+                </span>
+              </div>
+              <div class="sm-month-events">
+                <button
+                  v-for="booking in recordsForDay(day).slice(0, 3)"
+                  :key="booking.name"
+                  type="button"
+                  class="sm-month-booking"
+                  :class="statusClass(booking.status)"
+                  :title="booking.name + ' · ' + booking.status + ' · ' + booking.customer_name"
+                  :aria-label="booking.name + ', ' + timeLabel(booking.booking_time) + ', ' + booking.registration_number + ', ' + booking.status"
+                  @click="selectBooking(booking)"
+                >
+                  <span class="sm-month-time">{{ timeLabel(booking.booking_time) }}</span>
+                  <span class="sm-month-registration">{{ booking.registration_number }}</span>
+                </button>
+                <button
+                  v-if="recordsForDay(day).length > 3"
+                  class="sm-month-more"
+                  type="button"
+                  :aria-label="'Show all ' + recordsForDay(day).length + ' bookings on ' + day"
+                  @click="focusDay(day)"
+                >
+                  +{{ recordsForDay(day).length - 3 }} more
+                </button>
+              </div>
             </template>
           </div>
         </div>
@@ -348,7 +359,7 @@
 
       <div
         class="lg:hidden"
-        :class="view === 'day' || view === 'month' ? 'md:hidden' : ''"
+        :class="view === 'day' ? 'md:hidden' : ''"
       >
         <h2 class="mb-3 text-base font-semibold">
           {{
@@ -523,6 +534,9 @@ const status = ref('')
 const customer = ref('')
 const vehicle = ref('')
 const showFilters = ref(false)
+const advancedFilterCount = computed(
+  () => [customer.value, vehicle.value].filter(Boolean).length
+)
 const activeFilters = computed(
   () =>
     [
@@ -582,7 +596,9 @@ const rangeLabel = computed(() =>
 const monthCells = computed(() => {
   const first = monthStart(cursor.value)
   const leading = (new Date(first + 'T00:00:00Z').getUTCDay() + 6) % 7
-  return [...Array(leading).fill(null), ...visibleDays.value]
+  const days = [...Array(leading).fill(null), ...visibleDays.value]
+  const trailing = (7 - (days.length % 7)) % 7
+  return [...days, ...Array(trailing).fill(null)]
 })
 const groups = computed(() =>
   rowGroups(
