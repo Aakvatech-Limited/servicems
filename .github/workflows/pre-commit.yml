@@ -29,3 +29,46 @@ jobs:
           node-version: 20
 
       - uses: pre-commit/action@v3.0.1
+
+  phase3-calendar-format:
+    name: Phase 3 calendar format and frontend tests (temporary)
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 67
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install project formatters
+        run: |
+          python -m pip install ruff==0.13.2
+          npm install -g prettier@2.7.1
+      - name: Format calendar changes
+        run: |
+          ruff check --select I --fix servicems/api/calendar.py servicems/api/test_calendar.py
+          ruff check --fix servicems/api/calendar.py servicems/api/test_calendar.py
+          ruff format servicems/api/calendar.py servicems/api/test_calendar.py
+          prettier --write frontend/src/components/BookingCalendar.vue frontend/src/index.css
+      - name: Commit formatting on PR branch only
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add servicems/api/calendar.py servicems/api/test_calendar.py frontend/src/components/BookingCalendar.vue frontend/src/index.css
+            git commit -m "style(bookings): format approved month calendar UI"
+            git push origin HEAD:refs/heads/feat/v16-booking-calendar-responsive
+          fi
+      - name: Frontend unit tests
+        working-directory: frontend
+        run: |
+          corepack enable
+          yarn install
+          node --test tests/*.test.mjs
