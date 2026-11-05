@@ -514,7 +514,7 @@ body {
   margin-bottom: 5px;
 }
 .sm-calendar .sm-month-grid {
-  grid-auto-rows: minmax(84px, 1fr);
+  grid-auto-rows: minmax(max-content, 1fr);
   gap: 4px;
 }
 .sm-calendar .sm-month-cell {
