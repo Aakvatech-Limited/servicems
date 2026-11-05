@@ -28,16 +28,23 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
     if (!doc) return;
     const root = document.documentElement;
     const body = document.body;
-    const rawTheme = root.getAttribute("data-theme") ||
+    const rawTheme =
+      root.getAttribute("data-theme") ||
       body.getAttribute("data-theme") ||
-      document.documentElement.getAttribute("data-bs-theme") || "";
-    const isDark = rawTheme.toLowerCase().includes("dark") ||
-      root.classList.contains("dark") || body.classList.contains("dark") ||
+      document.documentElement.getAttribute("data-bs-theme") ||
+      "";
+    const isDark =
+      rawTheme.toLowerCase().includes("dark") ||
+      root.classList.contains("dark") ||
+      body.classList.contains("dark") ||
       getComputedStyle(root).colorScheme === "dark";
     const next = isDark ? "dark" : "light";
     doc.documentElement.dataset.theme = next;
     doc.documentElement.classList.toggle("dark", isDark);
-    doc.documentElement.style.setProperty("--sm-font", getComputedStyle(wrapper).fontFamily);
+    doc.documentElement.style.setProperty(
+      "--sm-font",
+      getComputedStyle(wrapper).fontFamily
+    );
     // Follow native Desk's primary accent whenever the installed theme exposes it.
     const accent = getComputedStyle(root).getPropertyValue("--primary").trim();
     if (accent && accent.startsWith("#"))
@@ -77,10 +84,12 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
     themeObserver?.disconnect();
     themeObserver = new MutationObserver(syncTheme);
     themeObserver.observe(document.documentElement, {
-      attributes: true, attributeFilter: ["data-theme", "data-bs-theme", "class", "style"],
+      attributes: true,
+      attributeFilter: ["data-theme", "data-bs-theme", "class", "style"],
     });
     themeObserver.observe(document.body, {
-      attributes: true, attributeFilter: ["data-theme", "class", "style"],
+      attributes: true,
+      attributeFilter: ["data-theme", "class", "style"],
     });
     syncTheme();
     window.addEventListener("resize", resize);

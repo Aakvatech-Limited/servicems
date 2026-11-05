@@ -4,7 +4,9 @@
     :class="{ 'sm-dialog-open': selected || showCreate }"
     aria-label="Booking Calendar"
   >
-    <header class="sm-calendar-intro mb-3 flex items-center justify-between gap-3">
+    <header
+      class="sm-calendar-intro mb-3 flex items-center justify-between gap-3"
+    >
       <p class="sm-calendar-subtitle text-xs">
         Workshop booking schedule · Start times in {{ timezone }}
       </p>
@@ -100,7 +102,8 @@
         aria-controls="sm-advanced-calendar-filters"
         @click="showFilters = !showFilters"
       >
-        {{ showFilters ? 'Less filters' : 'More filters' }}{{ advancedFilterCount ? ' (' + advancedFilterCount + ')' : '' }}
+        {{ showFilters ? 'Less filters' : 'More filters'
+        }}{{ advancedFilterCount ? ' (' + advancedFilterCount + ')' : '' }}
       </button>
     </div>
     <div
@@ -127,7 +130,12 @@
           :filters="customer ? { customer } : {}"
         />
       </label>
-      <button v-if="activeFilters" type="button" class="sm-control sm-filter-clear" @click="clearFilters">
+      <button
+        v-if="activeFilters"
+        type="button"
+        class="sm-control sm-filter-clear"
+        @click="clearFilters"
+      >
         Clear all filters
       </button>
     </div>
@@ -138,17 +146,33 @@
       <button class="sm-control ml-3" type="button" @click="load">Retry</button>
     </div>
     <template v-else>
-      <div v-if="view === 'month'" class="sm-month-legend hidden lg:flex" aria-label="Booking status legend">
+      <div
+        v-if="view === 'month'"
+        class="sm-month-legend hidden lg:flex"
+        aria-label="Booking status legend"
+      >
         <span v-for="item in statuses" :key="item" class="sm-legend-item">
-          <span class="sm-legend-dot" :class="statusClass(item)" aria-hidden="true"></span>
+          <span
+            class="sm-legend-dot"
+            :class="statusClass(item)"
+            aria-hidden="true"
+          ></span>
           {{ item }}
         </span>
       </div>
       <div v-if="view === 'month'" class="sm-month-layout hidden lg:block">
-        <div class="sm-month-weekdays grid grid-cols-7 gap-1 text-center text-xs font-bold">
-          <span v-for="label in weekdays" :key="label" class="p-2">{{ label }}</span>
+        <div
+          class="sm-month-weekdays grid grid-cols-7 gap-1 text-center text-xs font-bold"
+        >
+          <span v-for="label in weekdays" :key="label" class="p-2">{{
+            label
+          }}</span>
         </div>
-        <div class="sm-month-grid grid grid-cols-7 gap-1" role="grid" aria-label="Monthly bookings">
+        <div
+          class="sm-month-grid grid grid-cols-7 gap-1"
+          role="grid"
+          aria-label="Monthly bookings"
+        >
           <div
             v-for="(day, idx) in monthCells"
             :key="idx"
@@ -180,18 +204,41 @@
                   type="button"
                   class="sm-month-booking"
                   :class="statusClass(booking.status)"
-                  :title="booking.name + ' · ' + booking.status + ' · ' + booking.customer_name"
-                  :aria-label="booking.name + ', ' + timeLabel(booking.booking_time) + ', ' + booking.registration_number + ', ' + booking.status"
+                  :title="
+                    booking.name +
+                    ' · ' +
+                    booking.status +
+                    ' · ' +
+                    booking.customer_name
+                  "
+                  :aria-label="
+                    booking.name +
+                    ', ' +
+                    timeLabel(booking.booking_time) +
+                    ', ' +
+                    booking.registration_number +
+                    ', ' +
+                    booking.status
+                  "
                   @click="selectBooking(booking)"
                 >
-                  <span class="sm-month-time">{{ timeLabel(booking.booking_time) }}</span>
-                  <span class="sm-month-registration">{{ booking.registration_number }}</span>
+                  <span class="sm-month-time">{{
+                    timeLabel(booking.booking_time)
+                  }}</span>
+                  <span class="sm-month-registration">{{
+                    booking.registration_number
+                  }}</span>
                 </button>
                 <button
                   v-if="recordsForDay(day).length > 3"
                   class="sm-month-more"
                   type="button"
-                  :aria-label="'Show all ' + recordsForDay(day).length + ' bookings on ' + day"
+                  :aria-label="
+                    'Show all ' +
+                    recordsForDay(day).length +
+                    ' bookings on ' +
+                    day
+                  "
                   @click="focusDay(day)"
                 >
                   +{{ recordsForDay(day).length - 3 }} more
@@ -363,10 +410,7 @@
         </div>
       </div>
 
-      <div
-        class="lg:hidden"
-        :class="view === 'day' ? 'md:hidden' : ''"
-      >
+      <div class="lg:hidden" :class="view === 'day' ? 'md:hidden' : ''">
         <h2 class="mb-3 text-base font-semibold">
           {{
             formatDay(agendaDate, {
