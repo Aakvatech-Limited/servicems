@@ -142,3 +142,38 @@ class TestCalendarApi(TestCase):
 				calendar._validate_bay("Bay-1", "Workshop", "2026-11-05", "09:00")
 		self.assertIn("FOR UPDATE", sql.call_args_list[0].args[0])
 		self.assertIn("FOR UPDATE", sql.call_args_list[1].args[0])
+
+	@patch.object(frappe, "get_all")
+	@patch.object(frappe.db, "get_value", return_value="Company Holiday List")
+	@patch.object(frappe.db, "get_single_value", return_value="Test Company")
+	@patch.object(frappe, "has_permission", return_value=True)
+	def test_holidays_use_configured_company_list(self, permitted, company, holiday_list, get_all):
+		get_all.return_value = [
+			frappe._dict(
+				holiday_date="2026-11-05",
+				description="<p>Workshop closed</p>",
+				weekly_off=0,
+				is_half_day=0,
+			)
+		]
+		result = calendar.get_calendar_holidays("2026-11-01", "2026-11-30")
+		permitted.assert_called_once_with("Service Booking", "read", throw=True)
+		holiday_list.assert_called_once_with("Company", "Test Company", "default_holiday_list")
+		self.assertEqual(result["holiday_list"], "Company Holiday List")
+		self.assertEqual(result["holidays"][0]["description"], "Workshop closed")
+		self.assertFalse(result["holidays"][0]["weekly_off"])
+		self.assertEqual(get_all.call_args.kwargs["filters"]["parent"], "Company Holiday List")
+
+	@patch.object(frappe, "has_permission", side_effect=frappe.PermissionError())
+	def test_holiday_endpoint_requires_booking_read_access(self, permitted):
+		with self.assertRaises(frappe.PermissionError):
+			calendar.get_calendar_holidays("2026-11-01", "2026-11-30")
+
+	@patch.object(frappe, "get_all")
+	@patch.object(frappe.db, "get_value", return_value=None)
+	@patch.object(frappe.db, "get_single_value", return_value="Test Company")
+	@patch.object(frappe, "has_permission", return_value=True)
+	def test_no_default_holiday_list_is_empty(self, permitted, company, holiday_list, get_all):
+		result = calendar.get_calendar_holidays("2026-11-01", "2026-11-30")
+		self.assertEqual(result["holidays"], [])
+		get_all.assert_not_called()
