@@ -138,6 +138,12 @@
       <button class="sm-control ml-3" type="button" @click="load">Retry</button>
     </div>
     <template v-else>
+      <div v-if="view === 'month'" class="sm-month-legend hidden lg:flex" aria-label="Booking status legend">
+        <span v-for="item in statuses" :key="item" class="sm-legend-item">
+          <span class="sm-legend-dot" :class="statusClass(item)" aria-hidden="true"></span>
+          {{ item }}
+        </span>
+      </div>
       <div v-if="view === 'month'" class="sm-month-layout hidden lg:block">
         <div class="sm-month-weekdays grid grid-cols-7 gap-1 text-center text-xs font-bold">
           <span v-for="label in weekdays" :key="label" class="p-2">{{ label }}</span>
