@@ -400,3 +400,28 @@ body {
   color: var(--sm-closed-fg);
   border-left-color: var(--sm-closed-border);
 }
+
+/* Scoped Vue styles load after this file; keep theme surfaces authoritative. */
+:root[data-theme] .sm-calendar,
+:root[data-theme] .sm-calendar .sm-details-dialog,
+:root[data-theme] .sm-booking-dialog {
+  background: var(--sm-bg);
+  color: var(--sm-foreground);
+}
+:root[data-theme] .sm-calendar :is(.sm-input, .sm-control),
+:root[data-theme] .sm-booking-dialog :is(.sm-input, .sm-control) {
+  background: var(--sm-surface);
+  color: var(--sm-foreground);
+  border-color: var(--sm-border);
+}
+:root[data-theme] .sm-calendar .sm-field span,
+:root[data-theme] .sm-booking-dialog .sm-label span,
+:root[data-theme] .sm-calendar .sm-booking-model,
+:root[data-theme] .sm-calendar .sm-booking-customer {
+  color: var(--sm-muted);
+}
+:root[data-theme] .sm-calendar .sm-primary,
+:root[data-theme] .sm-booking-dialog .sm-primary {
+  background: #145fc4;
+  color: #ffffff;
+}
