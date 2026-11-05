@@ -21,7 +21,28 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
   page.main.empty().append(iframe);
   let resizeObserver;
   let mutationObserver;
+  let themeObserver;
   let animation;
+  const syncTheme = () => {
+    const doc = iframe.contentDocument;
+    if (!doc) return;
+    const root = document.documentElement;
+    const body = document.body;
+    const rawTheme = root.getAttribute("data-theme") ||
+      body.getAttribute("data-theme") ||
+      document.documentElement.getAttribute("data-bs-theme") || "";
+    const isDark = rawTheme.toLowerCase().includes("dark") ||
+      root.classList.contains("dark") || body.classList.contains("dark") ||
+      getComputedStyle(root).colorScheme === "dark";
+    const next = isDark ? "dark" : "light";
+    doc.documentElement.dataset.theme = next;
+    doc.documentElement.classList.toggle("dark", isDark);
+    doc.documentElement.style.setProperty("--sm-font", getComputedStyle(wrapper).fontFamily);
+    // Follow native Desk's primary accent whenever the installed theme exposes it.
+    const accent = getComputedStyle(root).getPropertyValue("--primary").trim();
+    if (accent && accent.startsWith("#"))
+      doc.documentElement.style.setProperty("--sm-native-primary", accent);
+  };
   const resize = () => {
     if (!wrapper.getClientRects().length) return;
     const viewport = window.visualViewport?.height || window.innerHeight;
@@ -34,10 +55,7 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
     // Same-origin embedding: inherit Desk typography and timezone, without a second shell.
     const doc = iframe.contentDocument;
     if (doc) {
-      doc.documentElement.style.setProperty(
-        "--sm-font",
-        getComputedStyle(wrapper).fontFamily
-      );
+      syncTheme();
       iframe.contentWindow.dispatchEvent(new Event("resize"));
     }
     resize();
@@ -56,6 +74,15 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
     });
     // Native banners can move the frame without changing the page's own size.
     mutationObserver.observe(document.body, { childList: true, subtree: true });
+    themeObserver?.disconnect();
+    themeObserver = new MutationObserver(syncTheme);
+    themeObserver.observe(document.documentElement, {
+      attributes: true, attributeFilter: ["data-theme", "data-bs-theme", "class", "style"],
+    });
+    themeObserver.observe(document.body, {
+      attributes: true, attributeFilter: ["data-theme", "class", "style"],
+    });
+    syncTheme();
     window.addEventListener("resize", resize);
     window.visualViewport?.addEventListener("resize", resize);
     resize();
@@ -63,6 +90,7 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
   wrapper.servicemsCalendarDisconnect = () => {
     resizeObserver?.disconnect();
     mutationObserver?.disconnect();
+    themeObserver?.disconnect();
     cancelAnimationFrame(animation);
     window.removeEventListener("resize", resize);
     window.visualViewport?.removeEventListener("resize", resize);
