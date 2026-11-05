@@ -159,6 +159,10 @@
           ></span>
           {{ item }}
         </span>
+        <span class="sm-legend-divider" aria-hidden="true"></span>
+        <span class="sm-legend-item"><span class="sm-holiday-legend-icon" aria-hidden="true">▦</span> Holiday</span>
+        <span class="sm-legend-item"><span class="sm-weekend-legend-swatch" aria-hidden="true"></span> Weekend</span>
+        <span class="sm-holiday-source" v-if="holidayList">Holiday List: {{ holidayList }}</span>
       </div>
       <div v-if="view === 'month'" class="sm-month-layout hidden lg:block">
         <div
@@ -181,6 +185,8 @@
               'sm-month-outside': !day,
               'sm-month-today': day && day === localToday(),
               'sm-month-selected': day && day === agendaDate,
+              'sm-month-weekend': day && isWeekend(day),
+              'sm-month-holiday': day && holidayForDay(day) && !holidayForDay(day).weekly_off,
             }"
           >
             <template v-if="day">
@@ -196,6 +202,12 @@
                 <span v-if="recordsForDay(day).length" class="sm-month-count">
                   {{ recordsForDay(day).length }}
                 </span>
+              </div>
+              <div v-if="holidayForDay(day)" class="sm-month-holiday-label"
+                :class="{ 'sm-weekly-off-label': holidayForDay(day).weekly_off }"
+                :title="holidayForDay(day).description">
+                <span class="sm-holiday-mark" aria-hidden="true">▦</span>
+                <span class="sm-holiday-text">{{ holidayForDay(day).description }}</span>
               </div>
               <div class="sm-month-events">
                 <button
@@ -608,6 +620,8 @@ const canCreate = ref(false)
 const canWrite = ref(false)
 const query = ref('')
 const bookings = ref([])
+const holidays = ref([])
+const holidayList = ref('')
 const bays = ref([])
 const workshops = ref([])
 const bayManagementEnabled = ref(false)
@@ -650,6 +664,15 @@ const monthCells = computed(() => {
   const trailing = (7 - (days.length % 7)) % 7
   return [...days, ...Array(trailing).fill(null)]
 })
+const holidaysByDate = computed(() =>
+  Object.fromEntries(holidays.value.map((holiday) => [holiday.date, holiday]))
+)
+const holidayForDay = (date) => holidaysByDate.value[date] || null
+function isWeekend(date) {
+  if (!date) return false
+  const dayNumber = new Date(date + 'T00:00:00Z').getUTCDay()
+  return dayNumber === 0 || dayNumber === 6
+}
 const groups = computed(() =>
   rowGroups(
     bookings.value,
@@ -755,6 +778,21 @@ async function load() {
     }
     bookings.value = response.bookings || []
     bays.value = response.bays || []
+    holidays.value = []
+    holidayList.value = ''
+    try {
+      const holidayResponse = await frappeRequest({
+        url: 'servicems.api.calendar.get_calendar_holidays',
+        method: 'GET',
+        params: { from_date: range.value.from, to_date: range.value.to, workshop: workshop.value },
+      })
+      if (id !== requestNumber) return
+      holidays.value = holidayResponse.holidays || []
+      holidayList.value = holidayResponse.holiday_list || ''
+    } catch (_) {
+      // Holiday information is optional; booking retrieval remains independent.
+      if (id !== requestNumber) return
+    }
     bayManagementEnabled.value = Boolean(response.bay_management_enabled)
     workshops.value = (lookup || []).map((item) => item.name)
   } catch (e) {
