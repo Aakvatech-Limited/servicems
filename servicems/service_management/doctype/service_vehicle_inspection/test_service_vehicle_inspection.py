@@ -127,6 +127,7 @@ class TestServiceVehicleInspection(UnitTestCase):
 		)
 		inspection.service_job_card = "SJC-001"
 		inspection.correction_reason = "Incorrect mileage"
+
 		def get_doc(doctype, name):
 			if doctype == "Service Pre Inspection Template":
 				return self.template()
