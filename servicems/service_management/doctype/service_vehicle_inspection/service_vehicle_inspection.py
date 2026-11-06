@@ -33,8 +33,23 @@ class ServiceVehicleInspection(Document):
 						"A correction requires a completed inspection for the same Job Card and stage, and a reason."
 					)
 				)
+		if self.inspection_stage not in ("Pre-Service", "Post-Service", None, ""):
+			frappe.throw(_("Invalid inspection stage."))
 		if self.is_new():
+			if not self.inspection_template:
+				frappe.throw(_("Select an inspection template before creating a new inspection."))
 			self.template_snapshot = source.template_snapshot if self.corrects_inspection else None
+			if self.corrects_inspection:
+				self.require_photographs_snapshot = source.require_photographs_snapshot
+		if self.inspection_template:
+			template = frappe.get_doc("Service Pre Inspection Template", self.inspection_template)
+			template.check_permission("read")
+			if template.applicable_stage and template.applicable_stage != self.inspection_stage:
+				frappe.throw(_("Selected template does not apply to this inspection stage."))
+			if not self.corrects_inspection:
+				self.require_photographs_snapshot = int(bool(template.require_photographs))
+		if self.inspection_status == "Completed" and not self.inspection_stage:
+			frappe.throw(_("Select an inspection stage."))
 		if (
 			previous
 			and previous.inspection_template != self.inspection_template
@@ -45,6 +60,7 @@ class ServiceVehicleInspection(Document):
 			)
 		if previous and previous.template_snapshot:
 			self.template_snapshot = previous.template_snapshot
+			self.require_photographs_snapshot = previous.require_photographs_snapshot
 			baseline = frappe.parse_json(previous.template_snapshot)
 			if len(self.checklist) != len(baseline) or any(
 				row.inspection_item != item.get("inspection_item")
@@ -57,6 +73,11 @@ class ServiceVehicleInspection(Document):
 				row.require_photo = item.get("require_photo", 0)
 		if self.inspection_template and not self.template_snapshot:
 			template = frappe.get_doc("Service Pre Inspection Template", self.inspection_template)
+			template.check_permission("read")
+			if template.applicable_stage and template.applicable_stage != self.inspection_stage:
+				frappe.throw(_("Selected template does not apply to this inspection stage."))
+			if not previous:
+				self.require_photographs_snapshot = int(bool(template.require_photographs))
 			if self.checklist:
 				if len(self.checklist) != len(template.pre_inspection_items) or any(
 					row.inspection_item != spec.inspection_item
@@ -104,13 +125,21 @@ class ServiceVehicleInspection(Document):
 					},
 				)
 			)
-		if not attached:
+		if self.require_photographs_snapshot and not attached:
 			frappe.throw(_("Attach at least one inspection photograph before completion."))
 		for row in self.checklist:
 			if row.require_photo and not row.photograph:
 				frappe.throw(
 					_("A photograph is required for inspection item {0}.").format(row.inspection_item)
 				)
+		if (self.gps_latitude is None) != (self.gps_longitude is None):
+			frappe.throw(_("Capture latitude and longitude together."))
+		if self.gps_latitude is not None and not -90 <= float(self.gps_latitude) <= 90:
+			frappe.throw(_("Invalid GPS latitude."))
+		if self.gps_longitude is not None and not -180 <= float(self.gps_longitude) <= 180:
+			frappe.throw(_("Invalid GPS longitude."))
+		if self.gps_accuracy is not None and float(self.gps_accuracy) < 0:
+			frappe.throw(_("GPS accuracy cannot be negative."))
 		self.completed_by = frappe.session.user
 		self.inspected_on = now()
 
