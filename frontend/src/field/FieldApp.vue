@@ -303,12 +303,17 @@
                   target="_blank"
                   rel="noopener"
                   class="photo-thumb"
-                  ><img :src="photo.file_url" :alt="photo.file_name || 'Inspection photo'" loading="lazy" />
+                  ><img
+                    :src="photo.file_url"
+                    :alt="photo.file_name || 'Inspection photo'"
+                    loading="lazy"
+                  />
                   <span>{{ photo.file_name || 'View photo' }}</span></a
                 >
               </div>
               <div v-if="!completed && online" class="photo-actions">
-                <label class="button secondary photo-picker">📷 Camera
+                <label class="button secondary photo-picker"
+                  >📷 Camera
                   <input
                     type="file"
                     accept="image/*"
@@ -317,7 +322,8 @@
                     @change="pickPhoto($event, null)"
                   />
                 </label>
-                <label class="button secondary photo-picker">▧ Photo library
+                <label class="button secondary photo-picker"
+                  >▧ Photo library
                   <input
                     type="file"
                     accept="image/*"
