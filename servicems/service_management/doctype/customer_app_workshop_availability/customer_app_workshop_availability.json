@@ -1,0 +1,30 @@
+{
+ "doctype": "DocType",
+ "name": "Customer App Workshop Availability",
+ "module": "Service Management",
+ "istable": 1,
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "workshop",
+  "booking_enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "workshop",
+   "fieldtype": "Link",
+   "label": "Service Workshop",
+   "options": "Service Workshop",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "booking_enabled",
+   "fieldtype": "Check",
+   "label": "Available for Customer App Bookings",
+   "default": "0",
+   "in_list_view": 1
+  }
+ ],
+ "permissions": []
+}
