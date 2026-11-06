@@ -124,6 +124,23 @@ body {
   background: var(--sm-surface);
   color: var(--sm-foreground);
 }
+.sm-booking-dialog input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #087bff;
+  background-color: var(--sm-control-bg, var(--sm-surface));
+  border-color: var(--sm-muted);
+  border-radius: 3px;
+}
+.sm-booking-dialog input[type='checkbox']:checked {
+  background-color: #087bff;
+  border-color: #087bff;
+}
+.sm-booking-dialog input[type='checkbox']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 .sm-calendar input::placeholder,
 .sm-booking-dialog input::placeholder {
   color: var(--sm-muted);
