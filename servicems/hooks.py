@@ -81,12 +81,14 @@ fixtures = [
 after_install = [
 	"servicems.fleet_integration.ensure_service_job_card_tyre_fields",
 	"servicems.phase_two_setup.execute",
+	"servicems.field_permissions.ensure_field_permissions",
 ]
 after_migrate = [
 	"servicems.api.calendar.sync_calendar_navigation",
 	"servicems.fleet_integration.ensure_service_job_card_tyre_fields",
 	"servicems.navigation.sync_bay_navigation",
 	"servicems.phase_two_setup.execute",
+	"servicems.field_permissions.ensure_field_permissions",
 ]
 
 # Desk Notifications
@@ -106,6 +108,17 @@ after_migrate = [
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
+
+# Limit Field Technician records by assigned Job Cards.
+# Other roles continue through Frappe's normal DocPerm checks.
+permission_query_conditions = {
+	"Service Job Card": "servicems.field_permissions.field_job_query",
+	"Service Vehicle Inspection": "servicems.field_permissions.field_inspection_query",
+}
+has_permission = {
+	"Service Job Card": "servicems.field_permissions.job_card_permission",
+	"Service Vehicle Inspection": "servicems.field_permissions.inspection_permission",
+}
 
 # DocType Class
 # ---------------
