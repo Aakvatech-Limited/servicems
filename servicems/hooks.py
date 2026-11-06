@@ -83,6 +83,7 @@ after_install = [
 	"servicems.phase_two_setup.execute",
 ]
 after_migrate = [
+	"servicems.api.calendar.sync_calendar_navigation",
 	"servicems.fleet_integration.ensure_service_job_card_tyre_fields",
 	"servicems.navigation.sync_bay_navigation",
 	"servicems.phase_two_setup.execute",

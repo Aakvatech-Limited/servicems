@@ -1,22 +1,23 @@
 <template>
-  <div class="flex">
-    <Sidebar />
-    <div class="flex-1 max-w-7xl py-8 mx-auto w-full">
-      <h1 class="text-3xl font-bold text-center">Welcome to Booking Page</h1>
-      <BookingList />
-    </div>
-  </div>
+  <BookingCalendar v-if="embedded || isDevelopment" />
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { createResource } from 'frappe-ui'
-import { session } from '../data/session'
-import Sidebar from '@/components/Sidebar.vue'
-import BookingList from '@/components/BookingList.vue'
+import BookingCalendar from '@/components/BookingCalendar.vue'
 
-const ping = createResource({
-  url: 'ping',
-  auto: true,
-})
+const isDevelopment = import.meta.env.DEV
+const embedded =
+  new URLSearchParams(window.location.search).get('embedded') === '1'
+
+if (embedded && window.parent !== window) {
+  window.csrf_token =
+    window.parent.frappe?.csrf_token ||
+    window.parent.csrf_token ||
+    window.csrf_token
+}
+
+// The standalone website does not inherit the native Frappe Desk shell.
+if (!embedded && !isDevelopment) {
+  window.location.replace('/app/service-booking-calendar')
+}
 </script>

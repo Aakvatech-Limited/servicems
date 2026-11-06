@@ -1,2 +1,714 @@
 @import './assets/Inter/inter.css';
 @import 'frappe-ui/src/style.css';
+
+/* The embedded app has one content scroller; Desk supplies the outer shell. */
+html,
+body,
+#app,
+#app > div {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+}
+body {
+  font-family: var(--sm-font, Inter, sans-serif);
+}
+* {
+  box-sizing: border-box;
+}
+
+/* Match Desk's unobtrusive scrollbars, including the mobile form. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c6c6c6 transparent;
+}
+
+/* Booking Calendar: native Desk-compatible surfaces shared by the iframe.
+   The Desk page passes data-theme and toggles these variables without a reload. */
+:root {
+  color-scheme: light;
+  --sm-bg: #ffffff;
+  --sm-surface: #ffffff;
+  --sm-surface-muted: #f7f9fc;
+  --sm-foreground: #243247;
+  --sm-muted: #657388;
+  --sm-border: #dce3ed;
+  --sm-accent: #1769d2;
+  --sm-accent-soft: #eaf3ff;
+  --sm-pending-bg: #f5eafb;
+  --sm-pending-fg: #69229b;
+  --sm-pending-border: #a855f7;
+  --sm-progress-bg: #fff2d7;
+  --sm-progress-fg: #8a4907;
+  --sm-progress-border: #dc8b18;
+  --sm-complete-bg: #e3f7eb;
+  --sm-complete-fg: #16643b;
+  --sm-complete-border: #26955b;
+  --sm-closed-bg: #e9edf2;
+  --sm-closed-fg: #45536a;
+  --sm-closed-border: #718096;
+}
+:root[data-theme='dark'],
+:root[data-theme='timeless-dark'],
+:root.dark,
+body[data-theme='dark'],
+body.dark {
+  color-scheme: dark;
+  --sm-bg: #171d27;
+  --sm-surface: #202937;
+  --sm-surface-muted: #273244;
+  --sm-foreground: #e8eef8;
+  --sm-muted: #aab8cc;
+  --sm-border: #3d4b61;
+  --sm-accent: #8dbbff;
+  --sm-accent-soft: #233d60;
+  --sm-pending-bg: #39264a;
+  --sm-pending-fg: #e2b8fc;
+  --sm-pending-border: #c17aff;
+  --sm-progress-bg: #44351e;
+  --sm-progress-fg: #ffd48c;
+  --sm-progress-border: #f1ab3b;
+  --sm-complete-bg: #1d4237;
+  --sm-complete-fg: #a1edc2;
+  --sm-complete-border: #5fd49b;
+  --sm-closed-bg: #344052;
+  --sm-closed-fg: #c9d4e5;
+  --sm-closed-border: #94a3b8;
+}
+html,
+body {
+  background: var(--sm-bg);
+  color: var(--sm-foreground);
+}
+.sm-calendar {
+  background: var(--sm-bg);
+  color: var(--sm-foreground);
+}
+.sm-calendar .bg-white,
+.sm-calendar .bg-gray-50,
+.sm-calendar .sm-details-dialog,
+.sm-booking-dialog,
+.sm-record-link .sm-input {
+  background: var(--sm-surface);
+  color: var(--sm-foreground);
+}
+.sm-calendar .bg-gray-50 {
+  background: var(--sm-surface-muted);
+}
+.sm-calendar .bg-gray-200 {
+  background: var(--sm-border);
+}
+.sm-calendar .text-gray-500,
+.sm-calendar .text-gray-600,
+.sm-calendar .sm-calendar-subtitle,
+.sm-booking-dialog .text-gray-500 {
+  color: var(--sm-muted);
+}
+.sm-calendar .border-gray-200,
+.sm-calendar .border-gray-300,
+.sm-calendar .sm-control,
+.sm-calendar .sm-input,
+.sm-booking-dialog .sm-control,
+.sm-booking-dialog .sm-input,
+.sm-record-link .sm-input {
+  border-color: var(--sm-border);
+}
+.sm-calendar input,
+.sm-calendar select,
+.sm-calendar textarea,
+.sm-booking-dialog input,
+.sm-booking-dialog select,
+.sm-booking-dialog textarea {
+  background: var(--sm-surface);
+  color: var(--sm-foreground);
+}
+.sm-booking-dialog input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #087bff;
+  background-color: var(--sm-control-bg, var(--sm-surface));
+  border-color: var(--sm-muted);
+  border-radius: 3px;
+}
+.sm-booking-dialog input[type='checkbox']:checked {
+  background-color: #087bff;
+  border-color: #087bff;
+}
+.sm-booking-dialog input[type='checkbox']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.sm-calendar input::placeholder,
+.sm-booking-dialog input::placeholder {
+  color: var(--sm-muted);
+}
+.sm-calendar .sm-control,
+.sm-booking-dialog .sm-control {
+  background: var(--sm-surface);
+  color: var(--sm-foreground);
+}
+.sm-calendar .sm-field span,
+.sm-booking-dialog .sm-label span {
+  color: var(--sm-muted);
+}
+.sm-calendar .sm-primary,
+.sm-booking-dialog .sm-primary {
+  background: #145fc4;
+  color: #ffffff;
+}
+.sm-calendar :is(button, input, select, textarea, a):focus-visible,
+.sm-booking-dialog :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--sm-accent);
+  outline-offset: 2px;
+}
+.sm-calendar .sm-week-heading.sm-selected-day,
+.sm-calendar .sm-month-selected {
+  background: var(--sm-accent-soft);
+  color: var(--sm-accent);
+}
+.sm-calendar .sm-pending,
+.sm-calendar .sm-progress,
+.sm-calendar .sm-complete,
+.sm-calendar .sm-closed {
+  border-left: 3px solid var(--sm-status-border);
+  background: var(--sm-status-bg);
+  color: var(--sm-status-fg);
+}
+.sm-calendar .sm-pending {
+  --sm-status-bg: var(--sm-pending-bg);
+  --sm-status-fg: var(--sm-pending-fg);
+  --sm-status-border: var(--sm-pending-border);
+}
+.sm-calendar .sm-progress {
+  --sm-status-bg: var(--sm-progress-bg);
+  --sm-status-fg: var(--sm-progress-fg);
+  --sm-status-border: var(--sm-progress-border);
+}
+.sm-calendar .sm-complete {
+  --sm-status-bg: var(--sm-complete-bg);
+  --sm-status-fg: var(--sm-complete-fg);
+  --sm-status-border: var(--sm-complete-border);
+}
+.sm-calendar .sm-closed {
+  --sm-status-bg: var(--sm-closed-bg);
+  --sm-status-fg: var(--sm-closed-fg);
+  --sm-status-border: var(--sm-closed-border);
+}
+.sm-calendar .sm-agenda {
+  border-top: 1px solid var(--sm-border);
+  border-right: 1px solid var(--sm-border);
+  border-bottom: 1px solid var(--sm-border);
+}
+.sm-calendar .sm-booking-model,
+.sm-calendar .sm-booking-customer {
+  color: var(--sm-muted);
+}
+.sm-calendar
+  .sm-booking-summary
+  :is(.sm-status-pending, .sm-status-progress, .sm-status-complete, .sm-status-closed) {
+  background: var(--sm-status-bg);
+  color: var(--sm-status-fg);
+}
+.sm-calendar .sm-status-pending {
+  --sm-status-bg: var(--sm-pending-bg);
+  --sm-status-fg: var(--sm-pending-fg);
+}
+.sm-calendar .sm-status-progress {
+  --sm-status-bg: var(--sm-progress-bg);
+  --sm-status-fg: var(--sm-progress-fg);
+}
+.sm-calendar .sm-status-complete {
+  --sm-status-bg: var(--sm-complete-bg);
+  --sm-status-fg: var(--sm-complete-fg);
+}
+.sm-calendar .sm-status-closed {
+  --sm-status-bg: var(--sm-closed-bg);
+  --sm-status-fg: var(--sm-closed-fg);
+}
+.sm-calendar .sm-view-switch {
+  border-color: var(--sm-border);
+  background: var(--sm-surface);
+}
+.sm-calendar .sm-view-switch button {
+  color: var(--sm-muted);
+}
+.sm-calendar .sm-view-switch button[aria-pressed='true'] {
+  color: var(--sm-accent);
+  background: var(--sm-accent-soft);
+}
+.sm-calendar .sm-filter-bar {
+  display: grid;
+  grid-template-columns:
+    minmax(145px, 1fr) minmax(190px, 1.6fr) minmax(145px, 0.8fr)
+    auto;
+  gap: 10px;
+  align-items: end;
+}
+.sm-calendar .sm-advanced-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 10px;
+  padding: 12px;
+  background: var(--sm-surface-muted);
+  border: 1px solid var(--sm-border);
+  border-radius: 9px;
+  align-items: end;
+}
+.sm-calendar .sm-filter-toggle {
+  min-height: 36px;
+  white-space: nowrap;
+}
+.sm-calendar .sm-month-weekdays {
+  color: var(--sm-muted);
+}
+.sm-calendar .sm-month-grid {
+  grid-auto-rows: minmax(108px, auto);
+  align-items: stretch;
+}
+.sm-calendar .sm-month-cell {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--sm-border);
+  border-radius: 9px;
+  padding: 8px;
+  background: var(--sm-surface);
+}
+.sm-calendar .sm-month-cell.sm-month-outside {
+  background: var(--sm-surface-muted);
+  opacity: 0.55;
+}
+.sm-calendar .sm-month-cell.sm-month-today {
+  border-color: var(--sm-accent);
+  box-shadow: inset 0 0 0 1px var(--sm-accent);
+}
+.sm-calendar .sm-month-cell.sm-month-selected {
+  background: var(--sm-accent-soft);
+}
+.sm-calendar .sm-month-cell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.sm-calendar .sm-month-day-number {
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 23px;
+  min-height: 23px;
+  text-align: center;
+  border-radius: 5px;
+}
+.sm-calendar .sm-month-count {
+  font-size: 10px;
+  color: var(--sm-muted);
+  background: var(--sm-surface-muted);
+  border-radius: 12px;
+  padding: 1px 6px;
+}
+.sm-calendar .sm-month-events {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.sm-calendar .sm-month-booking {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  border-radius: 5px;
+  padding: 5px 6px;
+  text-align: left;
+  line-height: 1.25;
+  font-size: 10px;
+}
+.sm-calendar .sm-month-time {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.sm-calendar .sm-month-registration {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.sm-calendar .sm-month-more {
+  color: var(--sm-accent);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+  padding: 3px 4px;
+}
+.sm-calendar .sm-month-layout {
+  max-width: 100%;
+  overflow-x: clip;
+}
+@media (max-width: 1100px) {
+  .sm-calendar .sm-filter-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sm-calendar .sm-filter-toggle {
+    justify-self: start;
+  }
+  .sm-calendar .sm-advanced-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 639px) {
+  .sm-calendar .sm-filter-bar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sm-calendar .sm-advanced-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sm-calendar .sm-calendar-toolbar {
+    gap: 8px;
+  }
+  .sm-calendar .sm-calendar-subtitle {
+    line-height: 1.5;
+  }
+}
+
+.sm-calendar .sm-month-legend {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 9px;
+  color: var(--sm-muted);
+}
+.sm-calendar .sm-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+.sm-calendar .sm-legend-dot {
+  display: inline-block;
+  height: 9px;
+  width: 9px;
+  border-radius: 50%;
+  background: var(--sm-status-border);
+}
+:root[data-theme='dark'] .sm-calendar .sm-pending,
+:root.dark .sm-calendar .sm-pending {
+  background: var(--sm-pending-bg);
+  color: var(--sm-pending-fg);
+  border-left-color: var(--sm-pending-border);
+}
+:root[data-theme='dark'] .sm-calendar .sm-progress,
+:root.dark .sm-calendar .sm-progress {
+  background: var(--sm-progress-bg);
+  color: var(--sm-progress-fg);
+  border-left-color: var(--sm-progress-border);
+}
+:root[data-theme='dark'] .sm-calendar .sm-complete,
+:root.dark .sm-calendar .sm-complete {
+  background: var(--sm-complete-bg);
+  color: var(--sm-complete-fg);
+  border-left-color: var(--sm-complete-border);
+}
+:root[data-theme='dark'] .sm-calendar .sm-closed,
+:root.dark .sm-calendar .sm-closed {
+  background: var(--sm-closed-bg);
+  color: var(--sm-closed-fg);
+  border-left-color: var(--sm-closed-border);
+}
+
+/* Scoped Vue styles load after this file; keep theme surfaces authoritative. */
+:root[data-theme] .sm-calendar,
+:root[data-theme] .sm-calendar .sm-details-dialog,
+:root[data-theme] .sm-booking-dialog {
+  background: var(--sm-bg);
+  color: var(--sm-foreground);
+}
+:root[data-theme] .sm-calendar :is(.sm-input, .sm-control),
+:root[data-theme] .sm-booking-dialog :is(.sm-input, .sm-control) {
+  background: var(--sm-surface);
+  color: var(--sm-foreground);
+  border-color: var(--sm-border);
+}
+:root[data-theme] .sm-calendar .sm-field span,
+:root[data-theme] .sm-booking-dialog .sm-label span,
+:root[data-theme] .sm-calendar .sm-booking-model,
+:root[data-theme] .sm-calendar .sm-booking-customer {
+  color: var(--sm-muted);
+}
+:root[data-theme] .sm-calendar .sm-primary,
+:root[data-theme] .sm-booking-dialog .sm-primary {
+  background: #145fc4;
+  color: #ffffff;
+}
+
+/* Calendar layout follows the reference; embedded dark surfaces come from Desk. */
+:root {
+  --sm-bg: #eef3fb;
+  --sm-surface: #f8faff;
+  --sm-surface-muted: #e7eef9;
+  --sm-border: #cbd8eb;
+  --sm-accent-soft: #dceaff;
+  --sm-weekend-bg: #e9e9fb;
+  --sm-holiday-bg: #fff0f0;
+  --sm-holiday-border: #f2b8ba;
+  --sm-holiday-foreground: #a92132;
+  --sm-calendar-header: #e4edf9;
+}
+:root[data-theme='dark'],
+:root[data-theme='timeless-dark'],
+:root.dark {
+  --sm-bg: #171717;
+  --sm-surface: #171717;
+  --sm-surface-muted: #292929;
+  --sm-control-bg: #292929;
+  --sm-border: #242424;
+  --sm-foreground: #d9d9d9;
+  --sm-muted: #999999;
+  --sm-accent-soft: #203c60;
+  --sm-weekend-bg: #2b2943;
+  --sm-holiday-bg: #3b2632;
+  --sm-holiday-border: #89515b;
+  --sm-holiday-foreground: #ffb4bd;
+  --sm-calendar-header: #292929;
+}
+.sm-calendar {
+  --sm-calendar-gutter: 10px;
+  background: var(--sm-bg);
+}
+.sm-calendar .sm-calendar-intro {
+  margin-bottom: 10px;
+}
+.sm-calendar .sm-calendar-subtitle {
+  font-weight: 500;
+  color: var(--sm-muted);
+  letter-spacing: 0.01em;
+}
+.sm-calendar .sm-calendar-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  margin-bottom: 11px;
+}
+.sm-calendar .sm-period-navigation {
+  grid-column: 3;
+  grid-row: 1;
+  justify-content: flex-end;
+}
+.sm-calendar .sm-calendar-toolbar .sm-view-switch {
+  grid-column: 2;
+  grid-row: 1;
+  order: 0;
+  border: 0;
+  padding: 0;
+  gap: 0;
+  background: transparent;
+}
+.sm-calendar .sm-view-switch button {
+  min-width: 64px;
+  border: 1px solid var(--sm-border);
+  border-radius: 8px;
+  background: var(--sm-surface);
+  color: var(--sm-foreground);
+  font-weight: 650;
+}
+.sm-calendar .sm-view-switch button[aria-pressed='true'],
+:root[data-theme] .sm-calendar .sm-primary {
+  background: #087bff;
+  color: #fff;
+  border-color: #087bff;
+}
+:root[data-theme] .sm-calendar :is(.sm-input, .sm-control) {
+  background: var(--sm-control-bg, var(--sm-surface));
+}
+.sm-calendar .sm-range-label {
+  min-width: 130px;
+  padding: 8px 12px;
+  border: 1px solid var(--sm-border);
+  border-radius: 8px;
+  background: var(--sm-surface);
+  text-align: center;
+}
+.sm-calendar .sm-month-weekdays > span {
+  border-right: 1px solid var(--sm-border);
+}
+.sm-calendar .sm-month-registration {
+  font-weight: 650;
+}
+.sm-calendar .sm-month-legend .sm-legend-dot {
+  background: currentColor;
+  border: 0;
+}
+.sm-calendar [draggable='true'] {
+  cursor: grab;
+}
+.sm-calendar [draggable='true']:active {
+  cursor: grabbing;
+}
+.sm-calendar .sm-drop-target {
+  outline: 2px dashed var(--sm-accent);
+  outline-offset: -3px;
+  background: var(--sm-accent-soft);
+}
+.sm-calendar .sm-move-error {
+  color: var(--sm-holiday-foreground);
+  font-size: 13px;
+}
+.sm-calendar .sm-month-legend {
+  min-height: 26px;
+  gap: 12px;
+  font-size: 11px;
+}
+.sm-calendar .sm-legend-divider {
+  height: 16px;
+  border-left: 1px solid var(--sm-border);
+}
+.sm-calendar .sm-weekend-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid var(--sm-border);
+  background: var(--sm-weekend-bg);
+}
+.sm-calendar .sm-holiday-legend-icon {
+  font-size: 14px;
+  line-height: 1;
+  color: var(--sm-holiday-foreground);
+}
+.sm-calendar .sm-holiday-source {
+  margin-left: auto;
+  color: var(--sm-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.sm-calendar .sm-month-layout {
+  overflow: hidden;
+  border: 1px solid var(--sm-border);
+  border-radius: 10px;
+}
+.sm-calendar .sm-month-weekdays {
+  background: var(--sm-calendar-header);
+  color: var(--sm-foreground);
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+  gap: 0;
+}
+.sm-calendar .sm-month-grid {
+  grid-auto-rows: minmax(max-content, 1fr);
+  gap: 0;
+}
+.sm-calendar .sm-month-cell {
+  position: relative;
+  border-radius: 6px;
+  background: var(--sm-surface);
+  min-height: 84px;
+  padding: 6px;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+.sm-calendar .sm-month-cell.sm-month-outside {
+  opacity: 1;
+  background: var(--sm-surface);
+}
+.sm-calendar .sm-month-cell.sm-month-weekend {
+  background: var(--sm-weekend-bg);
+}
+.sm-calendar .sm-month-cell.sm-month-holiday {
+  background: var(--sm-holiday-bg);
+  border-color: var(--sm-holiday-border);
+}
+.sm-calendar .sm-month-cell.sm-month-selected {
+  background: var(--sm-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--sm-accent);
+  border-color: var(--sm-accent);
+}
+.sm-calendar .sm-month-cell.sm-month-today .sm-month-day-number {
+  color: #087bff;
+}
+.sm-calendar .sm-month-cell .sm-month-cell-header {
+  margin-bottom: 4px;
+}
+.sm-calendar .sm-month-count {
+  font-size: 10px;
+  color: #fff;
+  background: #087bff;
+  font-weight: 700;
+}
+.sm-calendar .sm-month-booking {
+  border-left-width: 3px;
+  font-size: 10px;
+  line-height: 1.15;
+  min-height: 20px;
+  padding: 4px 5px;
+}
+.sm-calendar .sm-month-more {
+  color: var(--sm-accent);
+  padding: 2px 4px;
+}
+.sm-calendar .sm-month-holiday-label {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 3px 4px;
+  border-radius: 5px;
+  margin-bottom: 3px;
+  color: var(--sm-holiday-foreground);
+  background: var(--sm-holiday-bg);
+  font-size: 10px;
+  font-weight: 650;
+  border: 1px solid var(--sm-holiday-border);
+}
+.sm-calendar .sm-month-holiday-label.sm-weekly-off-label {
+  color: var(--sm-muted);
+  background: var(--sm-weekend-bg);
+  border-color: var(--sm-border);
+}
+.sm-calendar .sm-holiday-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sm-calendar .sm-holiday-mark {
+  font-size: 12px;
+}
+.sm-calendar .sm-month-events {
+  min-width: 0;
+  gap: 3px;
+}
+.sm-calendar .sm-month-booking:focus-visible,
+.sm-calendar .sm-month-more:focus-visible,
+.sm-calendar .sm-month-day-number:focus-visible {
+  outline: 2px solid var(--sm-accent);
+  outline-offset: 1px;
+}
+@media (min-width: 1024px) and (min-height: 720px) {
+  .sm-calendar:has(.sm-month-layout) {
+    display: flex;
+    flex-direction: column;
+  }
+  .sm-calendar .sm-month-layout {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .sm-calendar .sm-month-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .sm-calendar .sm-month-cell {
+    min-height: 72px;
+  }
+}
+@media (max-width: 1023px) {
+  .sm-calendar .sm-calendar-toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .sm-calendar .sm-period-navigation {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}

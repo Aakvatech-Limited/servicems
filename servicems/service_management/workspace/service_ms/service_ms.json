@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Service MS",
  "links": [],
- "modified": "2026-10-21 16:00:00.000000",
+ "modified": "2026-11-05 01:19:08.561851",
  "modified_by": "sydneykb38@gmail.com",
  "module": "Service Management",
  "name": "Service MS",
@@ -44,8 +44,8 @@
   {
    "color": "Grey",
    "label": "Booking Calendar",
-   "type": "URL",
-   "url": "/bookings"
+   "type": "Page",
+   "link_to": "service-booking-calendar"
   },
   {
    "color": "Grey",

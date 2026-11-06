@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.utils.telemetry import capture
 
-cache = 1
+no_cache = 1
 
 
 def get_context():
