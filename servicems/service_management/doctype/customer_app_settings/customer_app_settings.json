@@ -1,0 +1,155 @@
+{
+ "doctype": "DocType",
+ "name": "Customer App Settings",
+ "module": "Service Management",
+ "autoname": "field:company",
+ "allow_rename": 0,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "enable_customer_app",
+  "registration_policy",
+  "branding_section",
+  "app_name",
+  "logo",
+  "pwa_icon",
+  "primary_color",
+  "secondary_color",
+  "navbar_color",
+  "theme",
+  "welcome_message",
+  "support_email",
+  "support_phone",
+  "terms_url",
+  "privacy_url",
+  "workshop_section",
+  "workshops"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "enable_customer_app",
+   "fieldtype": "Check",
+   "label": "Enable Customer App",
+   "default": "0"
+  },
+  {
+   "fieldname": "registration_policy",
+   "fieldtype": "Select",
+   "label": "Customer Registration Policy",
+   "options": "Invitation Only\nHybrid",
+   "default": "Invitation Only"
+  },
+  {
+   "fieldname": "branding_section",
+   "fieldtype": "Section Break",
+   "label": "Company Branding"
+  },
+  {
+   "fieldname": "app_name",
+   "fieldtype": "Data",
+   "label": "Customer App Name"
+  },
+  {
+   "fieldname": "logo",
+   "fieldtype": "Attach Image",
+   "label": "Company Logo"
+  },
+  {
+   "fieldname": "pwa_icon",
+   "fieldtype": "Attach Image",
+   "label": "PWA Icon"
+  },
+  {
+   "fieldname": "primary_color",
+   "fieldtype": "Data",
+   "label": "Primary Colour",
+   "default": "#bc2230"
+  },
+  {
+   "fieldname": "secondary_color",
+   "fieldtype": "Data",
+   "label": "Secondary Colour",
+   "default": "#0d1d38"
+  },
+  {
+   "fieldname": "navbar_color",
+   "fieldtype": "Data",
+   "label": "Navbar Colour",
+   "default": "#0d1d38"
+  },
+  {
+   "fieldname": "theme",
+   "fieldtype": "Select",
+   "label": "Theme",
+   "options": "System\nLight\nDark",
+   "default": "System"
+  },
+  {
+   "fieldname": "welcome_message",
+   "fieldtype": "Small Text",
+   "label": "Welcome Message"
+  },
+  {
+   "fieldname": "support_email",
+   "fieldtype": "Data",
+   "label": "Support Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "support_phone",
+   "fieldtype": "Data",
+   "label": "Support Phone",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "terms_url",
+   "fieldtype": "Data",
+   "label": "Terms URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "privacy_url",
+   "fieldtype": "Data",
+   "label": "Privacy URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "workshop_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Booking Workshop Availability"
+  },
+  {
+   "fieldname": "workshops",
+   "fieldtype": "Table",
+   "label": "Workshop Availability",
+   "options": "Customer App Workshop Availability",
+   "description": "Only enabled workshops accept NEW Customer App bookings. Historical records are retained."
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "ServiceMS Customer App Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

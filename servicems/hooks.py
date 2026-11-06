@@ -79,10 +79,12 @@ fixtures = [
 
 # before_install = "servicems.install.before_install"
 after_install = [
+	"servicems.customer_app.setup.ensure_role",
 	"servicems.fleet_integration.ensure_service_job_card_tyre_fields",
 	"servicems.phase_two_setup.execute",
 ]
 after_migrate = [
+	"servicems.customer_app.setup.ensure_role",
 	"servicems.api.calendar.sync_calendar_navigation",
 	"servicems.fleet_integration.ensure_service_job_card_tyre_fields",
 	"servicems.navigation.sync_bay_navigation",
@@ -224,3 +226,14 @@ doc_events = {
 
 
 extend_doctype_class = {"File": ["servicems.inspection_files.InspectionEvidenceMixin"]}
+
+
+# Customer App authorization is scoped per company and never overrides ERPNext Portal.
+permission_query_conditions = {
+	"Customer App Settings": "servicems.customer_app.security.settings_query_conditions",
+	"Customer App Account": "servicems.customer_app.security.accounts_query_conditions",
+}
+has_permission = {
+	"Customer App Settings": "servicems.customer_app.security.settings_has_permission",
+	"Customer App Account": "servicems.customer_app.security.account_has_permission",
+}

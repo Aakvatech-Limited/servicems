@@ -1,0 +1,69 @@
+{
+ "doctype": "DocType",
+ "name": "Customer App Account",
+ "module": "Service Management",
+ "autoname": "hash",
+ "engine": "InnoDB",
+ "track_changes": 1,
+ "field_order": [
+  "company",
+  "customer",
+  "user",
+  "verified",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "Website User",
+   "options": "User",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "verified",
+   "fieldtype": "Check",
+   "label": "Verified Customer Access",
+   "default": "0"
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Access Enabled",
+   "default": "1"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "ServiceMS Customer App Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
