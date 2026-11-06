@@ -58,6 +58,19 @@ def get_field_jobs(limit=40):
 
 
 @frappe.whitelist()
+def get_field_job(job_card):
+    card = _read_card(job_card)
+    return {
+        "name": card.name,
+        "status": card.status,
+        "service_item_name": card.service_item_name,
+        "vehicle_model": card.vehicle_model,
+        "workshop": card.workshop,
+        "customer": card.customer,
+    }
+
+
+@frappe.whitelist()
 def get_job_inspections(job_card):
     _read_card(job_card)
     return frappe.get_list(
