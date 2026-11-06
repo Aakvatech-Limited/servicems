@@ -3,13 +3,9 @@
     class="sm-calendar w-full p-3 sm:p-4"
     :class="{ 'sm-dialog-open': selected || showCreate }"
     aria-label="Booking Calendar"
+    :aria-busy="saving"
   >
-    <header
-      class="sm-calendar-intro mb-3 flex items-center justify-between gap-3"
-    >
-      <p class="sm-calendar-subtitle text-xs">
-        Workshop booking schedule · Start times in {{ timezone }}
-      </p>
+    <header class="sm-calendar-intro mb-3 flex items-center justify-end gap-3">
       <button
         v-if="canCreate"
         class="sm-primary"
@@ -23,7 +19,7 @@
     <div
       class="sm-calendar-toolbar mb-3 flex flex-wrap items-center justify-between gap-3"
     >
-      <div class="flex items-center gap-2">
+      <div class="sm-period-navigation flex items-center gap-2">
         <button
           class="sm-control"
           type="button"
@@ -41,7 +37,11 @@
         >
           ›
         </button>
-        <strong class="ml-1 text-sm">{{ rangeLabel }}</strong>
+        <strong
+          class="sm-range-label ml-1 text-sm"
+          :title="'Dates and times in ' + timezone"
+          >{{ rangeLabel }}</strong
+        >
       </div>
       <div
         class="sm-view-switch flex rounded-md border border-gray-200 p-1"
@@ -140,6 +140,10 @@
       </button>
     </div>
 
+    <p v-if="moveError" role="alert" class="sm-move-error mb-3">
+      {{ moveError }}
+    </p>
+    <p class="sr-only" role="status" aria-live="polite">{{ moveNotice }}</p>
     <div v-if="loading" role="status" class="sm-message">Loading bookings…</div>
     <div v-else-if="error" role="alert" class="sm-message text-red-700">
       {{ error }}
@@ -162,7 +166,7 @@
         <span class="sm-legend-divider" aria-hidden="true"></span>
         <span class="sm-legend-item"
           ><span class="sm-holiday-legend-icon" aria-hidden="true">▦</span>
-          Holiday</span
+          Holiday (from Holiday List)</span
         >
         <span class="sm-legend-item"
           ><span class="sm-weekend-legend-swatch" aria-hidden="true"></span>
@@ -193,10 +197,18 @@
               'sm-month-outside': !day,
               'sm-month-today': day && day === localToday(),
               'sm-month-selected': day && day === agendaDate,
+              'sm-drop-target': day && day === dropDate,
               'sm-month-weekend': day && isWeekend(day),
               'sm-month-holiday':
                 day && holidayForDay(day) && !holidayForDay(day).weekly_off,
             }"
+            @dblclick="createOnDate($event, day)"
+            :title="
+              day && canCreate ? 'Double-click to create a booking' : undefined
+            "
+            @dragover="dragOverDate($event, day)"
+            @dragleave="leaveDropDate($event)"
+            @drop.prevent="dropBooking(day)"
           >
             <template v-if="day">
               <div class="sm-month-cell-header">
@@ -232,6 +244,10 @@
                   type="button"
                   class="sm-month-booking"
                   :class="statusClass(booking.status)"
+                  :draggable="canDragBooking(booking)"
+                  @dragstart="startBookingDrag($event, booking)"
+                  @dragend="endBookingDrag"
+                  @dblclick.stop
                   :title="
                     booking.name +
                     ' · ' +
@@ -254,7 +270,7 @@
                     timeLabel(booking.booking_time)
                   }}</span>
                   <span class="sm-month-registration">{{
-                    booking.registration_number
+                    booking.registration_number || booking.name
                   }}</span>
                 </button>
                 <button
@@ -291,6 +307,10 @@
               :key="day"
               class="sm-week-heading bg-gray-50 text-center text-xs font-semibold"
               :class="{ 'sm-selected-day': day === agendaDate }"
+              @dblclick="canCreate && openCreate(day)"
+              @dragover="dragOverDate($event, day)"
+              @dragleave="leaveDropDate($event)"
+              @drop.prevent="dropBooking(day)"
             >
               <button
                 type="button"
@@ -318,6 +338,11 @@
                 v-for="day in visibleDays"
                 :key="group.key + day"
                 class="min-h-[100px] bg-white p-1"
+                :class="{ 'sm-drop-target': day === dropDate }"
+                @dblclick="createOnDate($event, day)"
+                @dragover="dragOverDate($event, day)"
+                @dragleave="leaveDropDate($event)"
+                @drop.prevent="dropBooking(day)"
               >
                 <button
                   v-for="booking in group.entries.filter(
@@ -327,6 +352,10 @@
                   type="button"
                   class="sm-event mb-1 w-full text-left"
                   :class="statusClass(booking.status)"
+                  :draggable="canDragBooking(booking)"
+                  @dragstart="startBookingDrag($event, booking)"
+                  @dragend="endBookingDrag"
+                  @dblclick.stop
                   @click="selectBooking(booking)"
                 >
                   <BookingSummary :booking="booking" compact />
@@ -393,6 +422,7 @@
         <div class="flex gap-4">
           <div
             class="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white p-4"
+            @dblclick="createOnDate($event, cursor)"
           >
             <h2 class="mb-3 text-base font-semibold">
               {{
@@ -606,7 +636,7 @@ const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const localToday = () => siteToday(timezone.value)
 const cursor = ref(localToday())
 const agendaDate = ref(cursor.value)
-const view = ref('week')
+const view = ref('month')
 const workshop = ref('')
 const status = ref('')
 const customer = ref('')
@@ -650,6 +680,10 @@ const rescheduleTime = ref('')
 const rescheduleBay = ref('')
 const saving = ref(false)
 const mutationError = ref('')
+const draggedBooking = ref(null)
+const dropDate = ref('')
+const moveError = ref('')
+const moveNotice = ref('')
 const showCreate = ref(false)
 const bookingDate = ref('')
 const range = computed(() => viewRange(cursor.value, view.value))
@@ -736,6 +770,7 @@ function jobCardUrl(item) {
   return '/app/service-job-card/' + encodeURIComponent(item.job_card)
 }
 function selectBooking(item) {
+  if (draggedBooking.value || saving.value) return
   selected.value = item
   rescheduleDate.value = item.booking_date
   rescheduleTime.value =
@@ -747,8 +782,75 @@ function selectBooking(item) {
   mutationError.value = ''
 }
 function openCreate(date = agendaDate.value) {
+  if (!canCreate.value || saving.value) return
   bookingDate.value = date
   showCreate.value = true
+}
+function createOnDate(event, date) {
+  if (
+    !date ||
+    event.target.closest('button, a, input, select, textarea, label')
+  )
+    return
+  openCreate(date)
+}
+function canDragBooking(booking) {
+  return canWrite.value && booking.status === 'Pending' && !saving.value
+}
+function startBookingDrag(event, booking) {
+  if (!canDragBooking(booking)) {
+    event.preventDefault()
+    return
+  }
+  draggedBooking.value = booking
+  moveError.value = ''
+  moveNotice.value = ''
+  event.dataTransfer.effectAllowed = 'move'
+  event.dataTransfer.setData('text/plain', booking.name)
+}
+function dragOverDate(event, date) {
+  if (!date || !draggedBooking.value || saving.value) return
+  event.preventDefault()
+  event.dataTransfer.dropEffect = 'move'
+  dropDate.value = date
+}
+function leaveDropDate(event) {
+  if (!event.currentTarget.contains(event.relatedTarget)) dropDate.value = ''
+}
+function endBookingDrag() {
+  draggedBooking.value = null
+  dropDate.value = ''
+}
+async function dropBooking(date) {
+  const booking = draggedBooking.value
+  endBookingDrag()
+  if (
+    !date ||
+    !booking ||
+    !canDragBooking(booking) ||
+    booking.booking_date === date
+  )
+    return
+  saving.value = true
+  moveError.value = ''
+  try {
+    await frappeRequest({
+      url: 'servicems.api.calendar.reschedule_booking',
+      method: 'POST',
+      params: {
+        name: booking.name,
+        booking_date: date,
+        booking_time: booking.booking_time || '',
+      },
+    })
+    moveNotice.value = `${booking.name} moved to ${formatDay(date)}.`
+    await load()
+  } catch (e) {
+    moveError.value =
+      e.messages?.join(' ') || e.message || 'Unable to move booking.'
+  } finally {
+    saving.value = false
+  }
 }
 async function load() {
   const id = ++requestNumber

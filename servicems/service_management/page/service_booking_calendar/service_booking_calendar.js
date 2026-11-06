@@ -45,6 +45,23 @@ frappe.pages["service-booking-calendar"].on_page_load = function (wrapper) {
       "--sm-font",
       getComputedStyle(wrapper).fontFamily
     );
+    const deskStyle = getComputedStyle(wrapper);
+    const surfaces = {
+      "--sm-bg": "--bg-color",
+      "--sm-surface": "--fg-color",
+      "--sm-surface-muted": "--subtle-fg",
+      "--sm-control-bg": "--control-bg",
+      "--sm-border": "--border-color",
+      "--sm-foreground": "--text-color",
+      "--sm-muted": "--text-muted",
+      "--sm-calendar-header": "--subtle-fg",
+    };
+    for (const [calendarToken, deskToken] of Object.entries(surfaces)) {
+      const value = deskStyle.getPropertyValue(deskToken).trim();
+      if (isDark && value && CSS.supports("color", value))
+        doc.documentElement.style.setProperty(calendarToken, value);
+      else doc.documentElement.style.removeProperty(calendarToken);
+    }
     // Follow native Desk's primary accent whenever the installed theme exposes it.
     const accent = getComputedStyle(root).getPropertyValue("--primary").trim();
     if (accent && accent.startsWith("#"))
