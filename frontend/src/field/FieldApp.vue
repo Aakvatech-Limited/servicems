@@ -303,22 +303,30 @@
                   target="_blank"
                   rel="noopener"
                   class="photo-thumb"
-                  >{{ photo.file_name || 'View photo' }}</a
+                  ><img :src="photo.file_url" :alt="photo.file_name || 'Inspection photo'" loading="lazy" />
+                  <span>{{ photo.file_name || 'View photo' }}</span></a
                 >
               </div>
-              <label
-                v-if="!completed && online"
-                class="button secondary photo-picker"
-                >📷 Capture or select photos
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  multiple
-                  hidden
-                  @change="pickPhoto($event, null)"
-                />
-              </label>
+              <div v-if="!completed && online" class="photo-actions">
+                <label class="button secondary photo-picker">📷 Camera
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    hidden
+                    @change="pickPhoto($event, null)"
+                  />
+                </label>
+                <label class="button secondary photo-picker">▧ Photo library
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden
+                    @change="pickPhoto($event, null)"
+                  />
+                </label>
+              </div>
               <div v-if="uploading" role="status">
                 Uploading private photo: {{ uploadProgress }}%
               </div>
