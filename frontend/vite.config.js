@@ -13,6 +13,12 @@ export default defineConfig({
     },
   },
   build: {
+    rollupOptions: {
+      input: {
+        bookings: path.resolve(__dirname, 'index.html'),
+        field: path.resolve(__dirname, 'field.html'),
+      },
+    },
     outDir: `../${path.basename(path.resolve('..'))}/public/frontend`,
     emptyOutDir: true,
     target: 'es2015',
