@@ -3,15 +3,33 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import nowdate, nowtime
+from frappe.utils import get_time, nowdate, nowtime
 
 
 class ServiceBooking(Document):
 	def validate(self):
-		if self.bay and not frappe.db.get_single_value("Service Settings", "enable_bay_management"):
+		if not self.bay:
+			return
+		if not frappe.db.get_single_value("Service Settings", "enable_bay_management"):
 			previous_bay = None if self.is_new() else frappe.db.get_value("Service Booking", self.name, "bay")
 			if self.bay != previous_bay:
 				frappe.throw("Enable Bay Management in Service Settings before allocating a bay.")
+			return
+		if self.status not in ("Pending", "In Progress") or self.docstatus == 2:
+			return
+		previous = self.get_doc_before_save()
+		changed = self.is_new() or any(
+			self.has_value_changed(field) for field in ("bay", "workshop", "booking_date", "booking_time")
+		)
+		if changed or (previous and previous.status not in ("Pending", "In Progress")):
+			from servicems.api.calendar import _validate_bay
+
+			booking_time = (
+				get_time(self.booking_time).strftime("%H:%M:%S")
+				if self.booking_time not in (None, "")
+				else ""
+			)
+			_validate_bay(self.bay, self.workshop, self.booking_date, booking_time, exclude=self.name)
 
 	def before_insert(self):
 		self.status = "Pending"

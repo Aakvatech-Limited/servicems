@@ -37,6 +37,10 @@ class TestCalendarRecords(TestCase):
 		frappe.db.rollback(save_point="calendar_records")
 		frappe.db.value_cache.clear()
 		frappe.clear_document_cache("Service Settings", "Service Settings")
+		for doctype in ("Service Booking", "Service Workshop"):
+			frappe.clear_cache(doctype=doctype)
+		if getattr(self, "restricted_user", None):
+			frappe.clear_cache()
 		frappe.set_user(self.previous_user)
 
 	def set_bays(self, enabled):
@@ -54,7 +58,16 @@ class TestCalendarRecords(TestCase):
 
 	def create(self, **values):
 		booking = {"booking_date": self.day, "booking_time": "09:05", "workshop": self.workshop, **values}
-		return calendar.create_booking(booking, self.customer, self.vehicle)
+		if getattr(self, "created", None):
+			return calendar.create_booking(
+				{
+					"customer": self.created["customer"],
+					"service_vehicle": self.created["service_vehicle"],
+					**booking,
+				}
+			)
+		self.created = calendar.create_booking(booking, self.customer, self.vehicle)
+		return self.created
 
 	def test_creates_real_customer_vehicle_and_booking(self):
 		self.set_bays(False)
@@ -110,6 +123,141 @@ class TestCalendarRecords(TestCase):
 			}
 		)
 		self.assertNotEqual(doc["name"], second["name"])
+
+	def test_untimed_bookings_without_bays_remain_supported(self):
+		for enabled in (False, True):
+			self.set_bays(enabled)
+			doc = self.create(booking_time="")
+			calendar.reschedule_booking(doc["name"], str(frappe.utils.add_days(self.day, 1)))
+			self.assertFalse(frappe.db.get_value("Service Booking", doc["name"], "booking_time"))
+
+	def test_bay_creation_and_rescheduling_require_a_start_time(self):
+		self.set_bays(True)
+		bay = self.bay()
+		with self.assertRaisesRegex(frappe.ValidationError, "start time is required"):
+			self.create(bay=bay, booking_time="")
+		self.assertEqual(frappe.db.count("Service Booking", {"bay": bay}), 0)
+		doc = self.create(bay=bay)
+		with self.assertRaisesRegex(frappe.ValidationError, "start time is required"):
+			calendar.reschedule_booking(doc["name"], str(frappe.utils.add_days(self.day, 1)))
+		self.assertEqual(str(frappe.db.get_value("Service Booking", doc["name"], "booking_date")), self.day)
+
+	def test_native_document_cannot_bypass_bay_time_or_duplicate_validation(self):
+		self.set_bays(True)
+		bay = self.bay()
+		original = self.create(bay=bay)
+		for time in ("", "09:05"):
+			values = {**original, "name": None, "booking_time": time}
+			with self.subTest(time=time), self.assertRaises(frappe.ValidationError):
+				frappe.get_doc(values).insert()
+		# Midnight is a real start time, not an empty timedelta.
+		midnight = frappe.get_doc({**original, "name": None, "booking_time": "00:00:00"}).insert()
+		self.assertIsNotNone(midnight.booking_time)
+
+	def test_historical_untimed_bay_allocation_can_be_edited_but_not_rescheduled(self):
+		self.set_bays(True)
+		bay = self.bay()
+		doc = self.create(bay=bay)
+		frappe.db.set_value("Service Booking", doc["name"], "booking_time", None)
+		legacy = frappe.get_doc("Service Booking", doc["name"])
+		legacy.service_description = "Unchanged historical allocation"
+		legacy.save()
+		legacy.booking_date = frappe.utils.add_days(self.day, 1)
+		with self.assertRaisesRegex(frappe.ValidationError, "start time is required"):
+			legacy.save()
+		self.set_bays(False)
+		calendar.reschedule_booking(doc["name"], str(frappe.utils.add_days(self.day, 1)))
+		self.assertEqual(frappe.db.get_value("Service Booking", doc["name"], "bay"), bay)
+
+	def restricted_reader(self, workshop_access=False, own_only=True):
+		from frappe.permissions import add_permission
+
+		role = "Calendar Reader " + self.suffix
+		frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": 1}).insert()
+		self.restricted_user = "calendar-" + self.suffix.lower() + "@example.invalid"
+		frappe.get_doc(
+			{
+				"doctype": "User",
+				"email": self.restricted_user,
+				"first_name": "Calendar Reader",
+				"user_type": "System User",
+				"send_welcome_email": 0,
+				"roles": [{"role": role}],
+			}
+		).insert()
+		permission = add_permission("Service Booking", role)
+		frappe.db.set_value("Custom DocPerm", permission, "if_owner", int(own_only))
+		# Installed dependency hooks grant linked-doctype select access automatically.
+		# Remove only this temporary role's grants to reproduce a true restricted reader.
+		for doctype in ("Service Workshop", "Bay", "Customer", "Service Vehicle"):
+			frappe.db.delete("Custom DocPerm", {"parent": doctype, "role": role})
+			frappe.clear_cache(doctype=doctype)
+		frappe.clear_cache(doctype="Service Booking")
+		if workshop_access:
+			add_permission("Service Workshop", role)
+		return self.restricted_user
+
+	def test_restricted_reader_loads_owned_bookings_without_linked_doctype_access(self):
+		self.set_bays(True)
+		visible = self.create()
+		hidden = self.create()
+		user = self.restricted_reader()
+		frappe.db.set_value("Service Booking", visible["name"], "owner", user)
+		frappe.set_user(user)
+		self.assertFalse(frappe.has_permission("Service Workshop", "read"))
+		self.assertFalse(frappe.has_permission("Bay", "read"))
+		with self.assertRaises(frappe.PermissionError):
+			frappe.get_list("Service Workshop", fields=["name"], page_length=500)
+		for enabled in (True, False):
+			frappe.set_user("Administrator")
+			self.set_bays(enabled)
+			frappe.set_user(user)
+			result = calendar.get_calendar_bookings(self.day, self.day)
+			self.assertIn(visible["name"], [row["name"] for row in result["bookings"]])
+			self.assertNotIn(hidden["name"], [row["name"] for row in result["bookings"]])
+			self.assertEqual(result["bays"], [])
+			self.assertEqual(calendar.get_calendar_workshops(), [])
+			self.assertEqual(
+				[
+					row["name"]
+					for row in calendar.get_calendar_bookings(self.day, self.day, workshop=self.workshop)[
+						"bookings"
+					]
+				],
+				[visible["name"]],
+			)
+
+	def test_workshop_options_paginate_and_apply_user_permissions(self):
+		from frappe.permissions import add_user_permission
+
+		base = frappe.get_doc("Service Workshop", self.workshop)
+		names = [f"Calendar Paging {self.suffix} {index:04d}" for index in range(501)]
+		frappe.db.bulk_insert(
+			"Service Workshop",
+			fields=["name", "workshop_name", "company", "parts_warehouse", "workshop_warehouse"],
+			values=[
+				(name, name, base.company, base.parts_warehouse, base.workshop_warehouse) for name in names
+			],
+		)
+		first = calendar.get_calendar_workshops()
+		second = calendar.get_calendar_workshops(start=500)
+		self.assertNotIn(names[-1], [row.name for row in first])
+		self.assertIn(names[-1], [row.name for row in second])
+		user = self.restricted_reader(workshop_access=True, own_only=False)
+		self.set_bays(False)
+		visible = self.create(workshop=names[-1])
+		self.create()
+		add_user_permission("Service Workshop", names[-1], user)
+		frappe.set_user(user)
+		self.assertEqual([row.name for row in calendar.get_calendar_workshops()], [names[-1]])
+		self.assertEqual(calendar.get_calendar_workshops(start=500), [])
+		self.assertEqual(
+			[row["name"] for row in calendar.get_calendar_bookings(self.day, self.day)["bookings"]],
+			[visible["name"]],
+		)
+		self.assertEqual(
+			calendar.get_calendar_bookings(self.day, self.day, workshop=self.workshop)["bookings"], []
+		)
 
 	def test_disabled_bay_preserves_historical_allocation_on_reschedule(self):
 		self.set_bays(True)

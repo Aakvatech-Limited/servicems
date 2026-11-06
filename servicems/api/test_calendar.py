@@ -143,6 +143,53 @@ class TestCalendarApi(TestCase):
 		self.assertIn("FOR UPDATE", sql.call_args_list[0].args[0])
 		self.assertIn("FOR UPDATE", sql.call_args_list[1].args[0])
 
+	@patch.object(calendar, "_bay_enabled", return_value=True)
+	def test_bay_requires_start_time_but_unallocated_bookings_do_not(self, bay_enabled):
+		for time in (None, ""):
+			with self.subTest(time=time), self.assertRaises(frappe.ValidationError):
+				calendar._validate_bay("Bay-1", "Workshop", "2026-11-05", time)
+			calendar._validate_bay("", "Workshop", "2026-11-05", time)
+
+	@patch.object(frappe, "get_list")
+	@patch.object(frappe, "has_permission")
+	def test_workshop_options_require_booking_access_and_respect_workshop_permissions(
+		self, permitted, get_list
+	):
+		permitted.side_effect = [True, False]
+		self.assertEqual(calendar.get_calendar_workshops(), [])
+		get_list.assert_not_called()
+		permitted.assert_any_call("Service Booking", "read", throw=True)
+		permitted.side_effect = frappe.PermissionError()
+		with self.assertRaises(frappe.PermissionError):
+			calendar.get_calendar_workshops()
+
+	@patch.object(frappe, "get_list", return_value=[])
+	@patch.object(frappe, "has_permission", return_value=True)
+	def test_workshop_options_use_permission_checked_pages(self, permitted, get_list):
+		calendar.get_calendar_workshops(start="500")
+		get_list.assert_called_once_with(
+			"Service Workshop", fields=["name"], order_by="name asc", offset=500, limit=500
+		)
+
+	@patch.object(frappe, "get_list")
+	@patch.object(frappe, "has_permission", return_value=False)
+	def test_enrichment_does_not_require_linked_document_permissions(self, permitted, get_list):
+		row = frappe._dict(
+			name="SB-001",
+			booking_date="2026-11-05",
+			booking_time="",
+			customer="Customer",
+			service_vehicle="Vehicle",
+			workshop="Workshop",
+			bay="",
+			status="Pending",
+			job_card="",
+		)
+		result = calendar._enrich([row])
+		self.assertEqual(result[0]["customer_name"], "Customer")
+		self.assertEqual(result[0]["registration_number"], "Vehicle")
+		get_list.assert_not_called()
+
 	@patch.object(frappe, "get_all")
 	@patch.object(frappe.db, "get_value", return_value="Company Holiday List")
 	@patch.object(frappe.db, "get_single_value", return_value="Test Company")

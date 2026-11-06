@@ -617,6 +617,7 @@ import { frappeRequest } from 'frappe-ui'
 import CreateBooking from './CalendarCreateBooking.vue'
 import RecordLink from './CalendarRecordLink.vue'
 import BookingSummary from './CalendarBookingSummary.vue'
+import { calendarWorkshops } from '@/utils/calendarWorkshops.mjs'
 import {
   addDays,
   daysBetween,
@@ -871,15 +872,8 @@ async function load() {
           search: query.value,
         },
       }),
-      frappeRequest({
-        url: 'frappe.client.get_list',
-        method: 'GET',
-        params: {
-          doctype: 'Service Workshop',
-          fields: JSON.stringify(['name']),
-          limit_page_length: 500,
-        },
-      }),
+      // Optional filter options must not prevent permitted bookings from loading.
+      calendarWorkshops(frappeRequest).catch(() => []),
     ])
     if (id !== requestNumber) return
     timezone.value = response.timezone || timezone.value
@@ -916,7 +910,7 @@ async function load() {
       if (id !== requestNumber) return
     }
     bayManagementEnabled.value = Boolean(response.bay_management_enabled)
-    workshops.value = (lookup || []).map((item) => item.name)
+    workshops.value = lookup
   } catch (e) {
     if (id === requestNumber)
       error.value =

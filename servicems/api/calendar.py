@@ -8,7 +8,7 @@ import re
 
 import frappe
 from frappe import _
-from frappe.utils import date_diff, get_system_timezone, getdate, strip_html_tags
+from frappe.utils import cint, date_diff, get_system_timezone, getdate, strip_html_tags
 
 ACTIVE_STATUSES = ("Pending", "In Progress")
 BOOKING_STATUSES = ("Pending", "In Progress", "Completed", "Closed")
@@ -65,6 +65,8 @@ def _validate_bay(bay, workshop, booking_date, booking_time, exclude=None):
 		return
 	if not _bay_enabled():
 		frappe.throw(_("Bay Management is disabled."))
+	if booking_time in (None, ""):
+		frappe.throw(_("A start time is required when allocating a Bay."))
 	bay_doc = frappe.get_doc("Bay", bay)
 	bay_doc.check_permission("read")
 	if bay_doc.service_workshop != workshop:
@@ -73,21 +75,22 @@ def _validate_bay(bay, workshop, booking_date, booking_time, exclude=None):
 	# transaction waiting here sees a concurrent booking after its commit.
 	frappe.db.sql("SELECT name FROM `tabBay` WHERE name = %s FOR UPDATE", (bay,))
 	# No duration field exists; do not claim to detect overlapping intervals.
-	if booking_time:
-		conflicts = frappe.db.sql(
-			"""SELECT name FROM `tabService Booking`
+	conflicts = frappe.db.sql(
+		"""SELECT name FROM `tabService Booking`
 			WHERE bay = %(bay)s AND booking_date = %(date)s
 			AND booking_time = %(time)s AND status IN ('Pending', 'In Progress')
 			AND docstatus < 2 AND name != %(exclude)s LIMIT 1 FOR UPDATE""",
-			{"bay": bay, "date": booking_date, "time": booking_time, "exclude": exclude or ""},
-		)
-		if conflicts:
-			frappe.throw(_("This Bay already has a booking at the selected start time."))
+		{"bay": bay, "date": booking_date, "time": booking_time, "exclude": exclude or ""},
+	)
+	if conflicts:
+		frappe.throw(_("This Bay already has a booking at the selected start time."))
 
 
 def _enrich(bookings):
 	customer_names = sorted({row.customer for row in bookings if row.customer})
 	vehicle_names = sorted({row.service_vehicle for row in bookings if row.service_vehicle})
+	can_read_customers = frappe.has_permission("Customer", "read")
+	can_read_vehicles = frappe.has_permission("Service Vehicle", "read")
 	customers = (
 		{
 			row.name: row.customer_name
@@ -98,7 +101,7 @@ def _enrich(bookings):
 				page_length=len(customer_names),
 			)
 		}
-		if customer_names
+		if customer_names and can_read_customers
 		else {}
 	)
 	vehicles = (
@@ -111,7 +114,7 @@ def _enrich(bookings):
 				page_length=len(vehicle_names),
 			)
 		}
-		if vehicle_names
+		if vehicle_names and can_read_vehicles
 		else {}
 	)
 	result = []
@@ -188,7 +191,7 @@ def get_calendar_bookings(
 		]
 	bay_management_enabled = _bay_enabled()
 	bays = []
-	if bay_management_enabled:
+	if bay_management_enabled and frappe.has_permission("Bay", "read"):
 		bay_filters = {"service_workshop": workshop} if workshop else {}
 		bays = frappe.get_list(
 			"Bay",
@@ -205,6 +208,21 @@ def get_calendar_bookings(
 		"can_create": bool(frappe.has_permission("Service Booking", "create")),
 		"can_write": bool(frappe.has_permission("Service Booking", "write")),
 	}
+
+
+@frappe.whitelist()
+def get_calendar_workshops(start=0):
+	"""Page through readable Workshops without requiring access to load bookings."""
+	frappe.has_permission("Service Booking", "read", throw=True)
+	if not frappe.has_permission("Service Workshop", "read"):
+		return []
+	return frappe.get_list(
+		"Service Workshop",
+		fields=["name"],
+		order_by="name asc",
+		offset=max(0, cint(start)),
+		limit=500,
+	)
 
 
 def _customer_required_fields():
@@ -256,6 +274,7 @@ def create_booking(booking, new_customer=None, new_vehicle=None):
 		frappe.throw(_("Workshop is required."))
 	frappe.has_permission("Service Booking", "create", throw=True)
 	frappe.get_doc("Service Workshop", values["workshop"]).check_permission("read")
+	_validate_bay(values.get("bay"), values["workshop"], values["booking_date"], values["booking_time"])
 
 	if new_customer is not None:
 		customer = _as_values(
@@ -301,7 +320,6 @@ def create_booking(booking, new_customer=None, new_vehicle=None):
 	if vehicle_doc.customer != values["customer"]:
 		frappe.throw(_("The selected Vehicle does not belong to the Customer."))
 
-	_validate_bay(values.get("bay"), values["workshop"], values["booking_date"], values["booking_time"])
 	return frappe.get_doc({"doctype": "Service Booking", **values}).insert().as_dict()
 
 
