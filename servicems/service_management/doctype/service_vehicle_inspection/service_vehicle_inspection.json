@@ -46,6 +46,11 @@
   "image_upload",
   "checklist",
   "template_snapshot",
+  "require_photographs_snapshot",
+  "gps_latitude",
+  "gps_longitude",
+  "gps_accuracy",
+  "gps_captured_at",
   "completed_by",
   "corrects_inspection",
   "correction_reason",
@@ -290,6 +295,41 @@
    "fieldtype": "Link",
    "options": "Service Job Card",
    "read_only": 1
+  },
+  {
+   "fieldname": "require_photographs_snapshot",
+   "fieldtype": "Check",
+   "label": "Stage Photo Required (Snapshot)",
+   "default": "1",
+   "read_only": 1,
+   "hidden": 1,
+   "description": "Frozen from template when the inspection is first created; historical records retain photo requirement."
+  },
+  {
+   "fieldname": "gps_latitude",
+   "fieldtype": "Float",
+   "label": "GPS Latitude",
+   "precision": "7",
+   "read_only": 0
+  },
+  {
+   "fieldname": "gps_longitude",
+   "fieldtype": "Float",
+   "label": "GPS Longitude",
+   "precision": "7",
+   "read_only": 0
+  },
+  {
+   "fieldname": "gps_accuracy",
+   "fieldtype": "Float",
+   "label": "GPS Accuracy (metres)",
+   "read_only": 0
+  },
+  {
+   "fieldname": "gps_captured_at",
+   "fieldtype": "Datetime",
+   "label": "GPS Capture Time",
+   "read_only": 0
   }
  ],
  "links": [],
