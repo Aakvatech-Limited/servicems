@@ -1,0 +1,19 @@
+{
+  "name": "ServiceMS Field Operations",
+  "short_name": "ServiceMS Field",
+  "description": "ServiceMS technician inspections",
+  "id": "/field",
+  "start_url": "/field",
+  "scope": "/field",
+  "display": "standalone",
+  "background_color": "#eef3fb",
+  "theme_color": "#0d1d38",
+  "icons": [
+    {
+      "src": "/assets/servicems/frontend/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
