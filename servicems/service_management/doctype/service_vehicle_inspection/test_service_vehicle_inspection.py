@@ -127,6 +127,11 @@ class TestServiceVehicleInspection(UnitTestCase):
 		)
 		inspection.service_job_card = "SJC-001"
 		inspection.correction_reason = "Incorrect mileage"
-		with patch.object(frappe, "get_doc", return_value=source):
+		def get_doc(doctype, name):
+			if doctype == "Service Pre Inspection Template":
+				return self.template()
+			return source
+
+		with patch.object(frappe, "get_doc", side_effect=get_doc):
 			inspection.validate()
 		self.assertEqual(inspection.require_photographs_snapshot, 0)
