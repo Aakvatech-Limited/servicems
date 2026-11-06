@@ -10,6 +10,12 @@
   "theme_color": "#0d1d38",
   "icons": [
     {
+      "src": "/assets/servicems/images/servicems.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
       "src": "/assets/servicems/frontend/favicon.png",
       "sizes": "any",
       "type": "image/png",
