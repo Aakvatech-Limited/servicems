@@ -10,6 +10,15 @@ from servicems.service_management.doctype.service_vehicle_inspection.service_veh
 
 
 class TestServiceVehicleInspection(UnitTestCase):
+	def setUp(self):
+		super().setUp()
+		timer = patch(
+			"servicems.service_management.doctype.service_vehicle_inspection.service_vehicle_inspection.now",
+			return_value="2026-11-06 12:00:00",
+		)
+		timer.start()
+		self.addCleanup(timer.stop)
+
 	def make_inspection(self, **kwargs):
 		values = {"doctype": "Service Vehicle Inspection", "inspection_status": "Draft", "__islocal": 1}
 		values.update(kwargs)
@@ -117,6 +126,7 @@ class TestServiceVehicleInspection(UnitTestCase):
 			inspection_template="BASIC", inspection_stage="Pre-Service", corrects_inspection="DONE"
 		)
 		source = SimpleNamespace(
+			inspection_template="BASIC",
 			inspection_status="Completed",
 			service_job_card="SJC-001",
 			inspection_stage="Pre-Service",

@@ -28,6 +28,7 @@ body,
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  overflow-wrap: anywhere;
 }
 .field-dark {
   --bg: #111c2a;
@@ -47,6 +48,9 @@ select,
 textarea {
   font: inherit;
 }
+.field-input {
+  font-size: max(16px, 1em);
+}
 button {
   cursor: pointer;
 }
@@ -64,7 +68,8 @@ a {
   gap: 12px;
   background: #0d1d38;
   color: white;
-  padding: 10px max(14px, env(safe-area-inset-right)) 10px
+  padding: max(10px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right)) 10px
     max(14px, env(safe-area-inset-left));
   min-height: 57px;
 }
@@ -116,8 +121,11 @@ a {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px clamp(12px, 2.5vw, 28px) 90px;
+  padding: 20px max(clamp(12px, 2.5vw, 28px), env(safe-area-inset-right))
+    calc(90px + env(safe-area-inset-bottom))
+    max(clamp(12px, 2.5vw, 28px), env(safe-area-inset-left));
   flex: 1;
+  min-width: 0;
 }
 h1,
 h2,
@@ -243,6 +251,7 @@ h2 {
   display: flex;
   justify-content: space-between;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .vehicle-title {
   font-size: 17px;
@@ -288,6 +297,7 @@ h2 {
   border-radius: 9px;
   padding: 12px;
   min-height: 50px;
+  min-width: 0;
 }
 .inspection-link span:first-child {
   overflow-wrap: anywhere;
@@ -406,6 +416,7 @@ h2 {
   min-height: 44px;
   margin-top: 5px;
   font-weight: 400;
+  min-width: 0;
 }
 .field-input:focus {
   outline: 2px solid var(--blue);
@@ -504,10 +515,13 @@ h2 {
     grid-template-columns: 1fr;
   }
   .field-main {
-    padding: 13px 11px 90px;
+    padding: 13px max(11px, env(safe-area-inset-right)) 90px
+      max(11px, env(safe-area-inset-left));
   }
   .field-header {
-    padding: 9px 11px;
+    padding: max(9px, env(safe-area-inset-top))
+      max(11px, env(safe-area-inset-right)) 9px
+      max(11px, env(safe-area-inset-left));
   }
   .field-brand {
     font-size: 13px;

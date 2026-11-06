@@ -1,6 +1,8 @@
 # Copyright (c) 2022, Aakvatech Limited and contributors
 # For license information, please see license.txt
 
+import math
+
 import frappe
 from frappe import _
 from frappe.model.document import Document
@@ -14,7 +16,7 @@ class ServiceVehicleInspection(Document):
 			frappe.db.sql(
 				"select name from `tabService Vehicle Inspection` where name=%s for update", self.name
 			)
-			previous = self.get_doc_before_save() or frappe.get_doc(self.doctype, self.name)
+			previous = frappe.get_doc(self.doctype, self.name)
 			if previous.inspection_status == "Completed":
 				frappe.throw(_("Completed inspections are immutable. Create a correction with a reason."))
 		if self.service_job_card:
@@ -42,7 +44,21 @@ class ServiceVehicleInspection(Document):
 			if self.corrects_inspection:
 				self.require_photographs_snapshot = source.require_photographs_snapshot
 				self.require_gps_snapshot = source.require_gps_snapshot
-		if self.inspection_template:
+		if previous and previous.template_snapshot:
+			for field in (
+				"service_job_card",
+				"inspection_stage",
+				"inspection_template",
+				"corrects_inspection",
+				"legacy_job_card",
+			):
+				if self.get(field) != previous.get(field):
+					frappe.throw(_("Inspection Job Card, stage, template and correction source are fixed."))
+		if (
+			self.inspection_template
+			and not (previous and previous.template_snapshot)
+			and not self.corrects_inspection
+		):
 			template = frappe.get_doc("Service Pre Inspection Template", self.inspection_template)
 			template.check_permission("read")
 			if template.applicable_stage and template.applicable_stage != self.inspection_stage:
@@ -73,8 +89,10 @@ class ServiceVehicleInspection(Document):
 					_("Recorded checklist items are fixed; create a new inspection to change the checklist.")
 				)
 			for row, item in zip(self.checklist, baseline, strict=True):
-				row.require_photo = item.get("require_photo", 0)
-				row.is_required = item.get("is_required", 0)
+				for field in ("inspection_type", "option", "require_photo", "is_required"):
+					row.set(
+						field, item.get(field) or (0 if field in ("require_photo", "is_required") else "")
+					)
 		if self.inspection_template and not self.template_snapshot:
 			template = frappe.get_doc("Service Pre Inspection Template", self.inspection_template)
 			template.check_permission("read")
@@ -108,6 +126,16 @@ class ServiceVehicleInspection(Document):
 						},
 					)
 			self.template_snapshot = frappe.as_json([row.as_dict() for row in self.checklist])
+		if self.is_new() and self.corrects_inspection and self.template_snapshot:
+			baseline = frappe.parse_json(self.template_snapshot)
+			if self.inspection_template != source.inspection_template or len(self.checklist) != len(baseline):
+				frappe.throw(_("Corrections must preserve the source template and checklist."))
+			for row, item in zip(self.checklist, baseline, strict=True):
+				for field in ("inspection_item", "inspection_type", "option", "require_photo", "is_required"):
+					row.set(field, item.get(field))
+		self.validate_gps()
+		photo_urls = [url for url in [self.image_upload, *[row.photograph for row in self.checklist]] if url]
+		self.validate_photographs(photo_urls)
 		if self.inspection_status != "Completed":
 			self.completed_by = previous.completed_by if previous else None
 			self.inspected_on = previous.inspected_on if previous else None
@@ -116,14 +144,6 @@ class ServiceVehicleInspection(Document):
 			frappe.throw(_("A completed inspection requires a Job Card and inspection stage."))
 		if not self.inspection_template:
 			frappe.throw(_("Select an inspection template before completion."))
-		photo_urls = [url for url in [self.image_upload, *[row.photograph for row in self.checklist]] if url]
-		for url in photo_urls:
-			photo = frappe.db.get_value(
-				"File", {"file_url": url, "is_folder": 0}, ["name", "file_type"], as_dict=True
-			)
-			if not photo or (photo.file_type or "").upper() not in ("JPG", "JPEG", "PNG", "WEBP", "GIF"):
-				frappe.throw(_("Inspection evidence must reference an uploaded photograph."))
-			frappe.get_doc("File", photo.name).check_permission("read")
 		attached = bool(photo_urls)
 		if not attached and not self.is_new():
 			attached = bool(
@@ -133,6 +153,7 @@ class ServiceVehicleInspection(Document):
 						"attached_to_doctype": self.doctype,
 						"attached_to_name": self.name,
 						"is_folder": 0,
+						"is_private": 1,
 						"file_type": ["in", ["JPG", "JPEG", "PNG", "WEBP", "GIF"]],
 					},
 				)
@@ -146,20 +167,56 @@ class ServiceVehicleInspection(Document):
 				frappe.throw(
 					_("A photograph is required for inspection item {0}.").format(row.inspection_item)
 				)
-		if (self.gps_latitude is None) != (self.gps_longitude is None):
-			frappe.throw(_("Capture latitude and longitude together."))
-		if self.gps_latitude is not None and not -90 <= float(self.gps_latitude) <= 90:
-			frappe.throw(_("Invalid GPS latitude."))
-		if self.gps_longitude is not None and not -180 <= float(self.gps_longitude) <= 180:
-			frappe.throw(_("Invalid GPS longitude."))
-		if self.gps_accuracy is not None and float(self.gps_accuracy) < 0:
-			frappe.throw(_("GPS accuracy cannot be negative."))
 		if self.require_gps_snapshot and (
-			self.gps_latitude is None or self.gps_longitude is None or not self.gps_captured_at
+			self.gps_latitude is None
+			or self.gps_longitude is None
+			or not self.gps_captured_at
+			or self.gps_accuracy is None
 		):
 			frappe.throw(_("This template requires a GPS location capture before completion."))
 		self.completed_by = frappe.session.user
 		self.inspected_on = now()
+
+	def validate_gps(self):
+		if (self.gps_latitude is None) != (self.gps_longitude is None):
+			frappe.throw(_("Capture latitude and longitude together."))
+		for field, minimum, maximum in (
+			("gps_latitude", -90, 90),
+			("gps_longitude", -180, 180),
+			("gps_accuracy", 0, float("inf")),
+		):
+			value = self.get(field)
+			if value is not None and (
+				not math.isfinite(float(value)) or not minimum <= float(value) <= maximum
+			):
+				frappe.throw(_("Invalid GPS coordinates or location accuracy."))
+
+	def validate_photographs(self, urls):
+		if not urls:
+			return
+		from servicems.inspection_files import evidence_inspections
+
+		parents = list(evidence_inspections(self))
+		for url in urls:
+			photo = frappe.db.get_value(
+				"File",
+				{
+					"file_url": url,
+					"is_private": 1,
+					"is_folder": 0,
+					"attached_to_doctype": self.doctype,
+					"attached_to_name": ["in", parents],
+					"file_type": ["in", ["JPG", "JPEG", "PNG", "WEBP", "GIF"]],
+				},
+				"name",
+			)
+			if not photo:
+				frappe.throw(
+					_(
+						"Photographs must be private uploads belonging to this inspection or its correction history."
+					)
+				)
+			frappe.get_doc("File", photo).check_permission("read")
 
 	def on_trash(self):
 		if self.inspection_status == "Completed":
@@ -233,25 +290,28 @@ def migrate_legacy_acceptance(job_card):
 
 
 def protect_completed_photo(doc, method=None):
-	if doc.file_url and frappe.db.sql(
-		"""select i.name from `tabService Vehicle Inspection` i
-	 left join `tabPre Inspection Item` c on c.parent=i.name and c.parenttype='Service Vehicle Inspection'
-	 where i.inspection_status='Completed' and (i.image_upload=%s or c.photograph=%s) limit 1""",
-		(doc.file_url, doc.file_url),
-	):
-		frappe.throw(_("Photographs referenced by completed inspections must be retained."))
-	parents = [(doc.attached_to_doctype, doc.attached_to_name)]
 	previous = doc.get_doc_before_save()
+	urls = {url for url in (doc.file_url, previous.file_url if previous else None) if url}
+	parents = [(doc.attached_to_doctype, doc.attached_to_name)]
 	if previous:
 		parents.append((previous.attached_to_doctype, previous.attached_to_name))
-	for doctype, name in parents:
-		if (
-			doctype == "Service Vehicle Inspection"
-			and name
-			and frappe.db.get_value(doctype, name, "inspection_status") == "Completed"
-		):
-			frappe.throw(
-				_(
-					"Photographs attached to completed inspections must be retained. Create a correction inspection."
+	for doctype, name in sorted(set(parents), key=str):
+		if doctype == "Service Vehicle Inspection" and name:
+			status = frappe.db.get_value(doctype, name, "inspection_status", for_update=True)
+			if status == "Completed":
+				frappe.throw(
+					_(
+						"Photographs attached to completed inspections must be retained. Create a correction inspection."
+					)
 				)
-			)
+	if (
+		not doc.is_new()
+		and urls
+		and frappe.db.sql(
+			"""select i.name from `tabService Vehicle Inspection` i
+	 left join `tabPre Inspection Item` c on c.parent=i.name and c.parenttype='Service Vehicle Inspection'
+	 where i.inspection_status='Completed' and (i.image_upload in %(urls)s or c.photograph in %(urls)s) limit 1 FOR UPDATE""",
+			{"urls": tuple(urls)},
+		)
+	):
+		frappe.throw(_("Photographs referenced by completed inspections must be retained."))

@@ -227,7 +227,7 @@
                   class="answer-controls"
                 >
                   <label
-                    v-for="choice in ['Yes', 'No', 'N/A']"
+                    v-for="choice in answerChoices(row)"
                     :key="choice"
                     class="answer-chip"
                     :class="{ chosen: row.answer === choice }"
@@ -236,7 +236,7 @@
                       type="radio"
                       :name="'answer-' + row.name"
                       :value="choice"
-                      :disabled="completed"
+                      :disabled="completed || busy"
                     />{{ choice }}</label
                   >
                 </div>
@@ -246,7 +246,7 @@
                     v-model="row.answer"
                     class="field-input"
                     type="text"
-                    :disabled="completed"
+                    :disabled="completed || busy"
                     :placeholder="row.option || 'Enter finding'"
                   />
                 </label>
@@ -256,7 +256,7 @@
                     v-model="row.remarks"
                     class="field-input"
                     rows="2"
-                    :disabled="completed"
+                    :disabled="completed || busy"
                     placeholder="Optional observations"
                   ></textarea>
                 </label>
@@ -276,6 +276,7 @@
                       accept="image/*"
                       capture="environment"
                       hidden
+                      :disabled="busy || uploading"
                       @change="pickPhoto($event, row)"
                     />
                   </label>
@@ -319,6 +320,7 @@
                     accept="image/*"
                     capture="environment"
                     hidden
+                    :disabled="busy || uploading"
                     @change="pickPhoto($event, null)"
                   />
                 </label>
@@ -329,6 +331,7 @@
                     accept="image/*"
                     multiple
                     hidden
+                    :disabled="busy || uploading"
                     @change="pickPhoto($event, null)"
                   />
                 </label>
@@ -343,7 +346,7 @@
                 >Inspection remarks
                 <textarea
                   v-model="values.inspection_remarks"
-                  :disabled="completed"
+                  :disabled="completed || busy"
                   rows="4"
                   class="field-input"
                   placeholder="Damage, observations or recommendations"
@@ -354,7 +357,7 @@
                 <input
                   v-model="values.mileage"
                   type="text"
-                  :disabled="completed"
+                  :disabled="completed || busy"
                   class="field-input"
                 />
               </label>
@@ -386,7 +389,7 @@
                 v-if="!completed"
                 class="button secondary"
                 type="button"
-                :disabled="!online || busy"
+                :disabled="!online || busy || gpsBusy"
                 @click="captureGPS"
               >
                 📍
@@ -410,7 +413,7 @@
             <button
               class="button secondary"
               type="button"
-              :disabled="busy || !online || uploading"
+              :disabled="busy || !online || uploading || gpsBusy"
               @click="saveDraft"
             >
               Save Draft
@@ -418,21 +421,50 @@
             <button
               class="button primary"
               type="button"
-              :disabled="busy || !online || uploading"
+              :disabled="busy || !online || uploading || gpsBusy"
               @click="completeInspection"
             >
               Complete Inspection
             </button>
           </template>
-          <button
-            v-else
-            class="button primary"
-            type="button"
-            @click="returnToJob"
-          >
-            Return to Job Card
-          </button>
+          <template v-else>
+            <button
+              class="button secondary"
+              type="button"
+              :disabled="busy || !online"
+              @click="correctionOpen = !correctionOpen"
+            >
+              Create correction
+            </button>
+            <button class="button primary" type="button" @click="returnToJob">
+              Return to Job Card
+            </button>
+          </template>
         </div>
+        <form
+          v-if="completed && correctionOpen"
+          class="panel correction-form"
+          @submit.prevent="createCorrection"
+        >
+          <label class="field-label"
+            >Correction reason
+            <textarea
+              v-model="correctionReason"
+              class="field-input"
+              required
+              maxlength="1000"
+              :disabled="busy"
+              rows="3"
+            ></textarea>
+          </label>
+          <button
+            class="button primary"
+            type="submit"
+            :disabled="busy || !online || !correctionReason.trim()"
+          >
+            Start correction
+          </button>
+        </form>
       </section>
     </main>
     <footer class="field-footer">
@@ -467,6 +499,19 @@ const uploadProgress = ref(0)
 const error = ref('')
 const statusMessage = ref('')
 const gpsMessage = ref('')
+const gpsBusy = ref(false)
+const correctionOpen = ref(false)
+const correctionReason = ref('')
+const savedDraft = ref('')
+let gpsRequest = 0
+const draftSignature = () => JSON.stringify([values.value, checklist.value])
+const dirty = computed(
+  () =>
+    inspection.value &&
+    !completed.value &&
+    savedDraft.value &&
+    draftSignature() !== savedDraft.value
+)
 const stages = ['Pre-Service', 'Post-Service']
 const completed = computed(
   () => inspection.value?.inspection_status === 'Completed'
@@ -486,9 +531,22 @@ const stageName = computed(() =>
 function connected() {
   online.value = navigator.onLine
 }
+function warnUnsaved(event) {
+  if (!dirty.value && !uploading.value) return
+  event.preventDefault()
+  event.returnValue = ''
+}
+function answerChoices(row) {
+  const choices = row.option
+    ?.split(/\r?\n/)
+    .map((value) => value.trim())
+    .filter(Boolean)
+  return choices?.length ? choices : ['Yes', 'No', 'N/A']
+}
 onMounted(() => {
   addEventListener('online', connected)
   addEventListener('offline', connected)
+  addEventListener('beforeunload', warnUnsaved)
   loadJobs().then(async () => {
     const jobCard = new URLSearchParams(window.location.search).get('job_card')
     if (jobCard) {
@@ -502,6 +560,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   removeEventListener('online', connected)
   removeEventListener('offline', connected)
+  removeEventListener('beforeunload', warnUnsaved)
 })
 async function invoke(action) {
   error.value = ''
@@ -559,17 +618,24 @@ async function openInspection(name) {
   )
   if (!record) return
   inspection.value = record
+  gpsRequest++
+  gpsBusy.value = false
+  gpsMessage.value = ''
+  statusMessage.value = ''
+  correctionOpen.value = false
+  correctionReason.value = ''
   checklist.value = (record.checklist || []).map((row) => ({ ...row }))
   values.value = {
     inspection_remarks: record.inspection_remarks || '',
     mileage: record.mileage || '',
-    gps_latitude: record.gps_latitude ?? null,
-    gps_longitude: record.gps_longitude ?? null,
-    gps_accuracy: record.gps_accuracy ?? null,
+    gps_latitude: record.gps_captured_at ? record.gps_latitude : null,
+    gps_longitude: record.gps_captured_at ? record.gps_longitude : null,
+    gps_accuracy: record.gps_captured_at ? record.gps_accuracy : null,
     gps_captured_at: record.gps_captured_at ?? null,
     image_upload: record.image_upload || '',
   }
   photos.value = []
+  savedDraft.value = draftSignature()
   await refreshPhotos()
   screen.value = 'inspection'
 }
@@ -577,20 +643,21 @@ async function refreshPhotos() {
   if (!inspection.value) return
   // File metadata is queried under ordinary Frappe read permissions.
   const items = await invoke(() =>
-    api('frappe.client.get_list', {
-      doctype: 'File',
-      fields: JSON.stringify(['name', 'file_name', 'file_url']),
-      filters: JSON.stringify({
-        attached_to_doctype: 'Service Vehicle Inspection',
-        attached_to_name: inspection.value.name,
-        is_private: 1,
-      }),
-      limit_page_length: 100,
+    api('servicems.field_api.get_inspection_photos', {
+      name: inspection.value.name,
     })
   )
   if (items) photos.value = items
 }
 async function returnToJob() {
+  if (busy.value || uploading.value || gpsBusy.value) return
+  if (
+    dirty.value &&
+    !window.confirm(
+      'Discard unsaved inspection changes? Save Draft first to keep them.'
+    )
+  )
+    return
   if (selectedJob.value) await openJob(selectedJob.value)
   else screen.value = 'jobs'
 }
@@ -604,6 +671,8 @@ async function pickPhoto(event, row) {
     for (const file of files) {
       if (!file.type.startsWith('image/'))
         throw new Error('Only photographs are accepted.')
+      if (file.size > 10 * 1024 * 1024)
+        throw new Error('Photographs must be 10 MB or smaller.')
       const saved = await uploadPhoto(
         file,
         inspection.value.name,
@@ -624,33 +693,35 @@ async function pickPhoto(event, row) {
   }
 }
 function captureGPS() {
+  if (gpsBusy.value || completed.value) return
   if (!navigator.geolocation) {
     gpsMessage.value = 'GPS is unavailable on this device.'
     return
   }
   gpsMessage.value = 'Requesting location permission…'
+  gpsBusy.value = true
+  const request = ++gpsRequest
+  const name = inspection.value.name
   navigator.geolocation.getCurrentPosition(
     ({ coords, timestamp }) => {
+      if (
+        request !== gpsRequest ||
+        inspection.value.name !== name ||
+        completed.value
+      )
+        return
+      gpsBusy.value = false
       values.value.gps_latitude = coords.latitude
       values.value.gps_longitude = coords.longitude
       values.value.gps_accuracy = coords.accuracy
       const date = new Date(timestamp)
-      values.value.gps_captured_at = [
-        [
-          date.getFullYear(),
-          String(date.getMonth() + 1).padStart(2, '0'),
-          String(date.getDate()).padStart(2, '0'),
-        ].join('-'),
-        [
-          String(date.getHours()).padStart(2, '0'),
-          String(date.getMinutes()).padStart(2, '0'),
-          String(date.getSeconds()).padStart(2, '0'),
-        ].join(':'),
-      ].join(' ')
+      values.value.gps_captured_at = date.toISOString()
       gpsMessage.value =
         'Location captured with your permission. Save Draft to retain it on the server.'
     },
     (e) => {
+      if (request !== gpsRequest) return
+      gpsBusy.value = false
       gpsMessage.value =
         e.code === 1
           ? 'Location access denied. Update browser permissions to try again.'
@@ -662,6 +733,7 @@ function captureGPS() {
 function payload() {
   return {
     name: inspection.value.name,
+    expected_modified: inspection.value.modified,
     values: { ...values.value },
     answers: checklist.value.map((r) => ({
       name: r.name,
@@ -679,8 +751,23 @@ async function saveDraft() {
   )
   busy.value = false
   if (!success) return false
+  inspection.value.modified = success.modified
+  savedDraft.value = draftSignature()
   statusMessage.value = 'Draft saved on server.'
   return true
+}
+async function createCorrection() {
+  if (busy.value || !online.value || !correctionReason.value.trim()) return
+  busy.value = true
+  const result = await invoke(() =>
+    api(
+      'servicems.field_api.create_field_correction',
+      { name: inspection.value.name, reason: correctionReason.value.trim() },
+      true
+    )
+  )
+  busy.value = false
+  if (result) await openInspection(result.name)
 }
 async function completeInspection() {
   if (!(await saveDraft())) return

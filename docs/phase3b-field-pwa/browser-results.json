@@ -1,0 +1,368 @@
+{
+  "physicalDevices": false,
+  "simulation": [
+    "Viewport and orientation",
+    "GPS permissions and coordinates",
+    "Generated PNG camera/gallery inputs",
+    "Keyboard viewport"
+  ],
+  "checks": [
+    "Technician sees only the assigned Job Card",
+    "Configured checklist choices render",
+    "Unsaved navigation warns and cancellation preserves the form",
+    "Multiple private uploads render actual photo previews",
+    "Rear-camera input and upload progress work in the simulated browser",
+    "GPS denial provides a recoverable message",
+    "GPS capture includes location accuracy",
+    "Draft answers, remarks, photo references and GPS persist",
+    "Inspection responses use no-store",
+    "Inspection values survive 40 viewport/theme combinations",
+    "Actions remain reachable with a reduced keyboard viewport",
+    "Pre-Inspection completes and becomes read-only",
+    "Correction retains original photographs and history",
+    "Post-Inspection completes with its required photograph",
+    "History retains Pre, Post and correction records",
+    "Chromium manifest and installability diagnostics pass",
+    "Service worker is active within Field scope",
+    "Authorized photo downloads use no-store",
+    "No private routes, photographs, session HTML or query credentials enter SW caches",
+    "No inspection data enters localStorage or sessionStorage",
+    "Normal flows have no browser exceptions or failed HTTP requests"
+  ],
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "light",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "theme": "dark",
+      "horizontalOverflow": false,
+      "clippedControls": false
+    }
+  ],
+  "screenshots": [
+    "mobile-home-light.png",
+    "mobile-pre-checklist-light.png",
+    "mobile-photo-gallery-light.png",
+    "mobile-gps-dark.png",
+    "tablet-inspection-light.png",
+    "tablet-inspection-dark.png",
+    "mobile-completed-light.png",
+    "mobile-post-dark.png"
+  ],
+  "cacheEntries": [],
+  "pre": "SVI000006",
+  "post": "SVI000008",
+  "correction": "SVI000007"
+}

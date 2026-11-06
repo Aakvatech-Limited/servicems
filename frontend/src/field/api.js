@@ -49,11 +49,12 @@ export function uploadPhoto(file, inspection, onProgress) {
   return new Promise((resolve, reject) => {
     const form = new FormData()
     form.append('file', file)
-    form.append('is_private', '1')
-    form.append('attached_to_doctype', 'Service Vehicle Inspection')
-    form.append('attached_to_name', inspection)
+    form.append('name', inspection)
     const request = new XMLHttpRequest()
-    request.open('POST', '/api/method/upload_file')
+    request.open(
+      'POST',
+      '/api/method/servicems.field_api.upload_inspection_photo'
+    )
     request.withCredentials = true
     request.setRequestHeader('X-Frappe-CSRF-Token', window.csrf_token)
     request.upload.onprogress = (event) => {

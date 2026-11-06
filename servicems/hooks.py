@@ -118,7 +118,10 @@ permission_query_conditions = {
 has_permission = {
 	"Service Job Card": "servicems.field_permissions.job_card_permission",
 	"Service Vehicle Inspection": "servicems.field_permissions.inspection_permission",
+	"File": "servicems.field_permissions.file_permission",
 }
+
+after_request = ["servicems.field_api.prevent_private_cache"]
 
 # DocType Class
 # ---------------
@@ -224,7 +227,7 @@ add_to_apps_screen = [
 
 doc_events = {
 	"File": {
-		"validate": "servicems.service_management.doctype.service_vehicle_inspection.service_vehicle_inspection.protect_completed_photo",
+		"validate": "servicems.inspection_files.validate_inspection_file",
 	},
 	"Quotation": {"validate": "servicems.billing.validate_quotation"},
 	"Sales Invoice": {"validate": "servicems.billing.validate_invoice"},

@@ -2,7 +2,7 @@
  * Only static resources qualify for caching. Private API responses, File
  * downloads, session HTML, photographs and drafts are never cached.
  */
-const CACHE = "servicems-field-shell-v1";
+const CACHE = "servicems-field-shell-v2";
 self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
@@ -23,6 +23,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  if (url.search) return;
   // Network-only for all HTML, Frappe APIs, uploads, private downloads,
   // dynamically returned record data, images and customer files.
   if (

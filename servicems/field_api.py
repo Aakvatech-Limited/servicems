@@ -36,6 +36,21 @@ def _read_card(name):
 	return card
 
 
+def _inspection(name, *, write=False):
+	doc = frappe.get_doc(INSPECTION, name, for_update=write)
+	doc.check_permission("write" if write else "read")
+	_read_card(doc.service_job_card)
+	return doc
+
+
+def prevent_private_cache(response, request):
+	if request.path == "/field" or request.path.startswith(
+		("/api/method/servicems.field_api.", "/private/files/")
+	):
+		response.headers["Cache-Control"] = "no-store, private, max-age=0"
+		response.headers["Pragma"] = "no-cache"
+
+
 @frappe.whitelist()
 def get_field_jobs(limit=40):
 	"""Return only Job Cards visible under normal Frappe permissions."""
@@ -104,11 +119,70 @@ def get_inspection_templates(stage):
 
 @frappe.whitelist()
 def get_field_inspection(name):
-	inspection = frappe.get_doc(INSPECTION, name)
-	inspection.check_permission("read")
-	if inspection.service_job_card:
-		_read_card(inspection.service_job_card)
+	inspection = _inspection(name)
 	return inspection.as_dict()
+
+
+@frappe.whitelist()
+def get_inspection_photos(name):
+	from servicems.inspection_files import evidence_inspections
+
+	doc = _inspection(name)
+	names = list(evidence_inspections(doc))
+	photos = frappe.get_all(
+		"File",
+		filters={
+			"attached_to_doctype": INSPECTION,
+			"attached_to_name": ["in", names],
+			"is_private": 1,
+			"is_folder": 0,
+		},
+		fields=["name", "file_name", "file_url"],
+		order_by="creation asc",
+		limit_page_length=100,
+	)
+	unique = {}
+	for photo in photos:
+		unique.setdefault(photo.file_url, photo)
+	return list(unique.values())
+
+
+@frappe.whitelist(methods=["POST"])
+def upload_inspection_photo(name):
+	from frappe.utils.file_manager import get_content_hash, save_file
+
+	from servicems.inspection_files import validate_image
+
+	doc = _inspection(name, write=True)
+	if doc.inspection_status != "Draft":
+		frappe.throw(_("Completed inspections cannot receive new photographs."))
+	photo = frappe.request.files.get("file")
+	if not photo:
+		frappe.throw(_("Select a photograph to upload."))
+	content = photo.stream.read(10 * 1024 * 1024 + 1)
+	if len(content) > 10 * 1024 * 1024:
+		frappe.throw(_("Photographs must be 10 MB or smaller."))
+	validate_image(content)
+	existing = frappe.db.get_value(
+		"File",
+		{
+			"attached_to_doctype": INSPECTION,
+			"attached_to_name": doc.name,
+			"is_private": 1,
+			"content_hash": get_content_hash(content),
+		},
+		["name", "file_url", "file_name", "is_private"],
+		as_dict=True,
+	)
+	if existing:
+		return existing
+	file = save_file(photo.filename, content, INSPECTION, doc.name, is_private=1)
+	return {
+		"name": file.name,
+		"file_url": file.file_url,
+		"file_name": file.file_name,
+		"is_private": file.is_private,
+	}
 
 
 @frappe.whitelist(methods=["POST"])
@@ -141,6 +215,12 @@ def _draft_values(values):
 	allowed = set(DRAFT_FIELDS)
 	if set(values) - allowed:
 		frappe.throw(_("Some draft fields cannot be edited from the Field PWA."))
+	if isinstance(values.get("gps_captured_at"), str) and values["gps_captured_at"].endswith("Z"):
+		from frappe.utils import convert_utc_to_system_timezone, get_datetime
+
+		values["gps_captured_at"] = convert_utc_to_system_timezone(
+			get_datetime(values["gps_captured_at"])
+		).replace(tzinfo=None)
 	return values
 
 
@@ -164,9 +244,15 @@ def _apply_answers(doc, answers):
 
 
 @frappe.whitelist(methods=["POST"])
-def save_field_draft(name, values=None, answers=None):
-	doc = frappe.get_doc(INSPECTION, name, for_update=True)
-	doc.check_permission("write")
+def save_field_draft(name, values=None, answers=None, expected_modified=None):
+	doc = _inspection(name, write=True)
+	if expected_modified and frappe.utils.get_datetime(expected_modified) != frappe.utils.get_datetime(
+		doc.modified
+	):
+		frappe.throw(
+			_("This inspection changed in another session. Reopen it before saving."),
+			frappe.TimestampMismatchError,
+		)
 	if doc.inspection_status != "Draft":
 		frappe.throw(_("Completed inspections cannot be edited. Create a correction."))
 	for key, value in _draft_values(values or {}).items():
@@ -179,8 +265,7 @@ def save_field_draft(name, values=None, answers=None):
 
 @frappe.whitelist(methods=["POST"])
 def complete_field_inspection(name):
-	doc = frappe.get_doc(INSPECTION, name, for_update=True)
-	doc.check_permission("write")
+	doc = _inspection(name, write=True)
 	if doc.inspection_status != "Draft":
 		frappe.throw(_("This inspection is already completed."))
 	doc.inspection_status = "Completed"
@@ -190,6 +275,5 @@ def complete_field_inspection(name):
 
 @frappe.whitelist(methods=["POST"])
 def create_field_correction(name, reason):
-	doc = frappe.get_doc(INSPECTION, name)
-	doc.check_permission("write")
+	doc = _inspection(name, write=True)
 	return {"name": doc.create_correction(reason)}
