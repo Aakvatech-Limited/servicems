@@ -98,7 +98,13 @@ class ServiceVehicleInspection(Document):
 						"checklist",
 						{
 							field: row.get(field)
-							for field in ("inspection_item", "inspection_type", "option", "require_photo", "is_required")
+							for field in (
+								"inspection_item",
+								"inspection_type",
+								"option",
+								"require_photo",
+								"is_required",
+							)
 						},
 					)
 			self.template_snapshot = frappe.as_json([row.as_dict() for row in self.checklist])

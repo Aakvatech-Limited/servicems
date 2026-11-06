@@ -100,7 +100,12 @@ frappe.ui.form.on("Service Job Card", {
       );
       frm.add_custom_button(
         __("Open Field Operations"),
-        () => window.open("/field?job_card=" + encodeURIComponent(frm.doc.name), "_blank", "noopener"),
+        () =>
+          window.open(
+            "/field?job_card=" + encodeURIComponent(frm.doc.name),
+            "_blank",
+            "noopener"
+          ),
         __("Inspections")
       );
       ["Pre-Service", "Post-Service"].forEach((stage) =>

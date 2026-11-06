@@ -6,8 +6,10 @@ createApp(FieldApp).mount('#field-app')
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/field-sw.js', {scope: '/field'}).catch(() => {
-      // A service worker is optional; online inspection remains functional.
-    })
+    navigator.serviceWorker
+      .register('/field-sw.js', { scope: '/field' })
+      .catch(() => {
+        // A service worker is optional; online inspection remains functional.
+      })
   })
 }
