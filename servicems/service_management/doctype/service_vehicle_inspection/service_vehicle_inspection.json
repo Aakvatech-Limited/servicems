@@ -47,6 +47,7 @@
   "checklist",
   "template_snapshot",
   "require_photographs_snapshot",
+  "require_gps_snapshot",
   "gps_latitude",
   "gps_longitude",
   "gps_accuracy",
@@ -330,6 +331,14 @@
    "fieldtype": "Datetime",
    "label": "GPS Capture Time",
    "read_only": 0
+  },
+  {
+   "fieldname": "require_gps_snapshot",
+   "fieldtype": "Check",
+   "label": "GPS Required (Snapshot)",
+   "default": "0",
+   "hidden": 1,
+   "read_only": 1
   }
  ],
  "links": [],
