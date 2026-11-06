@@ -9,6 +9,7 @@
  "field_order": [
   "require_photographs",
   "template_name",
+  "applicable_stage",
   "pre_inspection_items"
  ],
  "fields": [
@@ -23,6 +24,13 @@
    "fieldtype": "Data",
    "label": "Template Name",
    "unique": 1
+  },
+  {
+   "fieldname": "applicable_stage",
+   "fieldtype": "Select",
+   "label": "Inspection Stage",
+   "options": "\nPre-Service\nPost-Service",
+   "description": "Blank allows this template for both stages and preserves existing templates."
   },
   {
    "fieldname": "pre_inspection_items",
