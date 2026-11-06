@@ -41,6 +41,7 @@ class ServiceVehicleInspection(Document):
 			self.template_snapshot = source.template_snapshot if self.corrects_inspection else None
 			if self.corrects_inspection:
 				self.require_photographs_snapshot = source.require_photographs_snapshot
+				self.require_gps_snapshot = source.require_gps_snapshot
 		if self.inspection_template:
 			template = frappe.get_doc("Service Pre Inspection Template", self.inspection_template)
 			template.check_permission("read")
@@ -48,6 +49,7 @@ class ServiceVehicleInspection(Document):
 				frappe.throw(_("Selected template does not apply to this inspection stage."))
 			if not self.corrects_inspection:
 				self.require_photographs_snapshot = int(bool(template.require_photographs))
+				self.require_gps_snapshot = int(bool(template.require_gps))
 		if self.inspection_status == "Completed" and not self.inspection_stage:
 			frappe.throw(_("Select an inspection stage."))
 		if (
@@ -61,6 +63,7 @@ class ServiceVehicleInspection(Document):
 		if previous and previous.template_snapshot:
 			self.template_snapshot = previous.template_snapshot
 			self.require_photographs_snapshot = previous.require_photographs_snapshot
+			self.require_gps_snapshot = previous.require_gps_snapshot
 			baseline = frappe.parse_json(previous.template_snapshot)
 			if len(self.checklist) != len(baseline) or any(
 				row.inspection_item != item.get("inspection_item")
@@ -71,6 +74,7 @@ class ServiceVehicleInspection(Document):
 				)
 			for row, item in zip(self.checklist, baseline, strict=True):
 				row.require_photo = item.get("require_photo", 0)
+				row.is_required = item.get("is_required", 0)
 		if self.inspection_template and not self.template_snapshot:
 			template = frappe.get_doc("Service Pre Inspection Template", self.inspection_template)
 			template.check_permission("read")
@@ -78,6 +82,7 @@ class ServiceVehicleInspection(Document):
 				frappe.throw(_("Selected template does not apply to this inspection stage."))
 			if not previous:
 				self.require_photographs_snapshot = int(bool(template.require_photographs))
+				self.require_gps_snapshot = int(bool(template.require_gps))
 			if self.checklist:
 				if len(self.checklist) != len(template.pre_inspection_items) or any(
 					row.inspection_item != spec.inspection_item
@@ -86,13 +91,14 @@ class ServiceVehicleInspection(Document):
 					frappe.throw(_("Checklist items must match the selected template."))
 				for row, spec in zip(self.checklist, template.pre_inspection_items, strict=True):
 					row.require_photo = spec.require_photo
+					row.is_required = spec.is_required
 			else:
 				for row in template.pre_inspection_items:
 					self.append(
 						"checklist",
 						{
 							field: row.get(field)
-							for field in ("inspection_item", "inspection_type", "option", "require_photo")
+							for field in ("inspection_item", "inspection_type", "option", "require_photo", "is_required")
 						},
 					)
 			self.template_snapshot = frappe.as_json([row.as_dict() for row in self.checklist])
@@ -128,6 +134,8 @@ class ServiceVehicleInspection(Document):
 		if self.require_photographs_snapshot and not attached:
 			frappe.throw(_("Attach at least one inspection photograph before completion."))
 		for row in self.checklist:
+			if row.is_required and not str(row.answer or "").strip():
+				frappe.throw(_("Answer required for inspection item {0}.").format(row.inspection_item))
 			if row.require_photo and not row.photograph:
 				frappe.throw(
 					_("A photograph is required for inspection item {0}.").format(row.inspection_item)
@@ -140,6 +148,10 @@ class ServiceVehicleInspection(Document):
 			frappe.throw(_("Invalid GPS longitude."))
 		if self.gps_accuracy is not None and float(self.gps_accuracy) < 0:
 			frappe.throw(_("GPS accuracy cannot be negative."))
+		if self.require_gps_snapshot and (
+			self.gps_latitude is None or self.gps_longitude is None or not self.gps_captured_at
+		):
+			frappe.throw(_("This template requires a GPS location capture before completion."))
 		self.completed_by = frappe.session.user
 		self.inspected_on = now()
 
