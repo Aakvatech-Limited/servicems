@@ -175,7 +175,13 @@ function connected() { online.value = navigator.onLine }
 onMounted(() => {
   addEventListener('online', connected)
   addEventListener('offline', connected)
-  loadJobs()
+  loadJobs().then(async () => {
+    const jobCard = new URLSearchParams(window.location.search).get('job_card')
+    if (jobCard) {
+      const job = await invoke(() => api('servicems.field_api.get_field_job', {job_card:jobCard}))
+      if (job) await openJob(job)
+    }
+  })
 })
 onBeforeUnmount(() => {
   removeEventListener('online', connected)
