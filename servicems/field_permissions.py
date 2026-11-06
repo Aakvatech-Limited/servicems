@@ -110,6 +110,7 @@ def ensure_field_permissions():
         (INSPECTION, ("read", "write", "create")),
         ("Service Pre Inspection Template", ("read",)),
     ):
-        frappe.permissions.add_permission(doctype, role, 0)
+        if not frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": role, "permlevel": 0}):
+            frappe.permissions.add_permission(doctype, role, 0)
         for field in ("read", "write", "create", "delete", "submit", "cancel", "amend"):
             frappe.permissions.update_permission_property(doctype, role, 0, field, int(field in rights))
