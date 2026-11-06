@@ -9,6 +9,7 @@
  "field_order": [
   "require_photographs",
   "template_name",
+  "require_gps",
   "applicable_stage",
   "pre_inspection_items"
  ],
@@ -37,6 +38,13 @@
    "fieldtype": "Table",
    "label": "Pre Inspection Items",
    "options": "Pre Inspection Item"
+  },
+  {
+   "fieldname": "require_gps",
+   "fieldtype": "Check",
+   "label": "GPS Location Required",
+   "default": "0",
+   "description": "When enabled, captured GPS location is required to complete this inspection."
   }
  ],
  "index_web_pages_for_search": 1,
