@@ -149,7 +149,7 @@ def get_inspection_photos(name):
 
 @frappe.whitelist(methods=["POST"])
 def upload_inspection_photo(name):
-	from frappe.utils.file_manager import get_content_hash, save_file
+	from frappe.utils.file_manager import get_content_hash
 
 	from servicems.inspection_files import validate_image
 
@@ -176,7 +176,16 @@ def upload_inspection_photo(name):
 	)
 	if existing:
 		return existing
-	file = save_file(photo.filename, content, INSPECTION, doc.name, is_private=1)
+	file = frappe.get_doc(
+		{
+			"doctype": "File",
+			"file_name": photo.filename,
+			"content": content,
+			"attached_to_doctype": INSPECTION,
+			"attached_to_name": doc.name,
+			"is_private": 1,
+		}
+	).insert(ignore_permissions=True)
 	return {
 		"name": file.name,
 		"file_url": file.file_url,

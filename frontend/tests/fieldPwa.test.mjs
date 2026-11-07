@@ -68,3 +68,19 @@ test('service worker ignores private routes, session HTML, photos, POST and quer
   }
   assert.equal(handled, 0)
 })
+
+test('photo validation failures expose the server reason and never return an attachment', async (t) => {
+  globalThis.window = { csrf_token: 'test-token' }
+  globalThis.XMLHttpRequest = class {
+    upload = {}
+    open() {}
+    setRequestHeader() {}
+    send() {
+      this.status = 417
+      this.responseText = JSON.stringify({ _server_messages: JSON.stringify([JSON.stringify({ message: 'Upload a valid JPEG, PNG, WebP or GIF photograph.' })]) })
+      this.onload()
+    }
+  }
+  t.after(() => { delete globalThis.window; delete globalThis.XMLHttpRequest })
+  await assert.rejects(uploadPhoto(new File(['bad'], 'bad.png'), 'SVI1'), /Upload a valid JPEG/)
+})

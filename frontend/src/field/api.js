@@ -70,7 +70,20 @@ export function uploadPhoto(file, inspection, onProgress) {
           result.message?.is_private
         )
           resolve(result.message)
-        else reject(new Error('Private photo upload failed.'))
+        else {
+          const messages = result._server_messages
+            ? JSON.parse(result._server_messages)
+            : []
+          const message = messages.length
+            ? JSON.parse(messages[messages.length - 1]).message
+            : null
+          reject(
+            new Error(
+              message ||
+                'Private photo upload failed. Reopen the inspection and retry.'
+            )
+          )
+        }
       } catch (_) {
         reject(new Error('Photo upload did not return a valid response.'))
       }

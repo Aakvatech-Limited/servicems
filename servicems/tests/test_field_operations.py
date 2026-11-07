@@ -188,6 +188,24 @@ class TestFieldOperations(TestCase):
 		self.assertEqual(first.name, second.name)
 		self.assertEqual(len(api.get_inspection_photos(doc.name)), 1)
 
+	def test_uploaded_bytes_can_match_inaccessible_private_evidence_without_granting_source_access(self):
+		source = self.start(card=self.cards[1])
+		original = self.upload(source)
+		self.answer(source)
+		api.complete_field_inspection(source.name)
+		target = self.start()
+		self.field_user()
+		with self.assertRaises(frappe.PermissionError):
+			api.get_field_inspection(source.name)
+		copy = self.upload(target)
+		self.assertNotEqual(copy.name, original.name)
+		self.assertEqual(copy.attached_to_name, target.name)
+		self.assertEqual(copy.content_hash, original.content_hash)
+		self.assertTrue(copy.is_downloadable())
+		self.assertFalse(original.is_downloadable())
+		with self.assertRaises(frappe.PermissionError):
+			api.get_inspection_photos(source.name)
+
 	def test_gps_required_accuracy_and_draft_validation(self):
 		self.template.require_gps = 1
 		self.template.save()
