@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0d1d38"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="ServiceMS Field"/>
+  <link rel="icon" href="/assets/servicems/frontend/favicon.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/servicems/field/icon-180.png"/>
+  <link rel="manifest" href="/assets/servicems/field/manifest.webmanifest"/>
+  <title>ServiceMS Field Operations</title>
+</head>
+<body>
+  <div id="field-app"></div>
+  <script>window.csrf_token = '{{ csrf_token }}'</script>
+  <script>window.field_user = {{ field_user | tojson }}</script>
+  <script>window.field_has_desk = {{ field_has_desk | tojson }}</script>
+  <script type="module" src="/src/field/main.js"></script>
+</body>
+</html>

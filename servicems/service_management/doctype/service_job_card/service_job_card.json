@@ -377,12 +377,14 @@
   {
    "fieldname": "section_break_41",
    "fieldtype": "Section Break",
-   "label": "Pre Acceptance Inspection"
+   "label": "Pre Acceptance Inspection",
+   "hidden": 1
   },
   {
    "fieldname": "section_break_43",
    "fieldtype": "Section Break",
-   "label": "Battery Details"
+   "label": "Battery Details",
+   "hidden": 1
   },
   {
    "fetch_from": "service_item_name.vin",
@@ -395,237 +397,278 @@
    "default": "0",
    "fieldname": "service_book",
    "fieldtype": "Check",
-   "label": "Service Book"
+   "label": "Service Book",
+   "hidden": 1
   },
   {
    "fieldname": "column_break_44",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "fire_extinguisher",
    "fieldtype": "Check",
-   "label": "Fire Extinguisher"
+   "label": "Fire Extinguisher",
+   "hidden": 1
   },
   {
    "fieldname": "battery_make",
    "fieldtype": "Data",
-   "label": "Battery Make"
+   "label": "Battery Make",
+   "hidden": 1
   },
   {
    "fieldname": "battery_no",
    "fieldtype": "Data",
-   "label": "Battery No"
+   "label": "Battery No",
+   "hidden": 1
   },
   {
    "fieldname": "tyre_details_section",
    "fieldtype": "Section Break",
-   "label": "Tyre Details"
+   "label": "Tyre Details",
+   "hidden": 1
   },
   {
    "fieldname": "front_right",
    "fieldtype": "Select",
    "label": "Front Right",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "front_left",
    "fieldtype": "Select",
    "label": "Front Left",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "axle_1_rear_right",
    "fieldtype": "Select",
    "label": "AXLE 1 REAR RIGHT T 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "axle_1_rear_left",
    "fieldtype": "Select",
    "label": "AXLE 1 REAR LEFT T 1  AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "axle_2_rear_left",
    "fieldtype": "Select",
    "label": "AXLE 2 REAR LEFT T 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "spare_wheel_1",
    "fieldtype": "Select",
    "label": "Spare Wheel 1",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "spare_wheel_2",
    "fieldtype": "Select",
    "label": "Spare Wheel 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "cigar_lighter",
    "fieldtype": "Check",
-   "label": "Cigar Lighter"
+   "label": "Cigar Lighter",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "first_aid",
    "fieldtype": "Check",
-   "label": "First aid"
+   "label": "First aid",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "clock",
    "fieldtype": "Check",
-   "label": "Clock"
+   "label": "Clock",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "gear_lock",
    "fieldtype": "Check",
-   "label": "Gear Lock"
+   "label": "Gear Lock",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "tyre_stopper",
    "fieldtype": "Check",
-   "label": "Tyre stopper"
+   "label": "Tyre stopper",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "tarpaulin",
    "fieldtype": "Check",
-   "label": "Tarpaulin"
+   "label": "Tarpaulin",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "fog_lamps",
    "fieldtype": "Check",
-   "label": "Fog Lamp"
+   "label": "Fog Lamp",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "mobile_charger",
    "fieldtype": "Check",
-   "label": "Mobile Charger"
+   "label": "Mobile Charger",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "cargo_belt",
    "fieldtype": "Check",
-   "label": "Cargo belt"
+   "label": "Cargo belt",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "tool_kit",
    "fieldtype": "Check",
-   "label": "Tool Kit"
+   "label": "Tool Kit",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "jock",
    "fieldtype": "Check",
-   "label": "Jock"
+   "label": "Jock",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "pressure_pipe",
    "fieldtype": "Check",
-   "label": "Pressure pipe"
+   "label": "Pressure pipe",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "helmet",
    "fieldtype": "Check",
-   "label": "Helmet"
+   "label": "Helmet",
+   "hidden": 1
   },
   {
    "bold": 1,
    "fieldname": "battery_condition_column",
    "fieldtype": "Column Break",
-   "label": "Battery Condition"
+   "label": "Battery Condition",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "excellent",
    "fieldtype": "Check",
-   "label": "Excellent"
+   "label": "Excellent",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "good",
    "fieldtype": "Check",
-   "label": "Good"
+   "label": "Good",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "poor",
    "fieldtype": "Check",
-   "label": "Poor"
+   "label": "Poor",
+   "hidden": 1
   },
   {
    "fieldname": "note_section",
    "fieldtype": "Read Only",
-   "label": "Note To Measure Tyre tread use Tread DepthGuage"
+   "label": "Note To Measure Tyre tread use Tread DepthGuage",
+   "hidden": 1
   },
   {
    "bold": 1,
    "fieldname": "section_break_82",
    "fieldtype": "Heading",
-   "label": "Remark/Vehicles diagnosis report"
+   "label": "Remark/Vehicles diagnosis report",
+   "hidden": 1
   },
   {
    "fieldname": "data_83",
-   "fieldtype": "Data"
+   "fieldtype": "Data",
+   "hidden": 1
   },
   {
    "fieldname": "column_break_71",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "fieldname": "trailer_axle_left_1and2",
    "fieldtype": "Select",
    "label": "TRAILER AXLE LEFT 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "trailer_axle_2_left_1and2",
    "fieldtype": "Select",
    "label": "TRAILER AXLE 2 LEFT 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "trailer_axle_3_left_1and2",
    "fieldtype": "Select",
    "label": "TRAILER AXLE 3 LEFT 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "axle2_rear_right_t_1_and_2",
    "fieldtype": "Select",
    "label": "AXLE2 REAR RIGHT T 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "trailer_axle_right_1_and_2",
    "fieldtype": "Select",
    "label": "TRAILER AXLE RIGHT 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "trailer_axle_2_right_1_and_2",
    "fieldtype": "Select",
    "label": "TRAILER AXLE 2 RIGHT 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "fieldname": "trailer_axle_3_right_1_and_2",
    "fieldtype": "Select",
    "label": "TRAILER AXLE 3 RIGHT 1 AND 2",
-   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm"
+   "options": "\nAbove 10 mm\nAround 7 mm\nLess than 2.6 mm",
+   "hidden": 1
   },
   {
    "default": "0",
