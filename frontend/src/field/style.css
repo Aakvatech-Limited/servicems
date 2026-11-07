@@ -1294,6 +1294,13 @@ progress {
   justify-content: space-between;
   gap: 8px;
 }
+.photo-dialog .delete-photo {
+  width: 100%;
+  margin-bottom: 16px;
+  color: var(--text);
+  background: #dc35451a;
+  border: 1px solid #dc354580;
+}
 .photo-dialog-actions .button {
   font-size: 11px;
   padding: 8px 10px;

@@ -666,6 +666,20 @@
         </div>
         <img :src="selectedPhoto.file_url" :alt="selectedPhoto.file_name" />
         <p>{{ selectedPhoto.file_name }}</p>
+        <p v-if="errorMessage" class="notice danger" role="alert">
+          {{ errorMessage }}
+        </p>
+        <button
+          v-if="!completed && selectedPhoto.can_delete"
+          class="button delete-photo"
+          :disabled="locked || !online"
+          @click="$emit('delete-photo', selectedPhoto)"
+        >
+          <FieldIcon name="trash-2" />{{ busy ? 'Deleting…' : 'Delete photo' }}
+        </button>
+        <p v-else class="muted">
+          This photograph is protected inspection evidence.
+        </p>
         <div class="photo-dialog-actions">
           <button
             class="button secondary"
@@ -693,7 +707,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import FieldIcon from './FieldIcon.vue'
 import {
   formatCaptureTime,
@@ -715,12 +729,14 @@ const props = defineProps({
   gpsMessage: String,
   statusMessage: String,
   failedUpload: String,
+  errorMessage: String,
 })
 defineEmits([
   'back',
   'save',
   'complete',
   'upload',
+  'delete-photo',
   'retry',
   'gps',
   'correction',
@@ -766,6 +782,15 @@ const previewIndex = ref(null),
   photoDialog = ref(null)
 const selectedPhoto = computed(() =>
   previewIndex.value == null ? null : props.photos[previewIndex.value]
+)
+watch(
+  () => props.photos,
+  () => {
+    if (previewIndex.value == null) return
+    if (!props.photos.length) photoDialog.value?.close()
+    else
+      previewIndex.value = Math.min(previewIndex.value, props.photos.length - 1)
+  }
 )
 function move(index) {
   step.value = Math.max(0, Math.min(4, index))

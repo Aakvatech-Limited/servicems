@@ -137,12 +137,14 @@ def get_inspection_photos(name):
 			"is_private": 1,
 			"is_folder": 0,
 		},
-		fields=["name", "file_name", "file_url"],
+		fields=["name", "file_name", "file_url", "attached_to_name"],
 		order_by="creation asc",
 		limit_page_length=100,
 	)
 	unique = {}
 	for photo in photos:
+		owner = photo.pop("attached_to_name")
+		photo.can_delete = doc.inspection_status == "Draft" and owner == doc.name
 		unique.setdefault(photo.file_url, photo)
 	return list(unique.values())
 
@@ -252,9 +254,7 @@ def _apply_answers(doc, answers):
 				row.set(field, answer[field])
 
 
-@frappe.whitelist(methods=["POST"])
-def save_field_draft(name, values=None, answers=None, expected_modified=None):
-	doc = _inspection(name, write=True)
+def _edit_draft(doc, values, answers, expected_modified):
 	if expected_modified and frappe.utils.get_datetime(expected_modified) != frappe.utils.get_datetime(
 		doc.modified
 	):
@@ -268,8 +268,42 @@ def save_field_draft(name, values=None, answers=None, expected_modified=None):
 		doc.set(key, value)
 	if answers is not None:
 		_apply_answers(doc, answers)
+
+
+@frappe.whitelist(methods=["POST"])
+def save_field_draft(name, values=None, answers=None, expected_modified=None):
+	doc = _inspection(name, write=True)
+	_edit_draft(doc, values, answers, expected_modified)
 	doc.save()
 	return {"name": doc.name, "inspection_status": doc.inspection_status, "modified": str(doc.modified)}
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_inspection_photo(name, file_name, values=None, answers=None, expected_modified=None):
+	from servicems.service_management.doctype.service_vehicle_inspection.service_vehicle_inspection import (
+		protect_completed_photo,
+	)
+
+	doc = _inspection(name, write=True)
+	photo = frappe.get_doc("File", file_name, for_update=True)
+	if (
+		photo.attached_to_doctype != INSPECTION
+		or photo.attached_to_name != doc.name
+		or not photo.is_private
+		or photo.is_folder
+	):
+		frappe.throw(_("Only photographs uploaded to this draft can be deleted."), frappe.PermissionError)
+	protect_completed_photo(photo)
+	_edit_draft(doc, values, answers, expected_modified)
+	if doc.image_upload == photo.file_url:
+		doc.image_upload = ""
+	for row in doc.checklist:
+		if row.photograph == photo.file_url:
+			row.photograph = ""
+	doc.save()
+	# Parent write access and exact attachment ownership were checked above.
+	photo.delete(ignore_permissions=True)
+	return {"name": doc.name, "modified": str(doc.modified), "deleted_url": photo.file_url}
 
 
 @frappe.whitelist(methods=["POST"])

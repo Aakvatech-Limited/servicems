@@ -400,10 +400,12 @@
           :gps-message="gpsMessage"
           :status-message="statusMessage"
           :failed-upload="failedUpload?.message || ''"
+          :error-message="error"
           @back="returnToJob"
           @save="saveDraft"
           @complete="completeInspection"
           @upload="pickPhoto"
+          @delete-photo="deletePhoto"
           @retry="retryUpload"
           @gps="captureGPS"
           @correction="correctionOpen = !correctionOpen"
@@ -898,6 +900,46 @@ async function pickPhoto(event, row) {
 async function retryUpload() {
   if (failedUpload.value)
     await uploadFiles(failedUpload.value.files, failedUpload.value.row)
+}
+async function deletePhoto(photo) {
+  if (
+    !photo.can_delete ||
+    completed.value ||
+    !online.value ||
+    navigationLocked.value
+  )
+    return
+  if (
+    !window.confirm(
+      'Delete this photograph? It will be removed from this draft. Any required evidence must be replaced before completion.'
+    )
+  )
+    return
+  busy.value = true
+  const result = await invoke(() =>
+    api(
+      'servicems.field_api.delete_inspection_photo',
+      {
+        ...payload(),
+        file_name: photo.name,
+      },
+      true
+    )
+  )
+  if (result) {
+    if (values.value.image_upload === result.deleted_url)
+      values.value.image_upload = ''
+    for (const row of checklist.value) {
+      if (row.photograph === result.deleted_url) row.photograph = ''
+    }
+    inspection.value.modified = result.modified
+    photos.value = photos.value.filter(
+      (item) => item.file_url !== result.deleted_url
+    )
+    savedDraft.value = draftSignature()
+    statusMessage.value = 'Photograph deleted. Draft changes saved.'
+  }
+  busy.value = false
 }
 async function uploadFiles(files, row) {
   if (

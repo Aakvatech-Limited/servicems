@@ -36,6 +36,7 @@ import icon29 from 'feather-icons/dist/icons/sun.svg?raw'
 import icon30 from 'feather-icons/dist/icons/truck.svg?raw'
 import icon31 from 'feather-icons/dist/icons/user.svg?raw'
 import icon32 from 'feather-icons/dist/icons/x.svg?raw'
+import icon33 from 'feather-icons/dist/icons/trash-2.svg?raw'
 const icons = {
   'alert-circle': icon0,
   'arrow-left': icon1,
@@ -70,6 +71,7 @@ const icons = {
   truck: icon30,
   user: icon31,
   x: icon32,
+  'trash-2': icon33,
 }
 const props = defineProps({ name: { type: String, required: true } })
 const svg = computed(() => icons[props.name] || '')

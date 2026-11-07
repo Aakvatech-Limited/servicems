@@ -188,6 +188,81 @@ class TestFieldOperations(TestCase):
 		self.assertEqual(first.name, second.name)
 		self.assertEqual(len(api.get_inspection_photos(doc.name)), 1)
 
+	def test_draft_photo_deletion_saves_edits_and_clears_required_references(self):
+		self.template.pre_inspection_items[0].require_photo = 1
+		self.template.save()
+		doc = self.start()
+		photo = self.upload(doc)
+		self.field_user()
+		self.assertTrue(api.get_inspection_photos(doc.name)[0].can_delete)
+		result = api.delete_inspection_photo(
+			doc.name,
+			photo.name,
+			values={"inspection_remarks": "Keep these edits", "image_upload": photo.file_url},
+			answers=[{"name": doc.checklist[0].name, "answer": "Pass", "photograph": photo.file_url}],
+			expected_modified=str(doc.modified),
+		)
+		doc.reload()
+		self.assertEqual(doc.inspection_remarks, "Keep these edits")
+		self.assertEqual(doc.checklist[0].answer, "Pass")
+		self.assertFalse(doc.image_upload)
+		self.assertFalse(doc.checklist[0].photograph)
+		self.assertEqual(result["modified"], str(doc.modified))
+		self.assertFalse(frappe.db.exists("File", photo.name))
+		self.assertEqual(api.get_inspection_photos(doc.name), [])
+		with self.assertRaisesRegex(frappe.ValidationError, "photograph is required"):
+			api.complete_field_inspection(doc.name)
+
+	def test_photo_deletion_rejects_completed_and_inherited_evidence(self):
+		doc = self.answer(self.start())
+		photo = self.upload(doc)
+		api.complete_field_inspection(doc.name)
+		self.assertFalse(api.get_inspection_photos(doc.name)[0].can_delete)
+		with self.assertRaises(frappe.ValidationError):
+			api.delete_inspection_photo(doc.name, photo.name)
+		correction = api.create_field_correction(doc.name, "Review evidence")["name"]
+		self.assertFalse(api.get_inspection_photos(correction)[0].can_delete)
+		with self.assertRaises(frappe.PermissionError):
+			api.delete_inspection_photo(correction, photo.name)
+		self.assertTrue(frappe.db.exists("File", photo.name))
+
+	def test_photo_deletion_rejects_unassigned_card_and_foreign_attachment(self):
+		own = self.start()
+		foreign = self.start(card=self.cards[1])
+		photo = self.upload(foreign)
+		self.field_user()
+		with self.assertRaises(frappe.PermissionError):
+			api.delete_inspection_photo(foreign.name, photo.name)
+		with self.assertRaises(frappe.PermissionError):
+			api.delete_inspection_photo(own.name, photo.name)
+		self.assertTrue(frappe.db.exists("File", photo.name))
+
+	def test_photo_deletion_preserves_bytes_referenced_by_completed_inspection(self):
+		source = self.start()
+		protected = self.upload(source)
+		self.answer(source, image_upload=protected.file_url)
+		api.complete_field_inspection(source.name)
+		draft = self.start()
+		copy = self.upload(draft)
+		self.assertEqual(copy.file_url, protected.file_url)
+		with self.assertRaisesRegex(frappe.ValidationError, "must be retained"):
+			api.delete_inspection_photo(draft.name, copy.name, values={"inspection_remarks": "Rejected"})
+		self.assertTrue(frappe.db.exists("File", copy.name))
+		self.assertTrue(frappe.db.exists("File", protected.name))
+		self.assertFalse(draft.reload().inspection_remarks)
+
+	def test_photo_deletion_rejects_stale_or_invalid_edits_without_removing_file(self):
+		doc = self.start()
+		photo = self.upload(doc)
+		old_modified = str(doc.modified)
+		self.answer(doc, inspection_remarks="Saved elsewhere")
+		with self.assertRaises(frappe.TimestampMismatchError):
+			api.delete_inspection_photo(doc.name, photo.name, expected_modified=old_modified)
+		with self.assertRaises(frappe.ValidationError):
+			api.delete_inspection_photo(doc.name, photo.name, values={"gps_accuracy": -1})
+		self.assertTrue(frappe.db.exists("File", photo.name))
+		self.assertEqual(doc.reload().inspection_remarks, "Saved elsewhere")
+
 	def test_uploaded_bytes_can_match_inaccessible_private_evidence_without_granting_source_access(self):
 		source = self.start(card=self.cards[1])
 		original = self.upload(source)

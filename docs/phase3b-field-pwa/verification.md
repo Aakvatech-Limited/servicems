@@ -18,6 +18,10 @@ Fresh checks after these original-reference changes: **29 frontend tests, 18 Fie
 
 No customer production deployment, framework upgrades, additional PR, merge, Calendar appearance changes, Phase 2 accounting changes or Phase 4 work occurred. Test photographs are labelled generated QA fixtures; GPS, viewport/orientation and keyboard height were simulated in Chromium. Physical Android/iOS installation, real camera/GPS, hardware keyboard and safe-area behavior still require device acceptance testing. QA records are marked as test-site review fixtures; temporary testing sessions are revoked after verification.
 
+## Photo review deletion — 7 November 2026
+
+Photo review now supports confirmed deletion of photographs uploaded to the current Draft. Completed and inherited evidence remain protected; removal saves current edits, clears matching references and preserves mandatory completion requirements. See [photo deletion verification](refinement/photo-review-deletion.md) for the fresh tests and captures. This follow-up passed 23 Field backend tests and 29 frontend tests; its browser checks are recorded separately from the earlier 200-case guided-flow matrix.
+
 ## Login correction — 7 November 2026
 
 Existing Desk sessions now open the native Frappe login form at `/field-login` before Field displays Job Cards. A successful Field sign-in marks only the new server session; reloading that confirmed session remains signed in. The Field header area shows the active account and a Sign out action. Sign-out clears the shared Frappe session and returns to login. The login route is network-only and uses no-store headers. No credentials or authentication tokens are stored in browser storage.
