@@ -15,6 +15,7 @@
 <body>
   <div id="field-app"></div>
   <script>window.csrf_token = '{{ csrf_token }}'</script>
+  <script>window.field_user = {{ field_user | tojson }}</script>
   <script type="module" src="/src/field/main.js"></script>
 </body>
 </html>

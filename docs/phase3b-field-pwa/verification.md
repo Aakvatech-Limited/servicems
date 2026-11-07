@@ -1,5 +1,11 @@
 # Phase 3B pilot verification — 6 November 2026
 
+## Login correction — 7 November 2026
+
+Existing Desk sessions now open the native Frappe login form at `/field-login` before Field displays Job Cards. A successful Field sign-in marks only the new server session; reloading that confirmed session remains signed in. The Field header area shows the active account and a Sign out action. Sign-out clears the shared Frappe session and returns to login. The login route is network-only and uses no-store headers. No credentials or authentication tokens are stored in browser storage.
+
+Five focused backend authentication tests passed. Authenticated Chromium verified an existing Administrator Desk session cannot skip Field login, invalid credentials remain on login, valid credentials expose only the assigned QA Job Card, the account is visible, controls fit 320/390/834px, reload retains the confirmed session, sign-out returns to login, and signed-out API access is denied. See [login results](login-verification.json) and [actual login screenshot](mobile-login.png). Frappe's native authentication/verification flow is reused; physical phone behavior and two-factor login were not separately exercised in this correction.
+
 Pilot: `mvk-v16`, `/home/av/pilot/benches/mvk-v16`; site: https://servicems2.aakvaerp.com/field.
 Branch: `feat/v16-field-pwa-inspections`; Draft PR #68 targets `version-16-v2-hotfix`.
 Runtime: Frappe 16.55.2 and ERPNext 16.53.0. No framework/app upgrades or customer production sites changed.

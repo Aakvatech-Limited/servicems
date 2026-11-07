@@ -24,6 +24,17 @@
     </header>
 
     <main class="field-main">
+      <div class="field-account">
+        <span>Signed in as {{ fieldUser }}</span>
+        <button
+          class="button secondary small"
+          type="button"
+          :disabled="busy || uploading"
+          @click="signOut"
+        >
+          Sign out
+        </button>
+      </div>
       <div v-if="error" class="alert error" role="alert">
         {{ error }} <button type="button" @click="error = ''">Dismiss</button>
       </div>
@@ -479,6 +490,7 @@ import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { api, uploadPhoto } from './api'
 
 const screen = ref('jobs')
+const fieldUser = window.field_user
 const online = ref(navigator.onLine)
 const darkMode = ref(
   window.matchMedia?.('(prefers-color-scheme: dark)').matches || false
@@ -569,6 +581,22 @@ async function invoke(action) {
   } catch (e) {
     error.value = e.message || String(e)
     return null
+  }
+}
+async function signOut() {
+  if (
+    (dirty.value || uploading.value) &&
+    !window.confirm('Sign out and discard unsaved changes?')
+  )
+    return
+  busy.value = true
+  try {
+    await api('logout', {}, true)
+    removeEventListener('beforeunload', warnUnsaved)
+    window.location.replace('/field')
+  } catch (e) {
+    error.value = e.message || String(e)
+    busy.value = false
   }
 }
 async function loadJobs() {

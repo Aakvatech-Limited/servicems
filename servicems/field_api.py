@@ -44,7 +44,7 @@ def _inspection(name, *, write=False):
 
 
 def prevent_private_cache(response, request):
-	if request.path == "/field" or request.path.startswith(
+	if request.path in ("/field", "/field-login") or request.path.startswith(
 		("/api/method/servicems.field_api.", "/private/files/")
 	):
 		response.headers["Cache-Control"] = "no-store, private, max-age=0"
