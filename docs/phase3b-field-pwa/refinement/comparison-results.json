@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-07",
+  "method": "Actual Chromium screenshots of a local HTML board; original PNG bytes unchanged, CSS masks only",
+  "cases": [
+    {
+      "screen": "01-mobile-home-light.png",
+      "comparison": "comparison-home.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png",
+      "renderedDimensions": {
+        "x": 26.5,
+        "y": 328,
+        "width": 1372,
+        "height": 779.5,
+        "scale": 1
+      }
+    },
+    {
+      "screen": "03-mobile-pre-checklist-light.png",
+      "comparison": "comparison-checklist.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png",
+      "renderedDimensions": {
+        "x": 26.5,
+        "y": 328,
+        "width": 1372,
+        "height": 779.5,
+        "scale": 1
+      }
+    },
+    {
+      "screen": "04-mobile-photo-gallery-light.png",
+      "comparison": "comparison-photos.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png",
+      "renderedDimensions": {
+        "x": 26.5,
+        "y": 328,
+        "width": 1372,
+        "height": 779.5,
+        "scale": 1
+      }
+    },
+    {
+      "screen": "07-mobile-completion-light.png",
+      "comparison": "comparison-completion.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png",
+      "renderedDimensions": {
+        "x": 26.5,
+        "y": 328,
+        "width": 1372,
+        "height": 779.5,
+        "scale": 1
+      }
+    },
+    {
+      "screen": "09-tablet-inspection-light.png",
+      "comparison": "comparison-tablet.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Original_Visual_Workflow.png",
+      "renderedDimensions": {
+        "x": 26.5,
+        "y": 328,
+        "width": 1372,
+        "height": 547.234375,
+        "scale": 1
+      }
+    }
+  ],
+  "fullReferenceViewsPassed": 3,
+  "browserExceptions": [],
+  "passed": true
+}

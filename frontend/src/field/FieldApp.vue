@@ -124,7 +124,18 @@
               placeholder="Search registration, Job Card or workshop"
               aria-label="Search Job Cards"
           /></label>
-          <div class="filter-tabs" aria-label="Filter Job Cards">
+          <label class="mobile-job-filter"
+            >Filter
+            <select v-model="jobFilter" aria-label="Filter Job Cards">
+              <option value="All">All</option>
+              <option value="Draft">Draft</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </label>
+          <div
+            class="filter-tabs desktop-job-filter"
+            aria-label="Filter Job Cards"
+          >
             <button
               v-for="filter in ['All', 'Draft', 'Completed']"
               :key="filter"

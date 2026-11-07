@@ -1,0 +1,33 @@
+{
+  "extracted_on": "2026-11-07",
+  "archive": {
+    "name": "ServiceMS_Phase3B_Mockup_References.zip",
+    "bytes": 4221005,
+    "sha256": "c5d6b61fe9984e7e9ca2d4b9c59251ec9ffba4b0c808fdd0a3380edff7be1667"
+  },
+  "files": [
+    {
+      "name": "ServiceMS_Phase3B_Extract_Mobile_Flow.png",
+      "bytes": 548414,
+      "sha256": "d5c5958beacacdc36e7f63673c1af577f30f53f5f960ad8fd0e8adc46a23320f"
+    },
+    {
+      "name": "ServiceMS_Phase3B_Original_Architecture_Mobile_Tablet.png",
+      "bytes": 1947127,
+      "sha256": "f0ea4bd522a3ec8ea20c1021fd90c92f1d2b1e6062fabd62a626ab0645c5dc7e"
+    },
+    {
+      "name": "ServiceMS_Phase3B_Original_Visual_Workflow.png",
+      "bytes": 1981190,
+      "sha256": "9c4c9807d93b0c4fe8b246b12387af38cedd0e320cb35282cbe5cba36555a515"
+    },
+    {
+      "name": "ServiceMS_Phase3B_References_README.txt",
+      "bytes": 830,
+      "sha256": "2a9c7bc59cd1805eca6886681ed263b5116559d5bcf00eb99726568a2afe2ebc"
+    }
+  ],
+  "original_sheets": 2,
+  "mobile_extract_is_derived": true,
+  "images_modified": false
+}

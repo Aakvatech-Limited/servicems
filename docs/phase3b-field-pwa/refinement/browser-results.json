@@ -2086,12 +2086,13 @@
     "06-mobile-review-light.png",
     "09-tablet-inspection-light.png",
     "10-tablet-inspection-dark.png",
+    "11-tablet-portrait-light.png",
     "07-mobile-completion-light.png",
     "08-mobile-post-dark.png",
     "01-mobile-home-light.png"
   ],
-  "pre": "SVI000022",
-  "correction": "SVI000023",
-  "post": "SVI000024",
+  "pre": "SVI000027",
+  "correction": "SVI000028",
+  "post": "SVI000029",
   "passed": true
 }

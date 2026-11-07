@@ -12,11 +12,7 @@
       <div>
         <p class="eyebrow">{{ stageLabel }} · {{ inspection.name }}</p>
         <h1>
-          {{
-            steps[step].title === 'Vehicle'
-              ? 'Start with your vehicle'
-              : titles[step]
-          }}
+          {{ step === 1 ? stageLabel : titles[step] }}
         </h1>
       </div>
       <span class="status-tag" :class="{ complete: completed }">{{
@@ -61,7 +57,7 @@
         </div>
       </nav>
 
-      <div class="wizard-content">
+      <div class="wizard-content" :class="{ 'with-context': step === 1 }">
         <section v-show="step === 0" class="panel vehicle-overview">
           <span class="large-icon"><FieldIcon name="truck" /></span>
           <p class="eyebrow">VEHICLE & INSPECTION</p>
@@ -204,16 +200,22 @@
                   :disabled="completed || locked"
                   :placeholder="row.option || 'Record the condition'"
               /></label>
-              <label class="field-label"
-                >Remarks <span class="optional">Optional</span
-                ><textarea
-                  v-model="row.remarks"
-                  rows="2"
-                  class="field-input"
-                  :disabled="completed || locked"
-                  placeholder="Add an observation"
-                ></textarea>
-              </label>
+              <details class="item-remarks" :open="completed && !!row.remarks">
+                <summary>
+                  {{ row.remarks ? 'View remarks' : 'Add remarks'
+                  }}<span class="optional">Optional</span>
+                </summary>
+                <label class="field-label"
+                  >Remarks <span class="optional">Optional</span
+                  ><textarea
+                    v-model="row.remarks"
+                    rows="2"
+                    class="field-input"
+                    :disabled="completed || locked"
+                    placeholder="Add an observation"
+                  ></textarea>
+                </label>
+              </details>
               <div class="item-photos">
                 <span :class="row.photograph ? 'positive' : 'muted'"
                   ><FieldIcon
@@ -247,6 +249,50 @@
             </div>
           </article>
         </section>
+
+        <aside
+          v-if="step === 1"
+          class="tablet-context panel"
+          aria-label="Inspection evidence summary"
+        >
+          <div class="section-heading">
+            <h3>Photos ({{ photos.length }})</h3>
+            <FieldIcon name="camera" />
+          </div>
+          <div v-if="photos.length" class="context-photos">
+            <button
+              v-for="(photo, index) in photos.slice(0, 4)"
+              :key="photo.name"
+              class="context-photo"
+              @click="openPhoto(index)"
+            >
+              <img :src="photo.file_url" :alt="'Review photo ' + (index + 1)" />
+            </button>
+          </div>
+          <p v-else class="muted">
+            {{
+              inspection.require_photographs_snapshot
+                ? 'Stage photograph required.'
+                : 'Stage photographs optional.'
+            }}
+          </p>
+          <button class="button secondary small" @click="move(2)">
+            Review evidence<FieldIcon name="arrow-right" />
+          </button>
+          <h3>Findings</h3>
+          <p class="context-findings">
+            {{
+              values.inspection_remarks || 'No additional findings recorded.'
+            }}
+          </p>
+          <button class="text-button" @click="move(3)">
+            Findings & GPS<FieldIcon name="arrow-right" />
+          </button>
+          <p v-if="values.gps_captured_at" class="positive">
+            <FieldIcon name="check-circle" />Location captured ·
+            {{ values.gps_accuracy }} m
+          </p>
+        </aside>
 
         <section v-show="step === 2" class="evidence-section">
           <div class="panel capture-panel">
@@ -692,9 +738,9 @@ const expanded = ref(
 const locked = computed(() => props.busy || props.uploading || props.gpsBusy)
 const titles = [
   'Vehicle details',
-  'Every detail matters',
-  'Capture the evidence',
-  'Record your findings',
+  'Inspection checklist',
+  'Add photographs',
+  'Inspection details',
   'Review your inspection',
 ]
 const stageLabel = computed(() =>
