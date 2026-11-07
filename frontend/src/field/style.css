@@ -1737,40 +1737,52 @@ progress {
 }
 @media (max-width: 767px) {
   .field-header {
-    min-height: 64px;
-    padding: max(10px, env(safe-area-inset-top))
-      max(18px, env(safe-area-inset-right)) 10px
-      max(18px, env(safe-area-inset-left));
+    min-height: 60px;
+    padding: max(8px, env(safe-area-inset-top))
+      max(16px, env(safe-area-inset-right)) 8px
+      max(16px, env(safe-area-inset-left));
     gap: 10px;
   }
   .field-header-actions {
-    gap: 9px;
+    gap: 6px;
+  }
+  .field-header .avatar-button {
+    min-width: 44px;
+    min-height: 44px;
   }
   .field-brand {
-    font-size: 15px;
-    gap: 9px;
+    font-size: 14px;
+    gap: 7px;
   }
   .field-logo {
-    height: 32px;
-    width: 32px;
-    font-size: 23px;
+    height: 28px;
+    width: 28px;
+    font-size: 21px;
   }
   .field-main {
-    padding: 26px max(18px, env(safe-area-inset-right)) 105px
-      max(18px, env(safe-area-inset-left));
+    padding: 16px max(16px, env(safe-area-inset-right)) 105px
+      max(16px, env(safe-area-inset-left));
   }
   .headline {
     margin-bottom: 23px;
   }
   .dashboard-heading h1 {
-    font-size: 29px;
+    font-size: 24px;
+    margin-bottom: 7px;
+  }
+  .dashboard-heading {
+    margin-bottom: 14px;
+  }
+  .dashboard-heading .eyebrow {
+    margin-bottom: 8px;
+    font-size: 9px;
   }
   .dashboard-heading p.muted {
     font-size: 12px;
   }
   .dashboard-stats {
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 12px;
   }
   .stat-card {
     padding: 15px 12px;
@@ -1878,7 +1890,7 @@ progress {
   }
   .step-nav {
     position: sticky;
-    top: 64px;
+    top: 60px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -2187,13 +2199,6 @@ progress {
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
   }
-  .attention-card {
-    flex-direction: column;
-    gap: 15px;
-  }
-  .attention-card .button {
-    align-self: stretch;
-  }
   .filter-tabs {
     width: 100%;
     justify-content: space-between;
@@ -2376,30 +2381,64 @@ progress {
     flex-wrap: wrap;
     align-content: flex-start;
     align-items: center;
-    gap: 8px;
-    padding: 13px 11px;
+    gap: 5px;
+    padding: 10px;
   }
   .dashboard-stats .stat-card .stat-icon {
-    width: 27px;
-    height: 27px;
+    width: 24px;
+    height: 24px;
     margin: 0;
   }
   .dashboard-stats .stat-card strong {
-    font-size: 23px;
+    font-size: 21px;
   }
   .dashboard-stats .stat-card > span:last-child {
     flex-basis: 100%;
     font-size: 10px;
   }
   .attention-card {
-    padding: 16px;
-    margin-bottom: 22px;
+    padding: 12px;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .attention-card > div {
+    min-width: 0;
   }
   .attention-card h2 {
-    font-size: 17px;
+    font-size: 16px;
+    margin: 6px 0 4px;
+    overflow-wrap: anywhere;
+  }
+  .attention-card p {
+    font-size: 11px;
+  }
+  .attention-card .button {
+    min-height: 44px;
+    padding: 9px 10px;
   }
   .attention-card .eyebrow {
     font-size: 7px;
+  }
+  .home-page .jobs-title {
+    margin-bottom: 12px;
+  }
+  .home-page .jobs-title .eyebrow {
+    display: none;
+  }
+  .home-page .jobs-title h2 {
+    font-size: 17px;
+  }
+  .home-page .list-tools {
+    margin-bottom: 12px;
+  }
+  .home-page .job-card {
+    padding: 14px;
+  }
+  .home-page .job-head {
+    margin-bottom: 9px;
+  }
+  .home-page .vehicle-title {
+    margin-bottom: 10px;
   }
   .list-tools {
     flex-direction: row;
@@ -2418,7 +2457,7 @@ progress {
     display: block;
     color: var(--muted);
     font-size: 0;
-    flex: 0 0 126px;
+    flex: 0 0 102px;
   }
   .mobile-job-filter select {
     width: 100%;

@@ -1,0 +1,278 @@
+{
+  "phase": "before",
+  "date": "2026-11-07",
+  "physicalDevice": false,
+  "checks": [
+    "No horizontal overflow 360x800 false",
+    "No horizontal overflow 448x998 false",
+    "No horizontal overflow 1366x900 false",
+    "No horizontal overflow 360x800 true",
+    "No horizontal overflow 448x998 true",
+    "No horizontal overflow 1366x900 true"
+  ],
+  "measurements": [
+    {
+      "width": 360,
+      "height": 800,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 65,
+        "width": 345,
+        "height": 65
+      },
+      "heading": {
+        "top": 91,
+        "bottom": 196.53125,
+        "width": 313,
+        "height": 105.53125
+      },
+      "stats": {
+        "top": 219.53125,
+        "bottom": 311.53125,
+        "width": 313,
+        "height": 92
+      },
+      "resume": {
+        "top": 331.53125,
+        "bottom": 498.40625,
+        "width": 313,
+        "height": 166.875
+      },
+      "firstJob": {
+        "top": 654.796875,
+        "bottom": 911.296875,
+        "width": 313,
+        "height": 256.5
+      },
+      "nav": {
+        "top": 736,
+        "bottom": 800,
+        "width": 345,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 448,
+      "height": 998,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 65,
+        "width": 448,
+        "height": 65
+      },
+      "heading": {
+        "top": 91,
+        "bottom": 177.9375,
+        "width": 412,
+        "height": 86.9375
+      },
+      "stats": {
+        "top": 200.9375,
+        "bottom": 278.4375,
+        "width": 412,
+        "height": 77.5
+      },
+      "resume": {
+        "top": 298.4375,
+        "bottom": 404.3125,
+        "width": 412,
+        "height": 105.875
+      },
+      "firstJob": {
+        "top": 560.703125,
+        "bottom": 817.203125,
+        "width": 412,
+        "height": 256.5
+      },
+      "nav": {
+        "top": 934,
+        "bottom": 998,
+        "width": 448,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 1351,
+        "height": 69
+      },
+      "heading": {
+        "top": 103,
+        "bottom": 198.78125,
+        "width": 1132,
+        "height": 95.78125
+      },
+      "stats": {
+        "top": 223.78125,
+        "bottom": 314.96875,
+        "width": 1132,
+        "height": 91.1875
+      },
+      "resume": {
+        "top": 338.96875,
+        "bottom": 460.953125,
+        "width": 1132,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 627.34375,
+        "bottom": 892.84375,
+        "width": 365.328125,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 827,
+        "bottom": 888,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 65,
+        "width": 345,
+        "height": 65
+      },
+      "heading": {
+        "top": 91,
+        "bottom": 196.53125,
+        "width": 313,
+        "height": 105.53125
+      },
+      "stats": {
+        "top": 219.53125,
+        "bottom": 311.53125,
+        "width": 313,
+        "height": 92
+      },
+      "resume": {
+        "top": 331.53125,
+        "bottom": 498.40625,
+        "width": 313,
+        "height": 166.875
+      },
+      "firstJob": {
+        "top": 654.796875,
+        "bottom": 911.296875,
+        "width": 313,
+        "height": 256.5
+      },
+      "nav": {
+        "top": 736,
+        "bottom": 800,
+        "width": 345,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 448,
+      "height": 998,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 65,
+        "width": 448,
+        "height": 65
+      },
+      "heading": {
+        "top": 91,
+        "bottom": 177.9375,
+        "width": 412,
+        "height": 86.9375
+      },
+      "stats": {
+        "top": 200.9375,
+        "bottom": 278.4375,
+        "width": 412,
+        "height": 77.5
+      },
+      "resume": {
+        "top": 298.4375,
+        "bottom": 404.3125,
+        "width": 412,
+        "height": 105.875
+      },
+      "firstJob": {
+        "top": 560.703125,
+        "bottom": 817.203125,
+        "width": 412,
+        "height": 256.5
+      },
+      "nav": {
+        "top": 934,
+        "bottom": 998,
+        "width": 448,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 1351,
+        "height": 69
+      },
+      "heading": {
+        "top": 103,
+        "bottom": 198.78125,
+        "width": 1132,
+        "height": 95.78125
+      },
+      "stats": {
+        "top": 223.78125,
+        "bottom": 314.96875,
+        "width": 1132,
+        "height": 91.1875
+      },
+      "resume": {
+        "top": 338.96875,
+        "bottom": 460.953125,
+        "width": 1132,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 627.34375,
+        "bottom": 892.84375,
+        "width": 365.328125,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 827,
+        "bottom": 888,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    }
+  ],
+  "screenshots": [
+    "compact-before-360-dark.png",
+    "compact-before-448-dark.png"
+  ],
+  "passed": true
+}
