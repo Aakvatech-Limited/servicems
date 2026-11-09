@@ -45,6 +45,9 @@ def validate_inspection_file(doc, method=None, *, check_content=True):
 		return
 	inspection = frappe.get_doc(INSPECTION, doc.attached_to_name, for_update=True)
 	inspection.check_permission("write")
+	from servicems.inspection_workflow import validate_inspection
+
+	validate_inspection(inspection)
 	if inspection.inspection_status != "Draft":
 		frappe.throw(_("Completed inspections cannot receive or change photographs."))
 	if not doc.is_private or (doc.file_url and not doc.file_url.startswith("/private/files/")):

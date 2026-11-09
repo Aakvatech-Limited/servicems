@@ -46,6 +46,9 @@ class ServiceJobCard(WebsiteGenerator):
 	def validate(self):
 		self.set_company_from_service_settings()
 		self.update_tables()
+		from servicems.inspection_workflow import validate_repair
+
+		validate_repair(self)
 		self.set_parts_rate()
 		self.set_totals()
 		self.vaildate_complete()

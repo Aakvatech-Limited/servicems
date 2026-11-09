@@ -1,0 +1,108 @@
+{
+  "verification_date": "2026-11-09",
+  "pilot_bench": "mvk-v16",
+  "site": "servicems2.aakvaerp.com",
+  "physical_device_tests": false,
+  "backend": [
+    {
+      "name": "Field API/security",
+      "passed": 23,
+      "failed": 0,
+      "seconds": 13.948,
+      "log_summary": "Ran 23 tests in 13.948s; OK"
+    },
+    {
+      "name": "UAT workflow",
+      "passed": 15,
+      "failed": 0,
+      "seconds": 3.106,
+      "log_summary": "Ran 15 tests in 3.106s; OK"
+    },
+    {
+      "name": "Authentication",
+      "passed": 5,
+      "failed": 0,
+      "seconds": 0.008,
+      "log_summary": "Ran 5 tests in 0.008s; OK"
+    },
+    {
+      "name": "Inspection unit tests",
+      "passed": 9,
+      "failed": 0,
+      "seconds": 0.205,
+      "log_summary": "Ran 9 tests in 0.205s; OK"
+    },
+    {
+      "name": "Job Card unit regressions",
+      "passed": 12,
+      "failed": 0,
+      "seconds": 0.031,
+      "log_summary": "Ran 12 tests in 0.031s; OK"
+    },
+    {
+      "name": "Phase 2 real-record regressions",
+      "passed": 24,
+      "failed": 0,
+      "seconds": 77.174,
+      "log_summary": "Ran 24 tests in 77.174s; OK"
+    },
+    {
+      "name": "Calendar API",
+      "passed": 18,
+      "failed": 0,
+      "seconds": 0.109,
+      "log_summary": "Ran 18 tests in 0.109s; OK"
+    },
+    {
+      "name": "Calendar real-record regressions",
+      "passed": 16,
+      "failed": 0,
+      "seconds": 8.394,
+      "log_summary": "Ran 16 tests in 8.394s; OK"
+    }
+  ],
+  "backend_total_passed": 122,
+  "frontend": {
+    "passed": 29,
+    "failed": 0
+  },
+  "build": "Production Vite build passed",
+  "quality_checks": "Repository-wide pre-commit, Ruff, Prettier and Semgrep passed",
+  "browser": {
+    "journey_assertions": 72,
+    "read_only_assertions": 8,
+    "responsive_cases": 200,
+    "explicit_security_cases": 5,
+    "concurrent_post_statuses": [
+      {
+        "status": 200
+      },
+      {
+        "status": 417
+      }
+    ],
+    "installability": "Chromium reported no errors",
+    "private_browser_storage": "No private records/credentials/photos found"
+  },
+  "github": {
+    "publication": "Pending HTTPS authentication",
+    "ci_on_new_head": "Not yet available; no success claimed",
+    "draft": true,
+    "merged": false
+  },
+  "checked_source_sha256": {
+    "frontend/src/field/FieldApp.vue": "1885219ac67b8af67a8e206d0a9136160394d162793694f3d8c978fa87acb68f",
+    "frontend/src/field/InspectionWizard.vue": "0631d6a5f5fb0cb81675f1f7b7a4a8a7f66e3f22c5f19bbbd11716bfa67061fa",
+    "servicems/field_api.py": "b312e795172c4c6a195bdc5ee518e3b3c8c555837e23046c6b1baf2df186dcc4",
+    "servicems/inspection_files.py": "a81ffdd16f534dd5c2c0e0c4b04225461d614255e3f6b5ada499d82048e59c1a",
+    "servicems/inspection_workflow.py": "1649d38f7c2e50fee209e3303436bc91683ef538175911ac401ffbded0c2ee46",
+    "servicems/service_management/doctype/service_job_card/service_job_card.py": "4d6470ba1bb8b74b2ed546cbc51e366bdeea6f7a013c56141c4274350b51fc2d",
+    "servicems/service_management/doctype/service_settings/service_settings.json": "b46d7b7730084b5177640739e9be1e799c0028b7663ba292a2b911dd17a2ca5b",
+    "servicems/service_management/doctype/service_settings/service_settings.py": "529f9c2bf24245dec760ba0a8eb558c2da00c714254c19da6d7753ca826aad2b",
+    "servicems/service_management/doctype/service_vehicle_inspection/service_vehicle_inspection.py": "f5c707d02f57e27d95e5cef11fafacb0a8e49db10fd29c2050df8dc25086d66f",
+    "servicems/service_management/doctype/service_vehicle_inspection/test_service_vehicle_inspection.py": "bab1944186ad11f262cd42f9c1961c30168303a9a5377243cb85f83eb4efe1d7",
+    "servicems/tests/test_field_finalization.py": "58b1bf0c91945a41070d3fb7a37ecc48694f1d12a0e8a75463aaaece5f78e82b",
+    "servicems/tests/test_field_operations.py": "68c4f90eeab87ba5f2dc73a01444144c7143d7df6c0feac12b85927c3772872e",
+    "servicems/tests/test_phase_two.py": "c12276ee4806cf5e50c3aa13eb071acb6c264473c4f43bcdde9ca18534f5d0aa"
+  }
+}

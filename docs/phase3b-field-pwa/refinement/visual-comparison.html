@@ -21,6 +21,16 @@ const root='../design-reference/';
 const files={workflow:'ServiceMS_Phase3B_Original_Visual_Workflow.png',architecture:'ServiceMS_Phase3B_Original_Architecture_Mobile_Tablet.png',extract:'ServiceMS_Phase3B_Extract_Mobile_Flow.png'};
 const phoneBoxes=[[20,48,172,338],[209,48,161,335],[384,48,161,335],[560,48,159,335],[734,48,169,335],[920,48,162,334]];
 const screens=[
+['../uat/01-mobile-home-light.png','UAT · compact Home / Job Cards',0,'390 × 844 · light · latest UAT build'],
+['../uat/02-mobile-job-card-light.png','UAT · Job Card / sequencing',1,'390 × 844 · light · stage policy and repair requirements'],
+['../uat/03-mobile-pre-checklist-light.png','UAT · Pre-Inspection checklist',2,'390 × 844 · light · frozen template answers'],
+['../uat/04-mobile-photo-gallery-light.png','UAT · photographic evidence',3,'390 × 844 · light · private QA photographs'],
+['../uat/05-mobile-gps-findings-light.png','UAT · one-time GPS and findings',4,'390 × 844 · light · simulated location permission and coordinates'],
+['../uat/15-post-completed-field-finished.png','UAT · Post completed / Field work finished',5,'390 × 844 · light · protected receipt; no approval workflow'],
+['../uat/09-tablet-inspection-light.png','UAT · tablet checklist / evidence',6,'1366 × 900 · light'],
+['../uat/10-tablet-inspection-dark.png','UAT · tablet dark',6,'1366 × 900 · dark; original shows light structure'],
+['../uat/11-tablet-portrait-light.png','UAT · tablet portrait',7,'834 × 1112 · light'],
+['../uat/16-mobile-location-setup.png','UAT · first-launch location setup',0,'390 × 844 · light · consent addition required for UAT'],
 ['01-mobile-home-light.png','Home / Job Cards',0,'390 × 844 · light'],
 ['02-mobile-job-card-light.png','Job Card details',1,'390 × 844 · light'],
 ['03-mobile-pre-checklist-light.png','Pre-Inspection checklist',2,'390 × 844 · light'],
@@ -47,5 +57,6 @@ document.getElementById('reference-heading').textContent=index>=6?'Original · t
 document.getElementById('reference-caption').textContent='Matched detail displayed from the supplied '+(file==='extract'?'mobile crop of original sheet 2':file==='workflow'?'original sheet 2':'original sheet 1')+'. Source PNG bytes unchanged.';
 }
 for(const [file,label] of screens){const option=document.createElement('option');option.value=file;option.textContent=label;screen.append(option);const link=document.createElement('a');link.href=file;const img=document.createElement('img');img.src=file;img.alt=label;img.loading='lazy';link.append(img,document.createTextNode(label));document.getElementById('gallery').append(link)}
+const initial=new URLSearchParams(location.search).get('screen');if(screens.some(item=>item[0]===initial))screen.value=initial;
 screen.addEventListener('change',render);view.addEventListener('change',render);render();
 </script></body></html>

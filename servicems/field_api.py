@@ -31,12 +31,19 @@ def _require_stage(stage):
 
 
 def _read_card(name):
+	from servicems.inspection_workflow import require_field_open
+
 	card = frappe.get_doc(JOB_CARD, name)
 	card.check_permission("read")
+	require_field_open(name)
 	return card
 
 
 def _inspection(name, *, write=False):
+	if write:
+		card = frappe.db.get_value(INSPECTION, name, "service_job_card")
+		if card:
+			frappe.db.get_value(JOB_CARD, card, "name", for_update=True)
 	doc = frappe.get_doc(INSPECTION, name, for_update=write)
 	doc.check_permission("write" if write else "read")
 	_read_card(doc.service_job_card)
@@ -55,7 +62,34 @@ def prevent_private_cache(response, request):
 def get_field_jobs(limit=40):
 	"""Return only Job Cards visible under normal Frappe permissions."""
 	limit = min(max(int(limit), 1), 100)
-	jobs = frappe.get_list(
+	jobs = _visible_jobs(limit)
+	return jobs
+
+
+def _visible_jobs(limit):
+	visible, offset = [], 0
+	while len(visible) < limit:
+		rows = _job_page(offset)
+		if not rows:
+			break
+		retired = set(
+			frappe.get_all(
+				INSPECTION,
+				filters={
+					"service_job_card": ["in", [row.name for row in rows]],
+					"inspection_stage": "Post-Service",
+					"inspection_status": "Completed",
+				},
+				pluck="service_job_card",
+			)
+		)
+		visible.extend(row for row in rows if row.name not in retired)
+		offset += len(rows)
+	return visible[:limit]
+
+
+def _job_page(offset):
+	return frappe.get_list(
 		JOB_CARD,
 		fields=[
 			"name",
@@ -67,13 +101,15 @@ def get_field_jobs(limit=40):
 			"modified",
 		],
 		order_by="modified desc",
-		page_length=limit,
+		page_length=100,
+		start=offset,
 	)
-	return jobs
 
 
 @frappe.whitelist()
 def get_field_job(job_card):
+	from servicems.inspection_workflow import stage_state
+
 	card = _read_card(job_card)
 	return {
 		"name": card.name,
@@ -82,6 +118,7 @@ def get_field_job(job_card):
 		"vehicle_model": card.vehicle_model,
 		"workshop": card.workshop,
 		"customer": card.customer,
+		"stages": stage_state(card),
 	}
 
 
@@ -119,8 +156,18 @@ def get_inspection_templates(stage):
 
 @frappe.whitelist()
 def get_field_inspection(name):
+	from servicems.inspection_workflow import stage_reason
+
 	inspection = _inspection(name)
-	return inspection.as_dict()
+	result = inspection.as_dict()
+	if (
+		inspection.inspection_status == "Draft"
+		and not inspection.corrects_inspection
+		and inspection.inspection_stage in STAGES
+	):
+		card = frappe.get_doc(JOB_CARD, inspection.service_job_card)
+		result.field_read_only_reason = stage_reason(card, inspection.inspection_stage)
+	return result
 
 
 @frappe.whitelist()
@@ -199,6 +246,7 @@ def upload_inspection_photo(name):
 @frappe.whitelist(methods=["POST"])
 def start_inspection(job_card, stage, template):
 	_require_stage(stage)
+	frappe.db.get_value(JOB_CARD, job_card, "name", for_update=True)
 	_read_card(job_card)
 	frappe.has_permission(INSPECTION, "create", throw=True)
 	template_doc = frappe.get_doc(TEMPLATE, template)
@@ -313,7 +361,31 @@ def complete_field_inspection(name):
 		frappe.throw(_("This inspection is already completed."))
 	doc.inspection_status = "Completed"
 	doc.save()
-	return {"name": doc.name, "inspection_status": doc.inspection_status}
+	return {
+		"name": doc.name,
+		"inspection_status": doc.inspection_status,
+		"inspected_on": str(doc.inspected_on),
+		"completed_by": doc.completed_by,
+		"field_finished": doc.inspection_stage == "Post-Service",
+	}
+
+
+@frappe.whitelist()
+def get_field_options():
+	from servicems.inspection_workflow import settings
+
+	return {
+		"gps_enabled": settings()["gps_enabled"],
+		"gps_preference": frappe.defaults.get_user_default("servicems_field_gps"),
+	}
+
+
+@frappe.whitelist(methods=["POST"])
+def set_field_gps_preference(enabled):
+	if enabled not in ("enabled", "disabled"):
+		frappe.throw(_("Select enabled or disabled for location capture."))
+	frappe.defaults.set_user_default("servicems_field_gps", enabled)
+	return {"gps_preference": enabled}
 
 
 @frappe.whitelist(methods=["POST"])

@@ -7,6 +7,15 @@ from frappe.model.document import Document
 
 
 class ServiceSettings(Document):
+	def validate(self):
+		from servicems.inspection_workflow import POLICIES
+
+		for field in ("pre_inspection_policy", "post_inspection_policy"):
+			value = self.get(field) or "Optional"
+			if value not in POLICIES:
+				frappe.throw("Select Required, Optional or Disabled for each inspection stage.")
+			self.set(field, value)
+
 	def on_update(self):
 		from servicems.navigation import sync_bay_navigation
 

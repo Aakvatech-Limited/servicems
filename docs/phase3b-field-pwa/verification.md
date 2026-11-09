@@ -1,5 +1,13 @@
 # Phase 3B pilot verification — 6 November 2026
 
+## Final UAT candidate — 9 November 2026
+
+Shared Desk/REST/Field validations now enforce configured Pre → existing repair tasks/labour → Post sequencing. Required/Optional/Disabled stage policies preserve historical templates and evidence. Opt-in GPS setup supports one-time capture, manual Retry Location and Account privacy controls. Completed Post retires ordinary Field work from lists/search/counts/history without changing Job Card status or relying on billing/closure. Historical blocked drafts remain reviewable; ordinary edits stay server-protected. No separate Post approval workflow was added.
+
+Actual verification: **122 backend tests**, **29 frontend tests**, production build, repository-wide pre-commit/Ruff/Prettier/Semgrep, **72 authenticated journey assertions**, **8 read-only assertions** and **200 responsive cases** passed. Concurrent Post completion had exactly one winner. Eighteen new screenshots and five refreshed original-image comparison pairs are saved. Temporary UAT settings and sessions were restored/revoked. See [UAT report](uat/README.md), [test results](uat/test-results.json), [current comparison board](refinement/visual-comparison.html) and [internal device checklist](uat/UAT-CHECKLIST.md).
+
+The candidate is running only on the dedicated pilot. Publishing the local commits and verifying CI against the new remote HEAD remain pending HTTPS Git authentication. PR #68 remains Draft and unmerged. No physical-device results or Product Owner approval are claimed.
+
 ## Guided UI refinement — 7 November 2026
 
 The pilot `/field` now uses a compact technician dashboard, Job Card summaries with Pre/Post indicators and history, and a five-section inspection wizard: Vehicle, Checklist, Photos, Findings and Review. Phone navigation uses numbered steps and persistent Save Draft/Back/Next controls; tablet layouts use a section rail. Navy/indigo surfaces, blue-gray light cards, complete dark styling and consistent SVG icons follow the supplied references. Photos have separate camera/library actions, larger previews, modal review, progress and retry. Completion opens a protected receipt with View Inspection and Return to Job Card actions. Only functional Home, Inspections and Account navigation is exposed.

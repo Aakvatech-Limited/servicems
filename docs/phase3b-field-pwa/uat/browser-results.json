@@ -1,0 +1,2145 @@
+{
+  "date": "2026-11-09",
+  "physicalDevices": false,
+  "simulations": [
+    "Chromium viewports/orientation",
+    "GPS permission and coordinates",
+    "Labelled QA image inputs",
+    "Reduced keyboard viewport"
+  ],
+  "checks": [
+    "Field lists the assigned unfinished QA Job Cards",
+    "First-launch setup requests permission and handles denial",
+    "Post action explains required Pre and remains disabled",
+    "Enabled inspection attempts location once after denied setup",
+    "Section navigation does not repeat automatic GPS requests",
+    "Manual Retry Location captures accuracy and timestamp",
+    "Successful GPS retry clears the stale setup denial",
+    "Draft photo deletion survives UAT workflow and preserves required evidence",
+    "Review is ready with template evidence and GPS satisfied",
+    "Draft saves answers, findings, GPS accuracy and capture time",
+    "Resume retains saved GPS without another automatic capture",
+    "Values retained 320 portrait false",
+    "Values retained 320 landscape false",
+    "Values retained 375 portrait false",
+    "Values retained 375 landscape false",
+    "Values retained 390 portrait false",
+    "Values retained 390 landscape false",
+    "Values retained 430 portrait false",
+    "Values retained 430 landscape false",
+    "Values retained 600 portrait false",
+    "Values retained 600 landscape false",
+    "Values retained 768 portrait false",
+    "Values retained 768 landscape false",
+    "Values retained 820 portrait false",
+    "Values retained 820 landscape false",
+    "Values retained 834 portrait false",
+    "Values retained 834 landscape false",
+    "Values retained 1024 portrait false",
+    "Values retained 1024 landscape false",
+    "Values retained 1366 portrait false",
+    "Values retained 1366 landscape false",
+    "Values retained 320 portrait true",
+    "Values retained 320 landscape true",
+    "Values retained 375 portrait true",
+    "Values retained 375 landscape true",
+    "Values retained 390 portrait true",
+    "Values retained 390 landscape true",
+    "Values retained 430 portrait true",
+    "Values retained 430 landscape true",
+    "Values retained 600 portrait true",
+    "Values retained 600 landscape true",
+    "Values retained 768 portrait true",
+    "Values retained 768 landscape true",
+    "Values retained 820 portrait true",
+    "Values retained 820 landscape true",
+    "Values retained 834 portrait true",
+    "Values retained 834 landscape true",
+    "Values retained 1024 portrait true",
+    "Values retained 1024 landscape true",
+    "Values retained 1366 portrait true",
+    "Values retained 1366 landscape true",
+    "Save Draft accessible with reduced keyboard viewport",
+    "Completed Pre-Inspection remains immutable",
+    "Post unlocks after existing repair tasks are completed",
+    "Completed Post shows protected finished-work receipt",
+    "Finished Job count decreases",
+    "Finished Job Card removed immediately from dashboard count and list",
+    "Search cannot recover finished work",
+    "History list omits finished Job Card",
+    "Finished direct API blocked get_field_job",
+    "Finished direct API blocked get_field_inspection",
+    "Finished direct API blocked get_job_inspections",
+    "Finished direct API blocked save_field_draft",
+    "Finished direct API blocked start_inspection",
+    "Concurrent Post completion permits exactly one winner",
+    "Account privacy control disables automatic location",
+    "Disabled stages are explained without inventing an inspection",
+    "No private records or credentials in browser storage",
+    "Chromium reports no PWA installability errors",
+    "Field service worker is registered",
+    "No browser exceptions",
+    "Sign out returns to login without Job Cards"
+  ],
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": false,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 320,
+      "height": 280,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 375,
+      "height": 335,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 390,
+      "height": 350,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 430,
+      "height": 390,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 844,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 600,
+      "height": 560,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 968,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 768,
+      "height": 728,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 1020,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 820,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 1034,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 834,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 1224,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 1566,
+      "orientation": "portrait",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 0,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 1,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 2,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 3,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "orientation": "landscape",
+      "dark": true,
+      "section": 4,
+      "horizontalOverflow": false,
+      "clippedControls": false,
+      "fixedActionsOverlap": false
+    }
+  ],
+  "screenshots": [
+    "16-mobile-location-setup.png",
+    "01-mobile-home-light.png",
+    "02-mobile-job-card-light.png",
+    "05-mobile-gps-findings-light.png",
+    "03-mobile-pre-checklist-light.png",
+    "12-mobile-camera-light.png",
+    "04-mobile-photo-gallery-light.png",
+    "13-photo-delete-review-light.png",
+    "14-photo-delete-review-dark.png",
+    "06-mobile-review-light.png",
+    "09-tablet-inspection-light.png",
+    "10-tablet-inspection-dark.png",
+    "11-tablet-portrait-light.png",
+    "07-mobile-completion-light.png",
+    "08-mobile-post-dark.png",
+    "15-post-completed-field-finished.png",
+    "17-mobile-retired-job-hidden.png",
+    "18-disabled-stages.png"
+  ],
+  "security": [
+    {
+      "method": "get_field_job",
+      "status": 417,
+      "noStore": true
+    },
+    {
+      "method": "get_field_inspection",
+      "status": 417,
+      "noStore": true
+    },
+    {
+      "method": "get_job_inspections",
+      "status": 417,
+      "noStore": true
+    },
+    {
+      "method": "save_field_draft",
+      "status": 417,
+      "noStore": true
+    },
+    {
+      "method": "start_inspection",
+      "status": 417,
+      "noStore": true
+    }
+  ],
+  "initialJobs": 5,
+  "pre": "SVI000042",
+  "post": "SVI000043",
+  "concurrentPost": [
+    {
+      "status": 200
+    },
+    {
+      "status": 417
+    }
+  ],
+  "passed": true
+}

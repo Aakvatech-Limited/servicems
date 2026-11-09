@@ -12,6 +12,9 @@ from servicems.service_management.doctype.service_vehicle_inspection.service_veh
 class TestServiceVehicleInspection(UnitTestCase):
 	def setUp(self):
 		super().setUp()
+		sequence = patch("servicems.inspection_workflow.validate_inspection")
+		sequence.start()
+		self.addCleanup(sequence.stop)
 		timer = patch(
 			"servicems.service_management.doctype.service_vehicle_inspection.service_vehicle_inspection.now",
 			return_value="2026-11-06 12:00:00",

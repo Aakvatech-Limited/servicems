@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-09",
+  "physical_devices": false,
+  "settings_restored": true,
+  "temporary_sessions_revoked": true,
+  "fixture_job_cards": [
+    {
+      "job_card": "SJC-26-000024",
+      "status": "Active",
+      "docstatus": 0,
+      "completed_tasks": 1,
+      "inspections": [
+        {
+          "name": "SVI000043",
+          "inspection_stage": "Post-Service",
+          "inspection_status": "Completed",
+          "corrects_inspection": null
+        },
+        {
+          "name": "SVI000042",
+          "inspection_stage": "Pre-Service",
+          "inspection_status": "Completed",
+          "corrects_inspection": null
+        }
+      ]
+    },
+    {
+      "job_card": "SJC-26-000025",
+      "status": "Active",
+      "docstatus": 0,
+      "completed_tasks": 1,
+      "inspections": [
+        {
+          "name": "SVI000045",
+          "inspection_stage": "Post-Service",
+          "inspection_status": "Completed",
+          "corrects_inspection": null
+        },
+        {
+          "name": "SVI000046",
+          "inspection_stage": "Post-Service",
+          "inspection_status": "Draft",
+          "corrects_inspection": null
+        },
+        {
+          "name": "SVI000044",
+          "inspection_stage": "Pre-Service",
+          "inspection_status": "Completed",
+          "corrects_inspection": null
+        }
+      ]
+    },
+    {
+      "job_card": "SJC-26-000026",
+      "status": "Active",
+      "docstatus": 0,
+      "completed_tasks": 1,
+      "inspections": []
+    }
+  ]
+}

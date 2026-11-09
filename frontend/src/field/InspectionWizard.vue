@@ -1,10 +1,14 @@
 <template>
   <div class="guided-inspection">
+    <p v-if="inspection.field_read_only_reason" class="notice">
+      {{ inspection.field_read_only_reason }} This draft is available for review
+      only.
+    </p>
     <div class="wizard-heading">
       <button
         class="icon-button back-button"
         aria-label="Return to Job Card"
-        :disabled="locked"
+        :disabled="working"
         @click="$emit('back')"
       >
         <FieldIcon name="arrow-left" />
@@ -101,7 +105,10 @@
                   inspection.require_gps_snapshot
                     ? 'GPS required by template'
                     : 'GPS optional'
-                }}<small>Capture location only when you choose.</small></span
+                }}<small
+                  >One-time capture when enabled in Account. No continuous
+                  tracking.</small
+                ></span
               >
             </div>
           </div>
@@ -482,7 +489,9 @@
                 gpsBusy
                   ? 'Locating…'
                   : values.gps_captured_at
-                  ? 'Refresh location'
+                  ? 'Retry Location'
+                  : gpsMessage
+                  ? 'Retry Location'
                   : 'Capture GPS'
               }}
             </button>
@@ -751,7 +760,10 @@ const expanded = ref(
     props.checklist.findIndex((row) => !row.answer)
   )
 )
-const locked = computed(() => props.busy || props.uploading || props.gpsBusy)
+const working = computed(() => props.busy || props.uploading || props.gpsBusy)
+const locked = computed(
+  () => working.value || !!props.inspection.field_read_only_reason
+)
 const titles = [
   'Vehicle details',
   'Inspection checklist',

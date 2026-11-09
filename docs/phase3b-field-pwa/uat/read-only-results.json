@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-09",
+  "physicalDevice": false,
+  "checks": [
+    "Historical optional Pre draft explains review-only state",
+    "Save Draft is disabled",
+    "Return navigation remains enabled",
+    "Checklist inputs cannot edit a blocked draft",
+    "Findings and GPS actions are disabled",
+    "Direct save still rejects blocked draft",
+    "User can return to Job Card and review history",
+    "No browser exceptions"
+  ],
+  "passed": true
+}

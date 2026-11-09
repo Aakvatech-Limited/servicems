@@ -36,6 +36,41 @@
       </div>
     </header>
     <main class="field-main">
+      <section
+        v-if="fieldOptions.gps_enabled && !fieldOptions.gps_preference"
+        class="panel"
+        aria-label="Location setup"
+      >
+        <h2>Set up inspection location</h2>
+        <p>
+          Allow a one-time location capture when you open an inspection. We
+          record accuracy and capture time. There is no continuous tracking. You
+          can turn this off in Account.
+        </p>
+        <div class="photo-actions">
+          <button
+            class="button primary"
+            :disabled="gpsSetupBusy"
+            @click="setLocationPreference('enabled')"
+          >
+            Enable location
+          </button>
+          <button
+            class="button secondary"
+            :disabled="gpsSetupBusy"
+            @click="setLocationPreference('disabled')"
+          >
+            Not now
+          </button>
+        </div>
+      </section>
+      <p
+        v-if="gpsSetupMessage && ['jobs', 'account'].includes(screen)"
+        class="notice"
+        role="status"
+      >
+        {{ gpsSetupMessage }}
+      </p>
       <div v-if="error" class="alert error" role="alert">
         <FieldIcon name="alert-circle" /><span>{{ error }}</span
         ><button
@@ -265,6 +300,12 @@
               ><span v-else class="muted">Not started</span>
             </div>
             <h2>{{ stageLabel(stage) }}</h2>
+            <p v-if="selectedJob.stages?.[stage]" class="muted">
+              {{ selectedJob.stages[stage].policy
+              }}<template v-if="selectedJob.stages[stage].reason">
+                · {{ selectedJob.stages[stage].reason }}</template
+              >
+            </p>
             <p class="muted">
               {{
                 stage === 'Pre-Service'
@@ -288,7 +329,9 @@
               :class="
                 stageRecord(jobInspections, stage) ? 'secondary' : 'primary'
               "
-              :disabled="!online || busy"
+              :disabled="
+                !online || busy || !!selectedJob.stages?.[stage]?.reason
+              "
               @click="chooseTemplate(stage)"
             >
               Start {{ stage === 'Pre-Service' ? 'Pre' : 'Post'
@@ -466,10 +509,29 @@
             </div>
           </dl>
         </div>
-        <button class="button primary" @click="screen = 'inspection'">
+        <p v-if="inspection.inspection_stage === 'Post-Service'" class="muted">
+          Field work is finished. This Job Card is removed from your Field
+          lists. Authorized Desk users can review its protected history.
+        </p>
+        <button
+          v-if="inspection.inspection_stage !== 'Post-Service'"
+          class="button primary"
+          @click="screen = 'inspection'"
+        >
           <FieldIcon name="eye" />View Inspection</button
-        ><button class="button secondary" @click="returnToJob">
-          Return to Job Card<FieldIcon name="arrow-right" />
+        ><button
+          class="button secondary"
+          @click="
+            inspection.inspection_stage === 'Post-Service'
+              ? navigate('jobs')
+              : returnToJob()
+          "
+        >
+          {{
+            inspection.inspection_stage === 'Post-Service'
+              ? 'Return to Job Cards'
+              : 'Return to Job Card'
+          }}<FieldIcon name="arrow-right" />
         </button>
       </section>
 
@@ -554,6 +616,23 @@
           }}</span>
         </div>
         <div class="panel account-actions">
+          <button
+            v-if="fieldOptions.gps_enabled"
+            :disabled="gpsSetupBusy"
+            @click="
+              setLocationPreference(
+                fieldOptions.gps_preference === 'enabled'
+                  ? 'disabled'
+                  : 'enabled'
+              )
+            "
+          >
+            <FieldIcon name="map-pin" /><span>{{
+              fieldOptions.gps_preference === 'enabled'
+                ? 'Turn off automatic location'
+                : 'Enable one-time inspection location'
+            }}</span>
+          </button>
           <button @click="darkMode = !darkMode">
             <FieldIcon :name="darkMode ? 'sun' : 'moon'" /><span>{{
               darkMode ? 'Switch to light mode' : 'Switch to dark mode'
@@ -672,6 +751,10 @@ const error = ref('')
 const statusMessage = ref('')
 const gpsMessage = ref('')
 const gpsBusy = ref(false)
+const fieldOptions = ref({ gps_enabled: false, gps_preference: '' })
+const gpsSetupBusy = ref(false)
+const gpsSetupMessage = ref('')
+const automaticCaptures = new Set()
 const correctionOpen = ref(false)
 const correctionReason = ref('')
 const savedDraft = ref('')
@@ -695,6 +778,16 @@ const stageName = computed(() =>
 
 function connected() {
   online.value = navigator.onLine
+  if (online.value && ['jobs', 'history'].includes(screen.value)) loadJobs()
+}
+function refreshVisibleJobs() {
+  if (
+    document.visibilityState === 'visible' &&
+    online.value &&
+    !navigationLocked.value &&
+    ['jobs', 'history'].includes(screen.value)
+  )
+    loadJobs()
 }
 function warnUnsaved(event) {
   if (!dirty.value && !uploading.value) return
@@ -735,6 +828,7 @@ async function navigate(next) {
     return
   screen.value = next
   window.scrollTo({ top: 0, behavior: 'instant' })
+  if (['jobs', 'history'].includes(next)) await loadJobs()
 }
 async function openHistory(record) {
   if (await openJob(record.job)) await openInspection(record.name)
@@ -743,7 +837,8 @@ onMounted(() => {
   addEventListener('online', connected)
   addEventListener('offline', connected)
   addEventListener('beforeunload', warnUnsaved)
-  loadJobs().then(async () => {
+  document.addEventListener('visibilitychange', refreshVisibleJobs)
+  Promise.all([loadJobs(), loadFieldOptions()]).then(async () => {
     const jobCard = new URLSearchParams(window.location.search).get('job_card')
     if (jobCard) {
       const job = await invoke(() =>
@@ -757,6 +852,7 @@ onBeforeUnmount(() => {
   removeEventListener('online', connected)
   removeEventListener('offline', connected)
   removeEventListener('beforeunload', warnUnsaved)
+  document.removeEventListener('visibilitychange', refreshVisibleJobs)
 })
 async function invoke(action) {
   error.value = ''
@@ -798,11 +894,15 @@ async function loadJobs() {
   loading.value = false
 }
 async function openJob(job) {
-  const list = await invoke(() =>
-    api('servicems.field_api.get_job_inspections', { job_card: job.name })
+  const result = await invoke(() =>
+    Promise.all([
+      api('servicems.field_api.get_job_inspections', { job_card: job.name }),
+      api('servicems.field_api.get_field_job', { job_card: job.name }),
+    ])
   )
-  if (list) {
-    selectedJob.value = job
+  if (result) {
+    const [list, detail] = result
+    selectedJob.value = detail
     jobInspections.value = list
     histories.value = { ...histories.value, [job.name]: list }
     screen.value = 'job'
@@ -869,6 +969,7 @@ async function openInspection(name) {
   savedDraft.value = draftSignature()
   await refreshPhotos()
   screen.value = 'inspection'
+  maybeCaptureGPS()
 }
 async function refreshPhotos() {
   if (!inspection.value) return
@@ -946,6 +1047,7 @@ async function uploadFiles(files, row) {
     !files.length ||
     !inspection.value ||
     completed.value ||
+    inspection.value.field_read_only_reason ||
     !online.value ||
     navigationLocked.value
   )
@@ -982,8 +1084,66 @@ async function uploadFiles(files, row) {
     uploadProgress.value = 0
   }
 }
+async function loadFieldOptions() {
+  const result = await invoke(() =>
+    api('servicems.field_api.get_field_options')
+  )
+  if (result) fieldOptions.value = result
+}
+async function setLocationPreference(enabled) {
+  gpsSetupBusy.value = true
+  const result = await invoke(() =>
+    api('servicems.field_api.set_field_gps_preference', { enabled }, true)
+  )
+  gpsSetupBusy.value = false
+  if (!result) return
+  fieldOptions.value.gps_preference = result.gps_preference
+  gpsSetupMessage.value =
+    enabled === 'enabled'
+      ? 'Location enabled. A single capture is taken when you open an inspection.'
+      : 'Automatic location is off. Required template locations can still be captured manually.'
+  if (enabled === 'disabled') {
+    gpsRequest++
+    gpsBusy.value = false
+    return
+  }
+  if (screen.value === 'inspection') maybeCaptureGPS()
+  else if (navigator.geolocation)
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        if (fieldOptions.value.gps_preference === 'enabled')
+          gpsSetupMessage.value =
+            'Location permission granted. One-time capture is ready for inspections.'
+      },
+      () => {
+        if (fieldOptions.value.gps_preference === 'enabled')
+          gpsSetupMessage.value =
+            'Location permission unavailable or denied. You can enable permission and Retry Location during an inspection.'
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    )
+}
+function maybeCaptureGPS() {
+  if (
+    !inspection.value ||
+    completed.value ||
+    inspection.value.field_read_only_reason ||
+    values.value.gps_captured_at ||
+    !fieldOptions.value.gps_enabled ||
+    fieldOptions.value.gps_preference !== 'enabled' ||
+    automaticCaptures.has(inspection.value.name)
+  )
+    return
+  automaticCaptures.add(inspection.value.name)
+  captureGPS()
+}
 function captureGPS() {
-  if (gpsBusy.value || completed.value) return
+  if (
+    gpsBusy.value ||
+    completed.value ||
+    inspection.value.field_read_only_reason
+  )
+    return
   if (!navigator.geolocation) {
     gpsMessage.value = 'GPS is unavailable on this device.'
     return
@@ -1006,6 +1166,7 @@ function captureGPS() {
       values.value.gps_accuracy = coords.accuracy
       const date = new Date(timestamp)
       values.value.gps_captured_at = date.toISOString()
+      gpsSetupMessage.value = ''
       gpsMessage.value =
         'Location captured with your permission. Save Draft to retain it on the server.'
     },
@@ -1071,6 +1232,17 @@ async function completeInspection() {
   )
   busy.value = false
   if (saved) {
+    if (saved.field_finished) {
+      inspection.value = { ...inspection.value, ...saved }
+      const name = selectedJob.value.name
+      jobs.value = jobs.value.filter((job) => job.name !== name)
+      const next = { ...histories.value }
+      delete next[name]
+      histories.value = next
+      screen.value = 'complete'
+      statusMessage.value = 'Inspection completed and protected.'
+      return
+    }
     await openInspection(inspection.value.name)
     if (inspection.value.inspection_status === 'Completed') {
       screen.value = 'complete'

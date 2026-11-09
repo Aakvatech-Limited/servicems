@@ -331,6 +331,11 @@ class TestFieldOperations(TestCase):
 
 	def test_pre_and_post_completion_with_correction_history(self):
 		for stage in ("Pre-Service", "Post-Service"):
+			if stage == "Post-Service":
+				card = self.cards[0].reload()
+				for task in card.tasks:
+					task.completed = 1
+				card.save()
 			self.template.applicable_stage = stage
 			self.template.save()
 			doc = self.answer(self.start(stage=stage))
@@ -345,12 +350,19 @@ class TestFieldOperations(TestCase):
 			):
 				with self.assertRaises(frappe.ValidationError):
 					operation(*args)
-			correction = api.create_field_correction(doc.name, "Correct mileage")
+			correction = {
+				"name": frappe.get_doc(api.INSPECTION, doc.name).create_correction("Correct mileage")
+			}
 			corrected = frappe.get_doc(api.INSPECTION, correction["name"])
 			self.assertEqual(corrected.corrects_inspection, doc.name)
-			api.complete_field_inspection(corrected.name)
+			corrected.inspection_status = "Completed"
+			corrected.save()
 			self.assertEqual(doc.reload().inspection_status, "Completed")
-			self.assertEqual(len(api.get_inspection_photos(corrected.name)), 1)
+			if stage == "Pre-Service":
+				self.assertEqual(len(api.get_inspection_photos(corrected.name)), 1)
+			else:
+				with self.assertRaises(frappe.ValidationError):
+					api.get_inspection_photos(corrected.name)
 
 	def test_foreign_or_public_file_references_rejected(self):
 		first, second = self.start(), self.start(card=self.cards[1])

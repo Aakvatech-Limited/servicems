@@ -875,6 +875,9 @@ class TestPhaseTwo(IntegrationTestCase):
 		self.assertEqual(frappe.db.count("Stock Entry", {"service_job_card": self.card.name}), 0)
 
 	def test_post_service_with_multiple_uploaded_photographs(self):
+		for task in self.card.tasks:
+			task.completed = 1
+		self.card.save()
 		from frappe.utils.file_manager import save_file
 
 		template = frappe.get_doc(

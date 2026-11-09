@@ -11,6 +11,8 @@ from frappe.utils import now
 
 class ServiceVehicleInspection(Document):
 	def validate(self):
+		if self.service_job_card:
+			frappe.db.get_value("Service Job Card", self.service_job_card, "name", for_update=True)
 		previous = None
 		if not self.is_new():
 			frappe.db.sql(
@@ -37,6 +39,9 @@ class ServiceVehicleInspection(Document):
 				)
 		if self.inspection_stage not in ("Pre-Service", "Post-Service", None, ""):
 			frappe.throw(_("Invalid inspection stage."))
+		from servicems.inspection_workflow import validate_inspection
+
+		validate_inspection(self)
 		if self.is_new():
 			if not self.inspection_template:
 				frappe.throw(_("Select an inspection template before creating a new inspection."))
