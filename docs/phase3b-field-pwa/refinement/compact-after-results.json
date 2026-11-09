@@ -1,0 +1,1103 @@
+{
+  "phase": "after",
+  "date": "2026-11-07",
+  "physicalDevice": false,
+  "checks": [
+    "No horizontal overflow 320x740 false",
+    "Tap targets remain at least 44px 320x740 false",
+    "First Job Card visible above navigation 320 false",
+    "No horizontal overflow 360x800 false",
+    "Tap targets remain at least 44px 360x800 false",
+    "First Job Card visible above navigation 360 false",
+    "No horizontal overflow 375x812 false",
+    "Tap targets remain at least 44px 375x812 false",
+    "First Job Card visible above navigation 375 false",
+    "No horizontal overflow 390x844 false",
+    "Tap targets remain at least 44px 390x844 false",
+    "First Job Card visible above navigation 390 false",
+    "No horizontal overflow 430x932 false",
+    "Tap targets remain at least 44px 430x932 false",
+    "First Job Card visible above navigation 430 false",
+    "No horizontal overflow 448x998 false",
+    "Tap targets remain at least 44px 448x998 false",
+    "First Job Card visible above navigation 448 false",
+    "No horizontal overflow 600x900 false",
+    "Tap targets remain at least 44px 600x900 false",
+    "No horizontal overflow 768x1024 false",
+    "No horizontal overflow 834x1112 false",
+    "No horizontal overflow 1024x768 false",
+    "No horizontal overflow 1366x900 false",
+    "No horizontal overflow 800x360 false",
+    "No horizontal overflow 320x740 true",
+    "Tap targets remain at least 44px 320x740 true",
+    "First Job Card visible above navigation 320 true",
+    "No horizontal overflow 360x800 true",
+    "Tap targets remain at least 44px 360x800 true",
+    "First Job Card visible above navigation 360 true",
+    "No horizontal overflow 375x812 true",
+    "Tap targets remain at least 44px 375x812 true",
+    "First Job Card visible above navigation 375 true",
+    "No horizontal overflow 390x844 true",
+    "Tap targets remain at least 44px 390x844 true",
+    "First Job Card visible above navigation 390 true",
+    "No horizontal overflow 430x932 true",
+    "Tap targets remain at least 44px 430x932 true",
+    "First Job Card visible above navigation 430 true",
+    "No horizontal overflow 448x998 true",
+    "Tap targets remain at least 44px 448x998 true",
+    "First Job Card visible above navigation 448 true",
+    "No horizontal overflow 600x900 true",
+    "Tap targets remain at least 44px 600x900 true",
+    "No horizontal overflow 768x1024 true",
+    "No horizontal overflow 834x1112 true",
+    "No horizontal overflow 1024x768 true",
+    "No horizontal overflow 1366x900 true",
+    "No horizontal overflow 800x360 true",
+    "First Job Card moves up at 360",
+    "First Job Card moves up at 448",
+    "Desktop geometry unchanged false",
+    "Desktop geometry unchanged true",
+    "Wizard sticky steps clear compact header",
+    "Wizard Save Draft stays above bottom navigation",
+    "No browser exceptions"
+  ],
+  "measurements": [
+    {
+      "width": 320,
+      "height": 740,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 305,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 171.171875,
+        "width": 273,
+        "height": 94.171875
+      },
+      "stats": {
+        "top": 185.171875,
+        "bottom": 265.3125,
+        "width": 273,
+        "height": 80.140625
+      },
+      "resume": {
+        "top": 277.3125,
+        "bottom": 402.578125,
+        "width": 273,
+        "height": 125.265625
+      },
+      "firstJob": {
+        "top": 512.671875,
+        "bottom": 752.171875,
+        "width": 273,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 676,
+        "bottom": 740,
+        "width": 305,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 345,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 171.171875,
+        "width": 313,
+        "height": 94.171875
+      },
+      "stats": {
+        "top": 185.171875,
+        "bottom": 265.3125,
+        "width": 313,
+        "height": 80.140625
+      },
+      "resume": {
+        "top": 277.3125,
+        "bottom": 368.34375,
+        "width": 313,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 478.4375,
+        "bottom": 717.9375,
+        "width": 313,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 736,
+        "bottom": 800,
+        "width": 345,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 375,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 343,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 343,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 343,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 343,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 748,
+        "bottom": 812,
+        "width": 375,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 390,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 358,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 358,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 358,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 358,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 780,
+        "bottom": 844,
+        "width": 390,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 430,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 398,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 398,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 398,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 398,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 868,
+        "bottom": 932,
+        "width": 430,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 448,
+      "height": 998,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 448,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 416,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 416,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 416,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 416,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 934,
+        "bottom": 998,
+        "width": 448,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 600,
+      "height": 900,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 600,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 568,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 568,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 568,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 277,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 836,
+        "bottom": 900,
+        "width": 600,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 753,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 183.28125,
+        "width": 705,
+        "height": 84.28125
+      },
+      "stats": {
+        "top": 208.28125,
+        "bottom": 350.46875,
+        "width": 705,
+        "height": 142.1875
+      },
+      "resume": {
+        "top": 374.46875,
+        "bottom": 496.453125,
+        "width": 705,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 724.84375,
+        "bottom": 990.34375,
+        "width": 343.5,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 951,
+        "bottom": 1012,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 834,
+      "height": 1112,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 834,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 184.453125,
+        "width": 786,
+        "height": 85.453125
+      },
+      "stats": {
+        "top": 209.453125,
+        "bottom": 351.640625,
+        "width": 786,
+        "height": 142.1875
+      },
+      "resume": {
+        "top": 375.640625,
+        "bottom": 497.625,
+        "width": 786,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 726.015625,
+        "bottom": 991.515625,
+        "width": 384,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 1039,
+        "bottom": 1100,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 1009,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 191,
+        "width": 961,
+        "height": 92
+      },
+      "stats": {
+        "top": 216,
+        "bottom": 307.1875,
+        "width": 961,
+        "height": 91.1875
+      },
+      "resume": {
+        "top": 331.1875,
+        "bottom": 453.171875,
+        "width": 961,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 619.5625,
+        "bottom": 885.0625,
+        "width": 308.328125,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 695,
+        "bottom": 756,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 1351,
+        "height": 69
+      },
+      "heading": {
+        "top": 103,
+        "bottom": 198.78125,
+        "width": 1132,
+        "height": 95.78125
+      },
+      "stats": {
+        "top": 223.78125,
+        "bottom": 314.96875,
+        "width": 1132,
+        "height": 91.1875
+      },
+      "resume": {
+        "top": 338.96875,
+        "bottom": 460.953125,
+        "width": 1132,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 627.34375,
+        "bottom": 892.84375,
+        "width": 365.328125,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 827,
+        "bottom": 888,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 800,
+      "height": 360,
+      "dark": false,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 785,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 183.28125,
+        "width": 737,
+        "height": 84.28125
+      },
+      "stats": {
+        "top": 208.28125,
+        "bottom": 350.46875,
+        "width": 737,
+        "height": 142.1875
+      },
+      "resume": {
+        "top": 374.46875,
+        "bottom": 496.453125,
+        "width": 737,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 724.84375,
+        "bottom": 990.34375,
+        "width": 359.5,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 294,
+        "bottom": 348,
+        "width": 440,
+        "height": 54
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 305,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 171.171875,
+        "width": 273,
+        "height": 94.171875
+      },
+      "stats": {
+        "top": 185.171875,
+        "bottom": 265.3125,
+        "width": 273,
+        "height": 80.140625
+      },
+      "resume": {
+        "top": 277.3125,
+        "bottom": 402.578125,
+        "width": 273,
+        "height": 125.265625
+      },
+      "firstJob": {
+        "top": 512.671875,
+        "bottom": 752.171875,
+        "width": 273,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 676,
+        "bottom": 740,
+        "width": 305,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 345,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 171.171875,
+        "width": 313,
+        "height": 94.171875
+      },
+      "stats": {
+        "top": 185.171875,
+        "bottom": 265.3125,
+        "width": 313,
+        "height": 80.140625
+      },
+      "resume": {
+        "top": 277.3125,
+        "bottom": 368.34375,
+        "width": 313,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 478.4375,
+        "bottom": 717.9375,
+        "width": 313,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 736,
+        "bottom": 800,
+        "width": 345,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 375,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 343,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 343,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 343,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 343,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 748,
+        "bottom": 812,
+        "width": 375,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 390,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 358,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 358,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 358,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 358,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 780,
+        "bottom": 844,
+        "width": 390,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 430,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 398,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 398,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 398,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 398,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 868,
+        "bottom": 932,
+        "width": 430,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 448,
+      "height": 998,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 448,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 416,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 416,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 416,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 416,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 934,
+        "bottom": 998,
+        "width": 448,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 600,
+      "height": 900,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 61,
+        "width": 600,
+        "height": 61
+      },
+      "heading": {
+        "top": 77,
+        "bottom": 152.578125,
+        "width": 568,
+        "height": 75.578125
+      },
+      "stats": {
+        "top": 166.578125,
+        "bottom": 232.21875,
+        "width": 568,
+        "height": 65.640625
+      },
+      "resume": {
+        "top": 244.21875,
+        "bottom": 335.25,
+        "width": 568,
+        "height": 91.03125
+      },
+      "firstJob": {
+        "top": 445.34375,
+        "bottom": 684.84375,
+        "width": 277,
+        "height": 239.5
+      },
+      "nav": {
+        "top": 836,
+        "bottom": 900,
+        "width": 600,
+        "height": 64
+      },
+      "overflow": false,
+      "targets": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 753,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 183.28125,
+        "width": 705,
+        "height": 84.28125
+      },
+      "stats": {
+        "top": 208.28125,
+        "bottom": 350.46875,
+        "width": 705,
+        "height": 142.1875
+      },
+      "resume": {
+        "top": 374.46875,
+        "bottom": 496.453125,
+        "width": 705,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 724.84375,
+        "bottom": 990.34375,
+        "width": 343.5,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 951,
+        "bottom": 1012,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 834,
+      "height": 1112,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 834,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 184.453125,
+        "width": 786,
+        "height": 85.453125
+      },
+      "stats": {
+        "top": 209.453125,
+        "bottom": 351.640625,
+        "width": 786,
+        "height": 142.1875
+      },
+      "resume": {
+        "top": 375.640625,
+        "bottom": 497.625,
+        "width": 786,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 726.015625,
+        "bottom": 991.515625,
+        "width": 384,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 1039,
+        "bottom": 1100,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 1009,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 191,
+        "width": 961,
+        "height": 92
+      },
+      "stats": {
+        "top": 216,
+        "bottom": 307.1875,
+        "width": 961,
+        "height": 91.1875
+      },
+      "resume": {
+        "top": 331.1875,
+        "bottom": 453.171875,
+        "width": 961,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 619.5625,
+        "bottom": 885.0625,
+        "width": 308.328125,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 695,
+        "bottom": 756,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 1351,
+        "height": 69
+      },
+      "heading": {
+        "top": 103,
+        "bottom": 198.78125,
+        "width": 1132,
+        "height": 95.78125
+      },
+      "stats": {
+        "top": 223.78125,
+        "bottom": 314.96875,
+        "width": 1132,
+        "height": 91.1875
+      },
+      "resume": {
+        "top": 338.96875,
+        "bottom": 460.953125,
+        "width": 1132,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 627.34375,
+        "bottom": 892.84375,
+        "width": 365.328125,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 827,
+        "bottom": 888,
+        "width": 440,
+        "height": 61
+      },
+      "overflow": false,
+      "targets": false
+    },
+    {
+      "width": 800,
+      "height": 360,
+      "dark": true,
+      "header": {
+        "top": 0,
+        "bottom": 69,
+        "width": 785,
+        "height": 69
+      },
+      "heading": {
+        "top": 99,
+        "bottom": 183.28125,
+        "width": 737,
+        "height": 84.28125
+      },
+      "stats": {
+        "top": 208.28125,
+        "bottom": 350.46875,
+        "width": 737,
+        "height": 142.1875
+      },
+      "resume": {
+        "top": 374.46875,
+        "bottom": 496.453125,
+        "width": 737,
+        "height": 121.984375
+      },
+      "firstJob": {
+        "top": 724.84375,
+        "bottom": 990.34375,
+        "width": 359.5,
+        "height": 265.5
+      },
+      "nav": {
+        "top": 294,
+        "bottom": 348,
+        "width": 440,
+        "height": 54
+      },
+      "overflow": false,
+      "targets": false
+    }
+  ],
+  "screenshots": [
+    "compact-after-360-dark.png",
+    "compact-after-448-dark.png"
+  ],
+  "passed": true
+}

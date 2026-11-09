@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-09",
+  "originalImageBytesChanged": false,
+  "cases": [
+    {
+      "actual": "01-mobile-home-light.png",
+      "comparison": "comparison-home.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png"
+    },
+    {
+      "actual": "03-mobile-pre-checklist-light.png",
+      "comparison": "comparison-checklist.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png"
+    },
+    {
+      "actual": "04-mobile-photo-gallery-light.png",
+      "comparison": "comparison-photos.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png"
+    },
+    {
+      "actual": "15-post-completed-field-finished.png",
+      "comparison": "comparison-post-completed.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Extract_Mobile_Flow.png"
+    },
+    {
+      "actual": "09-tablet-inspection-light.png",
+      "comparison": "comparison-tablet.png",
+      "reference": "../design-reference/ServiceMS_Phase3B_Original_Visual_Workflow.png"
+    }
+  ],
+  "browserExceptions": [],
+  "passed": true
+}

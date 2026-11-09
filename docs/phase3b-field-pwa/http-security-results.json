@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "get_field_job denies unassigned records",
+    "get_field_inspection denies unassigned records",
+    "get_inspection_photos denies unassigned records",
+    "Direct REST access denies unassigned inspection",
+    "Invalid CSRF token blocks draft mutation",
+    "Invalid GPS rejects draft transaction",
+    "Failed mutation leaves no partial remarks or GPS",
+    "Direct photo upload denies unassigned inspection",
+    "Completed inspection rejects direct API editing"
+  ],
+  "passed": true
+}

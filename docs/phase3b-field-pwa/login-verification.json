@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-07",
+  "browser": "Authenticated headless Chromium; no physical device",
+  "checks": [
+    "Existing Desk session opens native login without Job Cards",
+    "Invalid credentials remain on login",
+    "Valid native login loads only assigned Job Card",
+    "Active account is visible",
+    "Account controls fit 320px",
+    "Account controls fit 390px",
+    "Account controls fit 834px",
+    "Confirmed Field session survives reload",
+    "Sign out returns to login without private records",
+    "Signed-out direct API request is denied"
+  ],
+  "passed": true
+}

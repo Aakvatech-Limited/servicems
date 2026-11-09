@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-07",
+  "physicalDevices": false,
+  "checks": [
+    "Draft photo review exposes Delete photo",
+    "Cancel confirmation keeps both photographs",
+    "Failed deletion preserves gallery and shows retryable error",
+    "Delete control accessible at 320px light",
+    "Delete control accessible at 390px light",
+    "Delete control accessible at 834px light",
+    "Delete control accessible at 1024px light",
+    "Delete control accessible at 320px dark",
+    "Delete control accessible at 390px dark",
+    "Delete control accessible at 834px dark",
+    "Delete control accessible at 1024px dark",
+    "Deleting current photo advances to remaining photo",
+    "Removal preserves edits and clears required checklist photograph",
+    "Deleting last photo closes review and empties gallery",
+    "Required evidence still blocks completion after deletion",
+    "Deleting last indexed photo selects preceding photo",
+    "Delete is disabled while offline",
+    "Completed photo review has no delete action",
+    "No browser exceptions during photo deletion"
+  ],
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844,
+      "dark": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "dark": false
+    },
+    {
+      "width": 834,
+      "height": 844,
+      "dark": false
+    },
+    {
+      "width": 1024,
+      "height": 844,
+      "dark": false
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "dark": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "dark": true
+    },
+    {
+      "width": 834,
+      "height": 844,
+      "dark": true
+    },
+    {
+      "width": 1024,
+      "height": 844,
+      "dark": true
+    }
+  ],
+  "screenshots": [
+    "13-photo-delete-review-light.png",
+    "14-photo-delete-review-dark.png"
+  ],
+  "inspection": "SVI000035",
+  "passed": true
+}

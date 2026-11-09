@@ -11,9 +11,41 @@
   "item_groups",
   "use_spares_instead_of_item",
   "enable_bay_management",
-  "require_final_quality_check"
+  "require_final_quality_check",
+  "field_inspection_section",
+  "pre_inspection_policy",
+  "post_inspection_policy",
+  "field_gps_enabled"
  ],
  "fields": [
+  {
+   "fieldname": "field_inspection_section",
+   "fieldtype": "Section Break",
+   "label": "Field Inspections"
+  },
+  {
+   "fieldname": "pre_inspection_policy",
+   "fieldtype": "Select",
+   "label": "Pre-Inspection",
+   "options": "Required\nOptional\nDisabled",
+   "default": "Optional",
+   "reqd": 1
+  },
+  {
+   "fieldname": "post_inspection_policy",
+   "fieldtype": "Select",
+   "label": "Post-Inspection",
+   "options": "Required\nOptional\nDisabled",
+   "default": "Optional",
+   "reqd": 1
+  },
+  {
+   "fieldname": "field_gps_enabled",
+   "fieldtype": "Check",
+   "label": "Enable Field GPS Setup and One-Time Capture",
+   "default": "0",
+   "description": "Ask each technician to opt in. Capture once per inspection, never continuously. Template-required GPS remains mandatory."
+  },
   {
    "fieldname": "company",
    "fieldtype": "Link",

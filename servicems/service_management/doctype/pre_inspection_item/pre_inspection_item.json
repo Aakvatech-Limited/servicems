@@ -11,17 +11,22 @@
   "option",
   "answer",
   "remarks",
+  "is_required",
   "require_photo",
   "photograph"
  ],
  "fields": [
   {
    "fieldname": "inspection_item",
+   "in_list_view": 1,
+   "columns": 6,
    "fieldtype": "Data",
    "label": "Inspection Item"
   },
   {
    "fieldname": "inspection_type",
+   "in_list_view": 1,
+   "columns": 2,
    "fieldtype": "Select",
    "label": "Inspection Type",
    "options": "Check\nData"
@@ -43,6 +48,8 @@
   },
   {
    "fieldname": "require_photo",
+   "in_list_view": 1,
+   "columns": 1,
    "label": "Require Item Photograph",
    "fieldtype": "Check"
   },
@@ -50,6 +57,15 @@
    "fieldname": "photograph",
    "label": "Item Photograph",
    "fieldtype": "Attach Image"
+  },
+  {
+   "fieldname": "is_required",
+   "in_list_view": 1,
+   "columns": 1,
+   "fieldtype": "Check",
+   "label": "Answer Required",
+   "default": "0",
+   "description": "If enabled on a template, the inspection item must have an answer at completion."
   }
  ],
  "index_web_pages_for_search": 1,
