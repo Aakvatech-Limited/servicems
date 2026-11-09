@@ -18,7 +18,7 @@ Codex should request/receive the mock PNG as a visual input for screenshot compa
 - Use Aakvatech colours **as fallback/demo tokens only**: primary `#bc2230`, secondary `#0d1d38`, navbar `#0d1d38`; supporting blue `#4b68ae`, `#5695d0`, neutral `#aaaab9`. The live Customer App must render the *selected Company's* saved values.
 - Use validated, centrally defined CSS custom properties/design tokens with semantic names (e.g. `--customer-primary`, `--customer-secondary`, `--customer-navbar`, `--customer-bg`, `--customer-surface`, `--customer-text`, `--customer-border`, `--customer-focus`). Derive hover/disabled/surface variants safely. No scattered literal Aakvatech colours in components.
 - Light/dark modes must preserve configured brand intent **and** readable contrast. Validate colour input, provide safe fallbacks, accessible text contrast and keyboard focus indicators.
-- The garage's logo/app name appears in the Customer App header and PWA presentation. Aakvatech/ServiceMS attribution may appear in *marketing material*, but should not replace the garage's own identity in the actual white-label app. Any 'Powered by' footer needs a Product Owner decision.
+- The garage's logo/app name appears in the Customer App header and PWA presentation, while **mandatory product attribution** appears subtly in the app footer: **`Powered by Aakvatech - ServiceMS`**. Attribution is fixed by ServiceMS, not configurable/removable by garage admins, and must not replace the garage's primary branding. The entire attribution label should link to the **Product Owner-supplied destination URL (pending)**; **do not invent, guess or hardcode a placeholder URL**. Keep it readable and accessible in light/dark themes.
 - Administrators should have a **live Frappe Desk branding preview** for mobile and desktop; changing branding should not require source edits. Only authorized company managers may change their Company's settings.
 - Customer App disabled: no Customer App frontend/API/auth entrance accessible; brand data preserved. Standard Frappe login/ERPNext Portal and internal ServiceMS Desk/Field PWA stay untouched. Public branding bootstrap must not leak another Company's private data.
 
@@ -61,6 +61,7 @@ Dedicated accessible customer screens:
 - Existing historical Job Cards/quotes/invoices are first-class destinations, not hidden solely under a generic 'Documents' section.
 - Support readable typography, consistency, restrained micro-interactions, useful whitespace and attractive yet performant imagery. No decorative elements that obscure important actions.
 - Company-specific workshop booking switches affect **new booking availability only**; they never erase previously authorized history.
+- Show a consistent, unobtrusive **`Powered by Aakvatech - ServiceMS`** footer link on Customer App screens and the entry/login view when the app is enabled, including mobile, tablet and desktop. Place it after main content / at the bottom of the page, never as a floating obstruction or primary call-to-action. Keep link destination configurable centrally in product code only once the Product Owner supplies the exact URL; until then show accessible attribution text without a dead or invented hyperlink.
 
 ## 5. Acceptance checks before design sign-off
 
@@ -70,6 +71,7 @@ Dedicated accessible customer screens:
 - Verify brand values from Desk update presentation without code change; invalid/low-contrast colours fail safely or use readable fallbacks.
 - Confirm no admin settings in Customer App. Confirm Job Cards, Quotations, Invoices and Service History are directly discoverable on both mobile and desktop, including *old records*.
 - Confirm disable/re-enable company, disabled workshop, document downloads and multi-company authorization regressions.
+- Verify the fixed **Powered by Aakvatech - ServiceMS** attribution is legible and consistently placed at mobile and desktop sizes, uses the exact supplied URL once provided, opens safely, and cannot be hidden or altered by company branding settings.
 - Keep the PR Draft and the environment separate from Phase 3B; do not merge/deploy to production before Product Owner approval.
 
 ## 6. Codex handoff
