@@ -14,7 +14,7 @@ Pilot: `mvk-v16`, https://servicems2.aakvaerp.com/field. Existing feature branch
 
 The authenticated run on **9 November 2026** passed **72 assertions and 200 responsive cases**, including five explicit direct-API security checks and a concurrent Post completion race with exactly one success. It exercised GPS denial/retry/one-time behavior, Pre → repair → Post, protected completion, finished-work list/search/history removal, opt-out, disabled stages, upload/review/deletion, Draft resume, no private browser storage, installability and sign-out. Eight further [read-only draft assertions](read-only-results.json) passed. [Browser results](browser-results.json) distinguish simulations from physical-device tests. [Pilot checks](pilot-checks.json) confirm completed Post cards remain Active/draft Job Cards, with their inspections retained; temporary settings/user state were restored and test sessions revoked.
 
-Backend/frontend/build/check results for final source verification are recorded in [test-results.json](test-results.json). Git publication and CI must be verified against the final remote HEAD; local checks do not establish GitHub CI success.
+Backend/frontend/build/check results for final source verification are recorded in [test-results.json](test-results.json). The implementation and retained UI improvements were published on 9 November 2026 through commit [`c0286f8`](https://github.com/Aakvatech-Limited/servicems/commit/c0286f89f7aebbdb3d228d52e8a9535b158e4893). See [PR #68 checks](https://github.com/Aakvatech-Limited/servicems/pull/68/checks) for CI against the current remote HEAD; local checks do not establish GitHub CI success.
 
 ## Actual screenshots and comparisons
 

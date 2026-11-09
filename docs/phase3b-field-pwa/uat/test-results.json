@@ -85,8 +85,10 @@
     "private_browser_storage": "No private records/credentials/photos found"
   },
   "github": {
-    "publication": "Pending HTTPS authentication",
-    "ci_on_new_head": "Not yet available; no success claimed",
+    "publication": "Published to existing PR #68 on 2026-11-09",
+    "implementation_commit": "c0286f89f7aebbdb3d228d52e8a9535b158e4893",
+    "ci_on_new_head": "See PR #68 checks for the current HEAD; local test results are independent of GitHub CI",
+    "checks_url": "https://github.com/Aakvatech-Limited/servicems/pull/68/checks",
     "draft": true,
     "merged": false
   },
